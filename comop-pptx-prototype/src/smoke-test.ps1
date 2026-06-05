@@ -70,6 +70,74 @@ try {
 
 if (Test-Path -LiteralPath $OutputPath) { Remove-Item -LiteralPath $OutputPath -Force }
 
+# Test ADR-003 : contenu utilisateur contenant {{...}} ne doit pas etre double-remplace
+Write-Host ""
+Write-Host "--- Test injection placeholder ---"
+$injectionData = @{
+  evenements_passes = 'Voir ticket {{velocite_moyenne}} en prod'
+  faits_marquants = 'test'
+  equipe = 'test'
+  commentaire_indicateurs_agiles = 'test'
+  points_attention = 'test'
+  periode_debut = '2026-01-01'
+  periode_fin = '2026-01-31'
+  velocite_moyenne = '42'
+  taux_predictibilite = '90'
+  progression_resultats = '75'
+  avancement_projet = '50'
+  points_discussion = 'test'
+  sujets_decision = 'test'
+  decisions = 'test'
+  chantiers_3_mois = 'test'
+  jalons_livrables = 'test'
+  avancement_chantiers = 'test'
+  difficultes_roadmap = 'test'
+  niveau_confiance = 'eleve'
+  incertitude_roadmap = '10'
+  type_focus = 'test'
+  faits_marquants_incidentologie_recette = 'test'
+  commentaire_indicateurs_incidentologie_recette = 'test'
+  commentaire_evolution = 'test'
+  tickets_crees = '5'
+  tickets_traites = '4'
+  tickets_non_traites = '1'
+  impacts_metiers = 'test'
+  actions_resolution = 'test'
+  metiers_concernes = 'test'
+} | ConvertTo-Json
+
+$injectionDataPath = Join-Path ([System.IO.Path]::GetTempPath()) ("smoke-injection-" + [System.Guid]::NewGuid().ToString("N") + ".json")
+$injectionOutputPath = Join-Path ([System.IO.Path]::GetTempPath()) ("smoke-injection-" + [System.Guid]::NewGuid().ToString("N") + ".pptx")
+Set-Content -LiteralPath $injectionDataPath -Value $injectionData -Encoding UTF8
+
+try {
+  $injResult = powershell.exe -NoProfile -ExecutionPolicy Bypass -File $generateScript `
+    -TemplatePath $TemplatePath `
+    -DataPath $injectionDataPath `
+    -OutputPath $injectionOutputPath | ConvertFrom-Json
+
+  Assert-Step "Injection : generation sans erreur" { $injResult.status -eq "genere" }
+
+  if (Test-Path -LiteralPath $injectionOutputPath) {
+    $injVerifyDir = Join-Path ([System.IO.Path]::GetTempPath()) ("smoke-inj-verify-" + [System.Guid]::NewGuid().ToString("N"))
+    try {
+      [System.IO.Compression.ZipFile]::ExtractToDirectory($injectionOutputPath, $injVerifyDir)
+      $s2 = Get-Content (Join-Path $injVerifyDir "ppt\slides\slide2.xml") -Raw -Encoding UTF8
+      Assert-Step "Injection : '{{velocite_moyenne}}' dans le texte n'est pas remplace par sa valeur (42)" {
+        -not ($s2 -match '>42<')
+      }
+      Assert-Step "Injection : velocite_moyenne = 42 correctement remplace ailleurs" {
+        $s2 -match '42'
+      }
+    } finally {
+      if (Test-Path $injVerifyDir) { Remove-Item $injVerifyDir -Recurse -Force }
+    }
+  }
+} finally {
+  if (Test-Path -LiteralPath $injectionDataPath) { Remove-Item -LiteralPath $injectionDataPath -Force }
+  if (Test-Path -LiteralPath $injectionOutputPath) { Remove-Item -LiteralPath $injectionOutputPath -Force }
+}
+
 Write-Host ""
 Write-Host "Resultat : $passed OK, $failed echoues"
 if ($failed -gt 0) { exit 1 } else { exit 0 }

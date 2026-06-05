@@ -12,6 +12,17 @@ if (-not (Test-Path -LiteralPath $BrandingConfig)) {
 
 $branding = Get-Content -LiteralPath $BrandingConfig -Raw -Encoding UTF8 | ConvertFrom-Json
 
+$hexPattern = '^[0-9A-Fa-f]{6}$'
+if (-not $branding.primary_color -or $branding.primary_color -notmatch $hexPattern) {
+  throw "branding.json: primary_color manquant ou invalide (attendu: 6 chiffres hex, ex: 0E2356)"
+}
+if (-not $branding.accent_color -or $branding.accent_color -notmatch $hexPattern) {
+  throw "branding.json: accent_color manquant ou invalide (attendu: 6 chiffres hex, ex: 00D2DD)"
+}
+if (-not $branding.font) {
+  throw "branding.json: font manquant"
+}
+
 $colorMap = @{}
 $branding.color_map.PSObject.Properties | ForEach-Object { $colorMap[$_.Name] = $_.Value }
 

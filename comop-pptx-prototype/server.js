@@ -8,6 +8,7 @@ const root = __dirname;
 const webDir = path.join(root, "web");
 const templatesDir = path.join(root, "templates");
 const outputDir = path.join(root, "output");
+const requestDataDir = path.join(outputDir, "_data");
 const dataDir = path.join(root, "data");
 const port = Number(process.env.PORT || 5177);
 const serverLog = path.join(outputDir, "server-runtime.log");
@@ -36,16 +37,18 @@ function log(message) {
 }
 
 function purgeOldOutputs() {
-  if (!fs.existsSync(outputDir)) return;
   const cutoff = Date.now() - OUTPUT_TTL_MS;
-  fs.readdirSync(outputDir)
-    .filter(f => f.endsWith(".pptx") || f.endsWith(".json"))
-    .forEach(f => {
-      const full = path.join(outputDir, f);
+  const purgeDir = (dir, ext) => {
+    if (!fs.existsSync(dir)) return;
+    fs.readdirSync(dir).filter(f => f.endsWith(ext)).forEach(f => {
       try {
+        const full = path.join(dir, f);
         if (fs.statSync(full).mtimeMs < cutoff) fs.unlinkSync(full);
       } catch (_) {}
     });
+  };
+  purgeDir(outputDir, ".pptx");
+  purgeDir(requestDataDir, ".json");
 }
 
 function readRequestBody(req) {
@@ -129,8 +132,9 @@ async function handleApi(req, res) {
     }
 
     fs.mkdirSync(outputDir, { recursive: true });
+    fs.mkdirSync(requestDataDir, { recursive: true });
     const id = crypto.randomUUID();
-    const dataPath = path.join(outputDir, `request-${id}.json`);
+    const dataPath = path.join(requestDataDir, `request-${id}.json`);
     const outputPath = path.join(outputDir, `comop-${id}.pptx`);
     fs.writeFileSync(dataPath, JSON.stringify(body.fields || {}, null, 2), "utf8");
 
