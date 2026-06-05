@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Generateur COMOP PowerPoint</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <h1>Generateur COMOP</h1>
+          <p>Support PowerPoint 3 slides avec template interchangeable.</p>
+        </div>
+        <button id="loadSample" type="button">Charger exemple</button>
+      </header>
+
+      <section class="toolbar">
+        <label>
+          Template
+          <select id="template"></select>
+        </label>
+        <button id="generate" type="button">Generer le PowerPoint</button>
+      </section>
+
+      <form id="comopForm" class="form-grid">
+        <section>
+          <h2>1. Evenements passes</h2>
+          <label>Equipe <input name="equipe" required></label>
+          <div class="two-cols">
+            <label>Debut periode <input name="periode_debut" placeholder="15/05/2026"></label>
+            <label>Fin periode <input name="periode_fin" placeholder="04/06/2026"></label>
+          </div>
+          <label>Evenements passes <textarea name="evenements_passes"></textarea></label>
+          <label>Faits marquants <textarea name="faits_marquants"></textarea></label>
+          <label>Commentaire indicateurs <textarea name="commentaire_indicateurs_agiles"></textarea></label>
+          <div class="two-cols">
+            <label>Velocite moyenne <input name="velocite_moyenne"></label>
+            <label>Taux predictibilite <input name="taux_predictibilite"></label>
+          </div>
+          <div class="two-cols">
+            <label>Progression resultats <input name="progression_resultats"></label>
+            <label>Avancement projet <input name="avancement_projet"></label>
+          </div>
+          <label>Points d'attention <textarea name="points_attention"></textarea></label>
+        </section>
+
+        <section>
+          <h2>2. Roadmap 3 mois</h2>
+          <label>Chantiers 3 mois <textarea name="chantiers_3_mois"></textarea></label>
+          <label>Jalons / livrables <textarea name="jalons_livrables"></textarea></label>
+          <label>Avancement par chantier <textarea name="avancement_chantiers"></textarea></label>
+          <label>Difficultes / risques <textarea name="difficultes_roadmap"></textarea></label>
+          <label>Points discussion <textarea name="points_discussion"></textarea></label>
+          <label>Sujets decision <textarea name="sujets_decision"></textarea></label>
+          <label>Decisions <textarea name="decisions"></textarea></label>
+          <div class="two-cols">
+            <label>Niveau confiance <input name="niveau_confiance"></label>
+            <label>Incertitude <input name="incertitude_roadmap"></label>
+          </div>
+        </section>
+
+        <section>
+          <h2>3. Incidentologie / recette</h2>
+          <label>Type de focus
+            <select name="type_focus">
+              <option>Incidentologie et recette</option>
+              <option>Incidentologie</option>
+              <option>Recette</option>
+            </select>
+          </label>
+          <label>Faits marquants <textarea name="faits_marquants_incidentologie_recette"></textarea></label>
+          <label>Commentaire indicateurs <textarea name="commentaire_indicateurs_incidentologie_recette"></textarea></label>
+          <div class="three-cols">
+            <label>Tickets crees <input name="tickets_crees"></label>
+            <label>Tickets traites <input name="tickets_traites"></label>
+            <label>Tickets non traites <input name="tickets_non_traites"></label>
+          </div>
+          <label>Evolution <textarea name="commentaire_evolution"></textarea></label>
+          <label>Impacts metiers <textarea name="impacts_metiers"></textarea></label>
+          <label>Actions resolution <textarea name="actions_resolution"></textarea></label>
+          <label>Metiers concernes <textarea name="metiers_concernes"></textarea></label>
+        </section>
+      </form>
+
+      <footer id="status" class="status">Pret.</footer>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,28 @@
+{
+  "name": "OCTO Technology",
+  "primary_color": "0E2356",
+  "accent_color": "00D2DD",
+  "font": "Outfit",
+  "footer_text": "OCTO I PART OF ACCENTURE | &#xA9; {year} - All rights reserved",
+  "copyright_year": null,
+  "color_map": {
+    "581D74": "0E2356",
+    "B24388": "0E2356",
+    "B34A8C": "0E2356",
+    "9176B4": "0E2356",
+    "55579E": "0E2356",
+    "000000": "0E2356",
+    "FFC000": "00D2DD",
+    "EAB818": "00D2DD",
+    "00A193": "00D2DD",
+    "00AFCB": "00D2DD",
+    "00B0F0": "00D2DD",
+    "7BD4E3": "80E8F0",
+    "F5EAFA": "EEF8FA",
+    "B9B9D9": "C5D9E8",
+    "D6D2E3": "E8F0FF",
+    "676767": "5A6A8A",
+    "7F7F7F": "6B7A99"
+  },
+  "font_replacements": ["Arial", "Calibri", "Montserrat SemiBold", "Verdana"]
+}

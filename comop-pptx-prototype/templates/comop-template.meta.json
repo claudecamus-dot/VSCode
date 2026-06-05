@@ -1,0 +1,11 @@
+{
+  "name": "COMOP — Charte OCTO Technology",
+  "description": "Template COMOP standard aux couleurs OCTO Technology (navy #0E2356 + turquoise #00D2DD, police Outfit)",
+  "version": "2.0.0",
+  "branding": "OCTO Technology",
+  "slides": [
+    { "index": 1, "title": "Evenements passés" },
+    { "index": 2, "title": "Roadmap 3 mois" },
+    { "index": 3, "title": "Focus incidentologie / recette" }
+  ]
+}
