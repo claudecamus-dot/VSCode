@@ -123,6 +123,17 @@ p {
   line-height: 1.6;
 }
 
+.zone-remove-btn {
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--danger);
+}
+
+.zone-remove-btn:hover {
+  background: #8c1c12;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

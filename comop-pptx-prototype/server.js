@@ -248,6 +248,51 @@ async function handleApi(req, res) {
     return;
   }
 
+  if (req.method === "POST" && req.url.startsWith("/api/templates/") && req.url.endsWith("/remove-shape")) {
+    const rawName = decodeURIComponent(req.url.slice("/api/templates/".length, -"/remove-shape".length));
+    let templatePath;
+    try {
+      templatePath = safeTemplatePath(rawName);
+    } catch (error) {
+      sendJson(res, 400, { error: error.message });
+      return;
+    }
+    if (!fs.existsSync(templatePath)) {
+      sendJson(res, 404, { error: "Template introuvable" });
+      return;
+    }
+
+    const body = JSON.parse(await readRequestBody(req));
+    const slideIndex = Number(body.slideIndex);
+    const shapeName = String(body.shapeName || "");
+    if (!Number.isInteger(slideIndex) || slideIndex < 1 || !shapeName) {
+      sendJson(res, 400, { error: "Parametres invalides (slideIndex, shapeName)" });
+      return;
+    }
+
+    try {
+      await runPowerShell([
+        "-File",
+        path.join(root, "src", "remove-template-shape.ps1"),
+        "-TemplatePath",
+        templatePath,
+        "-SlideIndex",
+        String(slideIndex),
+        "-ShapeName",
+        shapeName
+      ]);
+    } catch (error) {
+      sendJson(res, 500, { error: error.message });
+      return;
+    }
+
+    const zonesPath = templatePath.replace(/\.pptx$/, ".zones.json");
+    if (fs.existsSync(zonesPath)) fs.unlinkSync(zonesPath);
+
+    sendJson(res, 200, { file: path.basename(templatePath), slideIndex, shapeName });
+    return;
+  }
+
   if (req.method === "GET" && req.url === "/api/sample") {
     const sample = fs.readFileSync(path.join(dataDir, "sample-comop.json"), "utf8");
     send(res, 200, sample, "application/json; charset=utf-8");

@@ -195,6 +195,47 @@ try {
   if (Test-Path -LiteralPath $zonesOutputPath) { Remove-Item -LiteralPath $zonesOutputPath -Force }
 }
 
+# Test suppression de graphique (golden-file, sur une copie temporaire du template :
+# l'operation est destructive et ne doit jamais toucher le template de la bibliotheque)
+Write-Host ""
+Write-Host "--- Test suppression de graphique ---"
+$removeScript = Join-Path $PSScriptRoot "remove-template-shape.ps1"
+Assert-Step "remove-template-shape.ps1 existe" { Test-Path -LiteralPath $removeScript }
+
+$removeCopyPath = Join-Path ([System.IO.Path]::GetTempPath()) ("smoke-remove-" + [System.Guid]::NewGuid().ToString("N") + ".pptx")
+$removeZonesPath = Join-Path ([System.IO.Path]::GetTempPath()) ("smoke-remove-zones-" + [System.Guid]::NewGuid().ToString("N") + ".json")
+try {
+  Copy-Item -LiteralPath $TemplatePath -Destination $removeCopyPath -Force
+
+  & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $zonesScript `
+    -TemplatePath $removeCopyPath -OutputPath $removeZonesPath | Out-Null
+  $before = Get-Content -LiteralPath $removeZonesPath -Raw -Encoding UTF8 | ConvertFrom-Json
+  $beforeTotal = ($before.slides | ForEach-Object { $_.zones.Count } | Measure-Object -Sum).Sum
+  Remove-Item -LiteralPath $removeZonesPath -Force
+
+  & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $removeScript `
+    -TemplatePath $removeCopyPath `
+    -SlideIndex 2 `
+    -ShapeName "Google Shape;305;g3072d353d33_0_186" | Out-Null
+
+  & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $zonesScript `
+    -TemplatePath $removeCopyPath -OutputPath $removeZonesPath | Out-Null
+  $after = Get-Content -LiteralPath $removeZonesPath -Raw -Encoding UTF8 | ConvertFrom-Json
+  $afterTotal = ($after.slides | ForEach-Object { $_.zones.Count } | Measure-Object -Sum).Sum
+
+  Assert-Step "Une zone de moins apres suppression ($beforeTotal -> $afterTotal)" { $afterTotal -eq ($beforeTotal - 1) }
+  Assert-Step "L'image retiree n'apparait plus sur la slide 2" {
+    $slide2 = $after.slides | Where-Object { $_.index -eq 2 }
+    -not ($slide2.zones | Where-Object { $_.nom -eq "Google Shape;305;g3072d353d33_0_186" })
+  }
+  Assert-Step "Le PPTX modifie reste valide (ouverture et relecture des zones OK)" { $after.slides.Count -eq $before.slides.Count }
+} finally {
+  if (Test-Path -LiteralPath $removeZonesPath) { Remove-Item -LiteralPath $removeZonesPath -Force }
+  if (Test-Path -LiteralPath $removeCopyPath) { Remove-Item -LiteralPath $removeCopyPath -Force }
+  $removeCopySidecar = $removeCopyPath -replace '\.pptx$', '.zones.json'
+  if (Test-Path -LiteralPath $removeCopySidecar) { Remove-Item -LiteralPath $removeCopySidecar -Force }
+}
+
 Write-Host ""
 Write-Host "Resultat : $passed OK, $failed echoues"
 if ($failed -gt 0) { exit 1 } else { exit 0 }

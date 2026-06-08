@@ -145,11 +145,50 @@ function renderZones(zones) {
       let text = label;
       if (zone.nom) text += ` — ${zone.nom}`;
       if (zone.apercu) text += ` : "${zone.apercu}"`;
-      item.textContent = text;
+      item.append(document.createTextNode(text));
+
+      if (zone.type !== "texte" && zone.nom) {
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "zone-remove-btn";
+        removeBtn.textContent = "Retirer";
+        removeBtn.addEventListener("click", () => removeZone(slide.index, zone, label));
+        item.append(document.createTextNode(" "));
+        item.append(removeBtn);
+      }
+
       list.append(item);
     }
     slideDiv.append(list);
     zonesResult.append(slideDiv);
+  }
+}
+
+async function removeZone(slideIndex, zone, label) {
+  const file = templateSelect.value;
+  if (!file || templateSelect.disabled) return;
+  const description = zone.apercu ? `${label} "${zone.apercu}"` : `${label} (${zone.nom})`;
+  if (!window.confirm(`Retirer ${description} de la slide ${slideIndex} ? Cette action modifie le template et est irreversible.`)) return;
+
+  setStatus(`Suppression de ${description}…`);
+  try {
+    const response = await fetch(`/api/templates/${encodeURIComponent(file)}/remove-shape`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slideIndex, shapeName: zone.nom })
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      setStatus(result.error || "Erreur de suppression.", "error");
+      return;
+    }
+
+    const zonesResponse = await fetch(`/api/templates/${encodeURIComponent(file)}/zones`);
+    const zones = await zonesResponse.json();
+    if (zonesResponse.ok) renderZones(zones);
+    setStatus(`${description} retire de la slide ${slideIndex}.`, "success");
+  } catch (err) {
+    setStatus(err.message || "Erreur reseau.", "error");
   }
 }
 
