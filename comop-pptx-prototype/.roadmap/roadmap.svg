@@ -1,23 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="1256" viewBox="0 0 980 1256" font-family="Segoe UI, Arial, sans-serif">
 <rect width="980" height="1256" fill="#F4F6F9"/>
 <text x="32" y="56" font-size="24" font-weight="700" fill="#0E2356">Atelier COMOP multi-templates</text>
-<text x="32" y="78" font-size="13" fill="#5A6B85">Increments 1 a 5 livres et committes - increment 6 en cours</text>
-<text x="32" y="111" font-size="13" font-weight="600" fill="#0E2356">7 / 10 termines</text>
+<text x="32" y="78" font-size="13" fill="#5A6B85">Increments 1 a 6 livres et committes - increment 7 en cours</text>
+<text x="32" y="111" font-size="13" font-weight="600" fill="#0E2356">8 / 10 termines</text>
 <rect x="172" y="100" width="726" height="14" rx="7" fill="#E1E6EF"/>
-<rect x="172" y="100" width="508" height="14" rx="7" fill="#00A693"/>
-<text x="912" y="111" font-size="13" font-weight="600" fill="#0E2356">70%</text>
+<rect x="172" y="100" width="581" height="14" rx="7" fill="#00A693"/>
+<text x="912" y="111" font-size="13" font-weight="600" fill="#0E2356">80%</text>
 <rect x="32" y="132" width="217" height="22" rx="11" fill="#2E9E5B"/>
-<text x="43" y="147" font-size="12" font-weight="600" fill="#FFFFFF">Tokens consommes : 102 245 726</text>
+<text x="43" y="147" font-size="12" font-weight="600" fill="#FFFFFF">Tokens consommes : 122 205 622</text>
 <rect x="259" y="132" width="230" height="22" rx="11" fill="#E8A23D"/>
-<text x="270" y="147" font-size="12" font-weight="600" fill="#FFFFFF">Prevision restante : ~49 000 000</text>
+<text x="270" y="147" font-size="12" font-weight="600" fill="#FFFFFF">Prevision restante : ~33 000 000</text>
 <rect x="499" y="132" width="236.5" height="22" rx="11" fill="#4A90D9"/>
-<text x="510" y="147" font-size="12" font-weight="600" fill="#FFFFFF">Total previsionnel : ~151 245 726</text>
+<text x="510" y="147" font-size="12" font-weight="600" fill="#FFFFFF">Total previsionnel : ~155 205 622</text>
 <rect x="32" y="166" width="721.3" height="22" rx="11" fill="#C0392B"/>
-<text x="43" y="181" font-size="12" font-weight="600" fill="#FFFFFF">ATTENTION prevision optimiste : ~16 333 333 / increment a venir vs ~20 449 145 / increment observe sur le livre</text>
+<text x="43" y="181" font-size="12" font-weight="600" fill="#FFFFFF">ATTENTION prevision optimiste : ~16 500 000 / increment a venir vs ~20 367 604 / increment observe sur le livre</text>
 <rect x="32" y="200" width="338.2" height="22" rx="11" fill="#0E2356"/>
-<text x="43" y="215" font-size="12" font-weight="600" fill="#FFFFFF">Mesure reelle session : 104 538 605 tokens factures</text>
+<text x="43" y="215" font-size="12" font-weight="600" fill="#FFFFFF">Mesure reelle session : 123 706 533 tokens factures</text>
 <rect x="380.2" y="200" width="294.8" height="22" rx="11" fill="#7A5CC9"/>
-<text x="391.2" y="215" font-size="12" font-weight="600" fill="#FFFFFF">Contexte : 107 856 / 200 000 (marge ~92 144)</text>
+<text x="391.2" y="215" font-size="12" font-weight="600" fill="#FFFFFF">Contexte : 139 067 / 200 000 (marge ~60 933)</text>
 <rect x="32" y="244" width="916" height="84" rx="8" fill="#FFFFFF" stroke="#E1E6EF"/>
 <rect x="32" y="244" width="6" height="84" rx="3" fill="#2E9E5B"/>
 <rect x="52" y="258" width="81" height="20" rx="10" fill="#8E7CC3"/>
@@ -84,22 +84,22 @@
 <text x="809.2" y="860" font-size="11" font-weight="700" fill="#FFFFFF">18 406 532 tokens</text>
 <text x="52" y="882" font-size="15" font-weight="700" fill="#182840">5. Reperage des zones (onglet Revue)</text>
 <text x="52" y="902" font-size="12" fill="#5A6B85">Detection des zones de texte et de graphiques dans les slides du template.</text>
-<rect x="32" y="930" width="916" height="84" rx="8" fill="#FBF3E6" stroke="#E1E6EF"/>
-<rect x="32" y="930" width="6" height="84" rx="3" fill="#E8A23D"/>
+<rect x="32" y="930" width="916" height="84" rx="8" fill="#FFFFFF" stroke="#E1E6EF"/>
+<rect x="32" y="930" width="6" height="84" rx="3" fill="#2E9E5B"/>
 <rect x="52" y="944" width="95" height="20" rx="10" fill="#00A693"/>
 <text x="61" y="958" font-size="11" font-weight="700" fill="#FFFFFF">REALISATION</text>
-<rect x="157" y="944" width="74" height="20" rx="10" fill="#E8A23D"/>
-<text x="166" y="958" font-size="11" font-weight="700" fill="#FFFFFF">EN COURS</text>
-<rect x="748" y="944" width="180" height="20" rx="10" fill="#7A8AA0"/>
-<text x="758" y="958" font-size="11" font-weight="700" fill="#FFFFFF">~16 000 000 tokens (est.)</text>
+<rect x="157" y="944" width="46" height="20" rx="10" fill="#2E9E5B"/>
+<text x="166" y="958" font-size="11" font-weight="700" fill="#FFFFFF">FAIT</text>
+<rect x="799.2" y="944" width="128.8" height="20" rx="10" fill="#2E9E5B"/>
+<text x="809.2" y="958" font-size="11" font-weight="700" fill="#FFFFFF">19 959 896 tokens</text>
 <text x="52" y="980" font-size="15" font-weight="700" fill="#182840">6. Suppression de graphiques existants</text>
-<text x="52" y="1000" font-size="12" fill="#5A6B85">Liberer une zone reutilisable en retirant un graphique deja present.</text>
-<rect x="32" y="1028" width="916" height="84" rx="8" fill="#FFFFFF" stroke="#E1E6EF"/>
-<rect x="32" y="1028" width="6" height="84" rx="3" fill="#B7C0CC"/>
+<text x="52" y="1000" font-size="12" fill="#5A6B85">Script remove-template-shape.ps1 + route POST .../remove-shape + bouton Retirer dans l'onglet Revue.</text>
+<rect x="32" y="1028" width="916" height="84" rx="8" fill="#FBF3E6" stroke="#E1E6EF"/>
+<rect x="32" y="1028" width="6" height="84" rx="3" fill="#E8A23D"/>
 <rect x="52" y="1042" width="95" height="20" rx="10" fill="#00A693"/>
 <text x="61" y="1056" font-size="11" font-weight="700" fill="#FFFFFF">REALISATION</text>
-<rect x="157" y="1042" width="67" height="20" rx="10" fill="#B7C0CC"/>
-<text x="166" y="1056" font-size="11" font-weight="700" fill="#FFFFFF">A FAIRE</text>
+<rect x="157" y="1042" width="74" height="20" rx="10" fill="#E8A23D"/>
+<text x="166" y="1056" font-size="11" font-weight="700" fill="#FFFFFF">EN COURS</text>
 <rect x="754.4" y="1042" width="173.60000000000002" height="20" rx="10" fill="#7A8AA0"/>
 <text x="764.4" y="1056" font-size="11" font-weight="700" fill="#FFFFFF">~9 000 000 tokens (est.)</text>
 <text x="52" y="1078" font-size="15" font-weight="700" fill="#182840">7. Nettoyage des slides excedentaires</text>

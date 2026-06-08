@@ -1,11 +1,11 @@
 {
   "title": "Atelier COMOP multi-templates",
-  "subtitle": "Increments 1 a 5 livres et committes - increment 6 en cours",
+  "subtitle": "Increments 1 a 6 livres et committes - increment 7 en cours",
   "session_actual": {
-    "tokens_total": 104538605,
-    "context_used": 107856,
+    "tokens_total": 123706533,
+    "context_used": 139067,
     "context_limit": 200000,
-    "measured_at": "2026-06-08T15:09:03Z"
+    "measured_at": "2026-06-08T15:52:57Z"
   },
   "items": [
     { "phase": "reflexion", "title": "Brief produit", "description": "Cadrage du besoin : trois espaces Configuration / Revue / Utilisation, bibliotheque de templates.", "status": "done" },
@@ -15,8 +15,8 @@
     { "phase": "realisation", "title": "3. Gestion de la bibliotheque (suppression)", "description": "Route DELETE /api/templates/:file, nettoyage atomique des sidecars, bouton Supprimer.", "status": "done", "tokens": { "actual": 7872850 } },
     { "phase": "realisation", "title": "4. Restructuration en 3 espaces", "description": "Onglets Configuration / Revue / Utilisation dans web/index.html + app.js.", "status": "done", "tokens": { "actual": 16290034 } },
     { "phase": "realisation", "title": "5. Reperage des zones (onglet Revue)", "description": "Detection des zones de texte et de graphiques dans les slides du template.", "status": "done", "tokens": { "actual": 18406532 } },
-    { "phase": "realisation", "title": "6. Suppression de graphiques existants", "description": "Liberer une zone reutilisable en retirant un graphique deja present.", "status": "current", "tokens": { "estimate": 16000000 } },
-    { "phase": "realisation", "title": "7. Nettoyage des slides excedentaires", "description": "Detection et suppression des slides au-dela des 3 attendues.", "status": "todo", "tokens": { "estimate": 9000000 } },
+    { "phase": "realisation", "title": "6. Suppression de graphiques existants", "description": "Script remove-template-shape.ps1 + route POST .../remove-shape + bouton Retirer dans l'onglet Revue.", "status": "done", "tokens": { "actual": 19959896 } },
+    { "phase": "realisation", "title": "7. Nettoyage des slides excedentaires", "description": "Detection et suppression des slides au-dela des 3 attendues.", "status": "current", "tokens": { "estimate": 9000000 } },
     { "phase": "realisation", "title": "8. Insertion de visuels prepares", "description": "Phase Utilisation : injecter des visuels prets dans les zones reperees.", "status": "todo", "tokens": { "estimate": 24000000 } }
   ]
 }
