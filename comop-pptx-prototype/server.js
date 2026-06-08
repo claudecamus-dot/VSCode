@@ -13,6 +13,7 @@ const dataDir = path.join(root, "data");
 const port = Number(process.env.PORT || 5177);
 const serverLog = path.join(outputDir, "server-runtime.log");
 const OUTPUT_TTL_MS = 24 * 60 * 60 * 1000; // 24h
+const TEMPLATE_UPLOAD_MAX_BYTES = 25 * 1024 * 1024; // 25 Mo (gabarit connu : 1.4 Mo)
 
 const contentTypes = {
   ".html": "text/html; charset=utf-8",
@@ -66,6 +67,24 @@ function readRequestBody(req) {
   });
 }
 
+function readBinaryBody(req, maxBytes) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    let length = 0;
+    req.on("data", chunk => {
+      length += chunk.length;
+      if (length > maxBytes) {
+        reject(new Error("Fichier trop volumineux"));
+        req.destroy();
+        return;
+      }
+      chunks.push(chunk);
+    });
+    req.on("end", () => resolve(Buffer.concat(chunks)));
+    req.on("error", reject);
+  });
+}
+
 function runPowerShell(args) {
   return new Promise((resolve, reject) => {
     const child = spawn("powershell.exe", ["-NoProfile", "-ExecutionPolicy", "Bypass", ...args], {
@@ -114,6 +133,54 @@ async function handleApi(req, res) {
       ? fs.readdirSync(templatesDir).filter(f => f.endsWith(".pptx"))
       : [];
     sendJson(res, 200, { templates: files.map(readTemplateMeta) });
+    return;
+  }
+
+  if (req.method === "POST" && req.url === "/api/templates") {
+    const rawName = decodeURIComponent(req.headers["x-template-name"] || "");
+    let templatePath;
+    try {
+      templatePath = safeTemplatePath(rawName);
+    } catch (error) {
+      sendJson(res, 400, { error: error.message });
+      return;
+    }
+    if (fs.existsSync(templatePath)) {
+      sendJson(res, 409, { error: "Un template du meme nom existe deja" });
+      return;
+    }
+
+    let buffer;
+    try {
+      buffer = await readBinaryBody(req, TEMPLATE_UPLOAD_MAX_BYTES);
+    } catch (error) {
+      sendJson(res, 413, { error: error.message });
+      return;
+    }
+
+    fs.mkdirSync(templatesDir, { recursive: true });
+    fs.writeFileSync(templatePath, buffer);
+
+    let branding = null;
+    try {
+      await runPowerShell([
+        "-File",
+        path.join(root, "src", "extract-template-branding.ps1"),
+        "-TemplatePath",
+        templatePath
+      ]);
+      const brandingPath = templatePath.replace(/\.pptx$/, ".branding.json");
+      if (fs.existsSync(brandingPath)) {
+        let brandingRaw = fs.readFileSync(brandingPath, "utf8");
+        if (brandingRaw.charCodeAt(0) === 0xFEFF) brandingRaw = brandingRaw.slice(1);
+        branding = JSON.parse(brandingRaw);
+      }
+    } catch (error) {
+      log(`EXTRACTION ${error.message}`);
+    }
+
+    const fileName = path.basename(templatePath);
+    sendJson(res, 200, { ...readTemplateMeta(fileName), branding });
     return;
   }
 

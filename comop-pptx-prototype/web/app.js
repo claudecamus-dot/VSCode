@@ -39,6 +39,33 @@ async function loadTemplates() {
   }
 }
 
+const templateUpload = document.querySelector("#templateUpload");
+
+templateUpload.addEventListener("change", async () => {
+  const file = templateUpload.files[0];
+  if (!file) return;
+  setStatus(`Chargement de ${file.name}…`);
+  try {
+    const response = await fetch("/api/templates", {
+      method: "POST",
+      headers: { "X-Template-Name": encodeURIComponent(file.name) },
+      body: file
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      setStatus(result.error || "Erreur de chargement.", "error");
+      return;
+    }
+    await loadTemplates();
+    templateSelect.value = result.file;
+    setStatus(`Template "${result.name}" ajoute a la bibliotheque.`, "success");
+  } catch (err) {
+    setStatus(err.message || "Erreur reseau.", "error");
+  } finally {
+    templateUpload.value = "";
+  }
+});
+
 document.querySelector("#loadSample").addEventListener("click", async () => {
   const response = await fetch("/api/sample");
   fillFields(await response.json());
