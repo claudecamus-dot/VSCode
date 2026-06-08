@@ -73,6 +73,34 @@ p {
   padding: 16px;
 }
 
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.tab-btn.is-active {
+  color: #ffffff;
+  background: var(--accent);
+  border-color: var(--accent-strong);
+}
+
+.tab-panel[hidden] {
+  display: none;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

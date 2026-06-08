@@ -14,6 +14,13 @@
         </div>
       </header>
 
+      <nav class="tabs" role="tablist">
+        <button class="tab-btn is-active" type="button" data-tab="configuration">1. Configuration</button>
+        <button class="tab-btn" type="button" data-tab="revue">2. Revue</button>
+        <button class="tab-btn" type="button" data-tab="utilisation">3. Utilisation</button>
+      </nav>
+
+      <div class="tab-panel" data-panel="configuration">
       <section class="toolbar">
         <label>
           Template
@@ -24,7 +31,6 @@
           Charger un template
           <input id="templateUpload" type="file" accept=".pptx">
         </label>
-        <button id="generate" type="button">Generer le PowerPoint</button>
       </section>
 
       <form id="comopForm" class="form-grid">
@@ -86,6 +92,22 @@
           <label>Metiers concernes <textarea name="metiers_concernes"></textarea></label>
         </section>
       </form>
+      </div>
+
+      <div class="tab-panel" data-panel="revue" hidden>
+        <section>
+          <h2>Revue du template</h2>
+          <p>Cet espace accueillera le reperage des zones de texte et de graphiques du template selectionne, ainsi que les outils de nettoyage (suppression de graphiques existants, slides excedentaires). Arrive aux increments 5 a 7.</p>
+        </section>
+      </div>
+
+      <div class="tab-panel" data-panel="utilisation" hidden>
+        <section>
+          <h2>Generation</h2>
+          <p>Une fois la configuration et la revue terminees, generez le support PowerPoint a partir du template selectionne et des informations saisies.</p>
+          <button id="generate" type="button">Generer le PowerPoint</button>
+        </section>
+      </div>
 
       <footer id="status" class="status">Pret.</footer>
     </main>

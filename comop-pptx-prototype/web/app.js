@@ -111,4 +111,18 @@ generateBtn.addEventListener("click", async () => {
   }
 });
 
+const tabButtons = document.querySelectorAll(".tab-btn");
+const tabPanels = document.querySelectorAll(".tab-panel");
+for (const button of tabButtons) {
+  button.addEventListener("click", () => {
+    const target = button.dataset.tab;
+    for (const btn of tabButtons) {
+      btn.classList.toggle("is-active", btn === button);
+    }
+    for (const panel of tabPanels) {
+      panel.hidden = panel.dataset.panel !== target;
+    }
+  });
+}
+
 loadTemplates().catch(error => setStatus(error.message, "error"));
