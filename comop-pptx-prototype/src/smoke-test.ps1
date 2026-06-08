@@ -165,6 +165,36 @@ try {
   if (Test-Path -LiteralPath $brandingOutputPath) { Remove-Item -LiteralPath $brandingOutputPath -Force }
 }
 
+# Test reperage des zones (golden-file sur le template OCTO connu)
+Write-Host ""
+Write-Host "--- Test reperage des zones ---"
+$zonesScript = Join-Path $PSScriptRoot "detect-template-zones.ps1"
+Assert-Step "detect-template-zones.ps1 existe" { Test-Path -LiteralPath $zonesScript }
+
+$zonesOutputPath = Join-Path ([System.IO.Path]::GetTempPath()) ("smoke-zones-" + [System.Guid]::NewGuid().ToString("N") + ".json")
+try {
+  & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $zonesScript `
+    -TemplatePath $TemplatePath `
+    -OutputPath $zonesOutputPath | Out-Null
+
+  Assert-Step "Sidecar de zones cree" { Test-Path -LiteralPath $zonesOutputPath }
+
+  $zones = Get-Content -LiteralPath $zonesOutputPath -Raw -Encoding UTF8 | ConvertFrom-Json
+  Assert-Step "4 slides detectees" { $zones.slides.Count -eq 4 }
+  Assert-Step "36 zones detectees au total" {
+    ($zones.slides | ForEach-Object { $_.zones.Count } | Measure-Object -Sum).Sum -eq 36
+  }
+  Assert-Step "Dimensions detectees (9144000 x 5143500)" {
+    $zones.dimensions.largeur -eq 9144000 -and $zones.dimensions.hauteur -eq 5143500
+  }
+  Assert-Step "Slide 1 = 1 zone de texte 'Pilotage Agile AG2R'" {
+    $slide1 = $zones.slides | Where-Object { $_.index -eq 1 }
+    $slide1.zones.Count -eq 1 -and $slide1.zones[0].type -eq "texte" -and $slide1.zones[0].apercu -eq "Pilotage Agile AG2R"
+  }
+} finally {
+  if (Test-Path -LiteralPath $zonesOutputPath) { Remove-Item -LiteralPath $zonesOutputPath -Force }
+}
+
 Write-Host ""
 Write-Host "Resultat : $passed OK, $failed echoues"
 if ($failed -gt 0) { exit 1 } else { exit 0 }

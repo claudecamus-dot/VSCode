@@ -199,12 +199,52 @@ async function handleApi(req, res) {
     }
 
     const base = templatePath.replace(/\.pptx$/, "");
-    for (const ext of [".pptx", ".branding.json", ".meta.json"]) {
+    for (const ext of [".pptx", ".branding.json", ".meta.json", ".zones.json"]) {
       const sidecar = base + ext;
       if (fs.existsSync(sidecar)) fs.unlinkSync(sidecar);
     }
 
     sendJson(res, 200, { file: path.basename(templatePath) });
+    return;
+  }
+
+  if (req.method === "GET" && req.url.startsWith("/api/templates/") && req.url.endsWith("/zones")) {
+    const rawName = decodeURIComponent(req.url.slice("/api/templates/".length, -"/zones".length));
+    let templatePath;
+    try {
+      templatePath = safeTemplatePath(rawName);
+    } catch (error) {
+      sendJson(res, 400, { error: error.message });
+      return;
+    }
+    if (!fs.existsSync(templatePath)) {
+      sendJson(res, 404, { error: "Template introuvable" });
+      return;
+    }
+
+    const zonesPath = templatePath.replace(/\.pptx$/, ".zones.json");
+    if (!fs.existsSync(zonesPath)) {
+      try {
+        await runPowerShell([
+          "-File",
+          path.join(root, "src", "detect-template-zones.ps1"),
+          "-TemplatePath",
+          templatePath
+        ]);
+      } catch (error) {
+        sendJson(res, 500, { error: error.message });
+        return;
+      }
+    }
+
+    if (!fs.existsSync(zonesPath)) {
+      sendJson(res, 500, { error: "Detection des zones impossible" });
+      return;
+    }
+
+    let zonesRaw = fs.readFileSync(zonesPath, "utf8");
+    if (zonesRaw.charCodeAt(0) === 0xFEFF) zonesRaw = zonesRaw.slice(1);
+    send(res, 200, zonesRaw, "application/json; charset=utf-8");
     return;
   }
 

@@ -111,6 +111,75 @@ generateBtn.addEventListener("click", async () => {
   }
 });
 
+const analyzeZonesBtn = document.querySelector("#analyzeZones");
+const zonesResult = document.querySelector("#zonesResult");
+
+const ZONE_TYPE_LABELS = {
+  texte: "Texte",
+  graphique: "Graphique",
+  tableau: "Tableau",
+  diagramme: "Diagramme",
+  image: "Image",
+  objet: "Objet"
+};
+
+function renderZones(zones) {
+  zonesResult.innerHTML = "";
+  const totalZones = zones.slides.reduce((sum, slide) => sum + slide.zones.length, 0);
+  const summary = document.createElement("p");
+  summary.textContent = `${zones.slides.length} slide(s), ${totalZones} zone(s) detectee(s).`;
+  zonesResult.append(summary);
+
+  for (const slide of zones.slides) {
+    const slideDiv = document.createElement("div");
+    slideDiv.className = "zone-slide";
+
+    const title = document.createElement("h3");
+    title.textContent = `Slide ${slide.index} — ${slide.zones.length} zone(s)`;
+    slideDiv.append(title);
+
+    const list = document.createElement("ul");
+    for (const zone of slide.zones) {
+      const item = document.createElement("li");
+      const label = ZONE_TYPE_LABELS[zone.type] || zone.type;
+      let text = label;
+      if (zone.nom) text += ` — ${zone.nom}`;
+      if (zone.apercu) text += ` : "${zone.apercu}"`;
+      item.textContent = text;
+      list.append(item);
+    }
+    slideDiv.append(list);
+    zonesResult.append(slideDiv);
+  }
+}
+
+analyzeZonesBtn.addEventListener("click", async () => {
+  const file = templateSelect.value;
+  if (!file || templateSelect.disabled) {
+    setStatus("Selectionnez un template a analyser.", "error");
+    return;
+  }
+  analyzeZonesBtn.disabled = true;
+  const originalLabel = analyzeZonesBtn.textContent;
+  analyzeZonesBtn.textContent = "Analyse en cours…";
+  setStatus("Analyse des zones en cours…");
+  try {
+    const response = await fetch(`/api/templates/${encodeURIComponent(file)}/zones`);
+    const result = await response.json();
+    if (!response.ok) {
+      setStatus(result.error || "Erreur d'analyse.", "error");
+      return;
+    }
+    renderZones(result);
+    setStatus("Analyse des zones terminee.", "success");
+  } catch (err) {
+    setStatus(err.message || "Erreur reseau.", "error");
+  } finally {
+    analyzeZonesBtn.disabled = false;
+    analyzeZonesBtn.textContent = originalLabel;
+  }
+});
+
 const tabButtons = document.querySelectorAll(".tab-btn");
 const tabPanels = document.querySelectorAll(".tab-panel");
 for (const button of tabButtons) {
