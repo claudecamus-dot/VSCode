@@ -12,15 +12,6 @@ function collectFields() {
   return Object.fromEntries(data.entries());
 }
 
-function fillFields(fields) {
-  for (const [key, value] of Object.entries(fields)) {
-    const field = form.elements[key];
-    if (field) {
-      field.value = value;
-    }
-  }
-}
-
 async function loadTemplates() {
   const response = await fetch("/api/templates");
   const { templates } = await response.json();
@@ -64,12 +55,6 @@ templateUpload.addEventListener("change", async () => {
   } finally {
     templateUpload.value = "";
   }
-});
-
-document.querySelector("#loadSample").addEventListener("click", async () => {
-  const response = await fetch("/api/sample");
-  fillFields(await response.json());
-  setStatus("Exemple charge.");
 });
 
 const generateBtn = document.querySelector("#generate");
