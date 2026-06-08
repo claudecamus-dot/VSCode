@@ -184,6 +184,30 @@ async function handleApi(req, res) {
     return;
   }
 
+  if (req.method === "DELETE" && req.url.startsWith("/api/templates/")) {
+    const rawName = decodeURIComponent(req.url.slice("/api/templates/".length));
+    let templatePath;
+    try {
+      templatePath = safeTemplatePath(rawName);
+    } catch (error) {
+      sendJson(res, 400, { error: error.message });
+      return;
+    }
+    if (!fs.existsSync(templatePath)) {
+      sendJson(res, 404, { error: "Template introuvable" });
+      return;
+    }
+
+    const base = templatePath.replace(/\.pptx$/, "");
+    for (const ext of [".pptx", ".branding.json", ".meta.json"]) {
+      const sidecar = base + ext;
+      if (fs.existsSync(sidecar)) fs.unlinkSync(sidecar);
+    }
+
+    sendJson(res, 200, { file: path.basename(templatePath) });
+    return;
+  }
+
   if (req.method === "GET" && req.url === "/api/sample") {
     const sample = fs.readFileSync(path.join(dataDir, "sample-comop.json"), "utf8");
     send(res, 200, sample, "application/json; charset=utf-8");

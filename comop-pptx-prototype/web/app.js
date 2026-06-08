@@ -57,6 +57,28 @@ templateUpload.addEventListener("change", async () => {
   }
 });
 
+const deleteTemplateBtn = document.querySelector("#deleteTemplate");
+
+deleteTemplateBtn.addEventListener("click", async () => {
+  const file = templateSelect.value;
+  if (!file || templateSelect.disabled) return;
+  const name = templateSelect.options[templateSelect.selectedIndex]?.textContent || file;
+  if (!window.confirm(`Supprimer le template "${name}" ? Cette action est irreversible.`)) return;
+  setStatus(`Suppression de ${name}…`);
+  try {
+    const response = await fetch(`/api/templates/${encodeURIComponent(file)}`, { method: "DELETE" });
+    const result = await response.json();
+    if (!response.ok) {
+      setStatus(result.error || "Erreur de suppression.", "error");
+      return;
+    }
+    await loadTemplates();
+    setStatus(`Template "${name}" supprime.`, "success");
+  } catch (err) {
+    setStatus(err.message || "Erreur reseau.", "error");
+  }
+});
+
 const generateBtn = document.querySelector("#generate");
 
 generateBtn.addEventListener("click", async () => {
