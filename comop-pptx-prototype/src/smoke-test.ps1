@@ -138,6 +138,33 @@ try {
   if (Test-Path -LiteralPath $injectionOutputPath) { Remove-Item -LiteralPath $injectionOutputPath -Force }
 }
 
+# Test extraction de charte (golden-file sur le template OCTO connu)
+Write-Host ""
+Write-Host "--- Test extraction de charte graphique ---"
+$extractScript = Join-Path $PSScriptRoot "extract-template-branding.ps1"
+Assert-Step "extract-template-branding.ps1 existe" { Test-Path -LiteralPath $extractScript }
+
+$brandingOutputPath = Join-Path ([System.IO.Path]::GetTempPath()) ("smoke-branding-" + [System.Guid]::NewGuid().ToString("N") + ".json")
+try {
+  & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $extractScript `
+    -TemplatePath $TemplatePath `
+    -OutputPath $brandingOutputPath | Out-Null
+
+  Assert-Step "Sidecar de charte cree" { Test-Path -LiteralPath $brandingOutputPath }
+
+  $branding = Get-Content -LiteralPath $brandingOutputPath -Raw -Encoding UTF8 | ConvertFrom-Json
+  Assert-Step "Theme detecte = OCTO" { $branding.name -eq "OCTO" }
+  Assert-Step "Couleur primaire detectee = 0E2356" { $branding.primary_color -eq "0E2356" }
+  Assert-Step "Couleur d'accent detectee = 00D2DD" { $branding.accent_color -eq "00D2DD" }
+  Assert-Step "Police detectee = Outfit" { $branding.font -eq "Outfit" }
+  Assert-Step "Candidat logo detecte avec confiance faible et note explicite" {
+    $branding.logo -ne $null -and $branding.logo.candidate -eq "image4.png" -and $branding.logo.confidence -eq "low" `
+      -and -not [string]::IsNullOrWhiteSpace($branding.logo.note)
+  }
+} finally {
+  if (Test-Path -LiteralPath $brandingOutputPath) { Remove-Item -LiteralPath $brandingOutputPath -Force }
+}
+
 Write-Host ""
 Write-Host "Resultat : $passed OK, $failed echoues"
 if ($failed -gt 0) { exit 1 } else { exit 0 }
