@@ -1,0 +1,225 @@
+# Projet - Generateur de support PowerPoint COMOP Agile
+
+## Contexte
+
+Le support d'exemple fourni est un PowerPoint 16:9 compose de 4 slides :
+
+- Slide 1 : page de titre "Pilotage Agile AG2R"
+- Slide 2 : maquette COMOP slide 1, evenements passes entre deux meetings de pilotage operationnel
+- Slide 3 : maquette COMOP slide 2, roadmap a 3 mois, avancement des chantiers et difficultes
+- Slide 4 : maquette COMOP slide 3, focus incidentologie et/ou recette
+
+Le MVP cible peut donc conserver les slides 2, 3 et 4 comme structure fonctionnelle du support genere. Le template AG2R fourni sert de premier exemple, mais le template de base doit pouvoir etre remplace par un autre template PowerPoint.
+
+## Objectif produit
+
+Permettre a un utilisateur de remplir simplement un formulaire web, puis de generer automatiquement un fichier PowerPoint de 3 slides conforme au template selectionne.
+
+L'utilisateur ne modifie pas directement PowerPoint. Il choisit un template disponible, renseigne les informations metier dans une interface claire, puis telecharge le support final.
+
+## Gestion des templates
+
+Le template de base doit etre changeable. L'application doit donc separer :
+
+- le contenu metier du COMOP, commun a tous les supports ;
+- le template PowerPoint, qui porte la mise en page, les couleurs, les polices, les logos et l'identite visuelle ;
+- le mapping entre les champs metier et les placeholders presents dans le template.
+
+Chaque template compatible doit respecter un contrat de placeholders commun. Par exemple, peu importe son design, un template doit contenir des zones nommees ou placeholders comme `{{equipe}}`, `{{periode_debut}}`, `{{roadmap}}` ou `{{tickets_non_traites}}`.
+
+Fonctionnalites attendues :
+
+- Selectionner un template avant la saisie ou avant la generation.
+- Ajouter un nouveau template PowerPoint dans l'application.
+- Verifier qu'un template contient bien les placeholders obligatoires.
+- Afficher le statut d'un template : valide, incomplet, ou non compatible.
+- Generer le meme contenu COMOP avec des templates differents.
+
+Pour le MVP, la gestion des templates peut rester simple :
+
+- un dossier local de templates ;
+- un template AG2R fourni par defaut ;
+- possibilite d'ajouter/remplacer un template manuellement ;
+- controle automatique de presence des placeholders obligatoires.
+
+## Structure cible du support 3 slides
+
+### Slide 1 - Evenements passes depuis le dernier COMOP
+
+Intention metier :
+
+Cette slide sert a restituer ce qui s'est passe entre deux meetings de COMOP. Elle donne une vision synthetique du pilotage operationnel en mode produit : faits marquants, progression, indicateurs agiles et impacts metiers depuis la derniere instance.
+
+Contenu observe dans le template :
+
+- Titre de slide : "FAITS MARQUANTS SUR LA PERIODE"
+- Bloc equipe : "EQUIPE XX"
+- Faits marquants : zone "XXX"
+- Indicateurs agiles sur la periode
+- Periode : "du XX/XX/2024 au XX/XX/2024"
+- Velocite moyenne : "30 Pts"
+- Taux de predictibilite : "100 %"
+- Resultats et impacts metiers
+- Progression des resultats metiers : "30 %"
+- Avancement realisation projet : "60 %"
+
+Champs formulaire proposes :
+
+- Nom de l'equipe
+- Date de debut de periode
+- Date de fin de periode
+- Evenements passes depuis le dernier COMOP
+- Faits marquants de la periode
+- Commentaire indicateurs agiles
+- Velocite moyenne
+- Taux de predictibilite
+- Progression des resultats metiers
+- Pourcentage d'avancement projet
+- Points d'attention issus de la periode ecoulee
+
+### Slide 2 - Roadmap a 3 mois, avancement et difficultes
+
+Intention metier :
+
+Cette slide sert a rendre visible la trajectoire des chantiers sur les 3 prochains mois. Elle doit montrer l'avancement, les jalons attendus, le niveau de confiance, les difficultes rencontrees et les sujets necessitant arbitrage ou decision.
+
+Contenu observe dans le template :
+
+- Titre de slide : "Roadmap"
+- Bloc "Pour information et/ou discussions"
+- Bloc "Sujets pour decision(s)"
+- Bloc "Decision(s) prises en seance"
+- Roadmap : niveau de confiance
+- Pourcentage d'erreur de 20 %
+
+Champs formulaire proposes :
+
+- Chantiers de la roadmap a 3 mois
+- Jalons ou livrables attendus
+- Avancement par chantier
+- Difficultes ou risques identifies
+- Informations ou points a discuter
+- Sujets soumis a decision
+- Decisions prises en seance
+- Niveau de confiance roadmap
+- Pourcentage d'erreur ou d'incertitude
+
+### Slide 3 - Focus incidentologie et/ou recette
+
+Intention metier :
+
+Cette slide sert a faire un focus operationnel sur l'incidentologie et/ou la recette. Selon le contexte du COMOP, elle peut mettre en avant les incidents, les retours de recette, les tickets ouverts/traites/non traites, les impacts metiers et les actions de resolution.
+
+Contenu observe dans le template :
+
+- Titre de slide : "FAITS MARQUANTS RETOUR R7 SUR LA PERIODE"
+- Faits marquants R7
+- Indicateurs traitement des retours R7
+- Periode
+- Evolution du volume de tickets retour R7
+- Metiers concernes
+
+Champs formulaire proposes :
+
+- Type de focus : incidentologie, recette, ou les deux
+- Faits marquants incidentologie/recette
+- Commentaire indicateurs incidentologie/recette
+- Date de debut de periode
+- Date de fin de periode
+- Volume de tickets crees
+- Volume de tickets traites
+- Volume de tickets non traites
+- Commentaire d'evolution
+- Impacts metiers constates
+- Actions correctives ou plans de resolution
+- Metiers ou personnes concernes
+
+## Parcours utilisateur MVP
+
+1. L'utilisateur ouvre l'application.
+2. Il selectionne un template disponible ou utilise le template par defaut.
+3. Il remplit les champs des 3 slides dans une interface unique ou par onglets.
+4. Il visualise un recapitulatif simple des informations saisies.
+5. Il clique sur "Generer le PowerPoint".
+6. L'application produit un fichier .pptx telechargeable.
+
+## Approche technique recommandee
+
+### Option MVP robuste
+
+Utiliser des fichiers PowerPoint comme templates avec des placeholders texte. Le template AG2R fourni est le premier template compatible, mais d'autres templates doivent pouvoir etre ajoutes tant qu'ils respectent le contrat de placeholders.
+
+Exemples de placeholders a inserer dans le template :
+
+- `{{equipe}}`
+- `{{periode_debut}}`
+- `{{periode_fin}}`
+- `{{faits_marquants}}`
+- `{{evenements_passes}}`
+- `{{velocite_moyenne}}`
+- `{{taux_predictibilite}}`
+- `{{roadmap}}`
+- `{{chantiers_3_mois}}`
+- `{{avancement_chantiers}}`
+- `{{difficultes_roadmap}}`
+- `{{sujets_decision}}`
+- `{{decisions}}`
+- `{{type_focus}}`
+- `{{faits_marquants_incidentologie_recette}}`
+- `{{tickets_crees}}`
+- `{{tickets_traites}}`
+- `{{tickets_non_traites}}`
+- `{{impacts_metiers}}`
+- `{{actions_resolution}}`
+
+L'application remplace ensuite ces placeholders dans le fichier `.pptx` selectionne et genere une copie finale.
+
+### Contrat de template
+
+Un template est considere compatible s'il contient :
+
+- exactement ou au minimum 3 slides fonctionnelles pour le support COMOP ;
+- les placeholders obligatoires utilises par le formulaire ;
+- des zones de texte suffisamment dimensionnees pour les contenus attendus ;
+- un format PowerPoint compatible `.pptx`.
+
+Le systeme doit pouvoir analyser le `.pptx` avant generation pour signaler les placeholders manquants.
+
+### Stack possible
+
+- Frontend : React ou Next.js
+- Backend : Node.js
+- Generation PPTX : remplacement de placeholders dans le `.pptx`, ou librairie dediee selon le niveau de fidelite attendu
+- Stockage : local pour le MVP, puis stockage cloud si plusieurs utilisateurs
+- Gestion templates : catalogue de templates avec metadata simple, par exemple nom, version, auteur, date d'ajout, placeholders detectes
+
+## Points d'attention
+
+- La fidelite graphique est prioritaire : il vaut mieux reutiliser le template PowerPoint existant que reconstruire les slides entierement en code.
+- Le changement de template ne doit pas changer le formulaire metier si le contrat de placeholders reste identique.
+- Chaque nouveau template doit etre valide avant d'etre propose a la generation.
+- Les zones dynamiques doivent etre limitees et bien nommees pour eviter les debordements de texte.
+- Les champs longs doivent avoir une limite de caracteres ou une logique de reduction automatique de taille.
+- Les graphiques ou indicateurs peuvent d'abord etre saisis comme textes/chiffres simples, puis evoluer vers de vrais graphiques dans une version ulterieure.
+
+## Premiere version a construire
+
+MVP conseille :
+
+- 1 template AG2R fourni par defaut
+- possibilite de remplacer ou ajouter un autre template compatible
+- 3 slides generees
+- formulaire avec les champs principaux
+- export `.pptx`
+- pas encore d'edition visuelle directe des slides
+- validation simple des placeholders du template
+
+## Prochaine etape
+
+Preparer une version du template AG2R avec placeholders, puis creer un prototype qui :
+
+- charge le template selectionne,
+- verifie la presence des placeholders obligatoires,
+- remplace les placeholders avec des donnees de test,
+- genere un fichier PowerPoint final,
+- puis connecte cette generation a une interface de saisie.
