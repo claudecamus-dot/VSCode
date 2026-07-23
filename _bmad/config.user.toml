@@ -11,7 +11,7 @@
 
 [core]
 user_name = "Claude.camus"
-communication_language = "French"
+communication_language = "English"
 
 [modules.bmm]
 user_skill_level = "intermediate"
