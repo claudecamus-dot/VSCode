@@ -1,0 +1,32 @@
+{
+ "generated": "2026-07-23T20:30:34+02:00",
+ "findings": [
+  {
+   "categorie": "verification-manquante",
+   "cible": "revue-increment",
+   "priorite": 3,
+   "titre": "Increment 6 cloture alors qu'une regression PPTX bloquante est capitalisee, sans passage revue-increment",
+   "preuve": "routing-hints.verifications_oubliees = 'revue-increment jamais invoquee malgre le rappel SessionStart'; commit d0115dd 'cloture increment 6' vs MEMORY project_comop_multitemplate_plan qui note 'increment 6 BLOCKED by PPTX-corruption regression, plan paused'. La leçon MEMORY feedback_regression_step_back exige un plan root-cause avant de continuer.",
+   "recommandation": "Ne pas considerer l'increment 6 'livre': rouvrir via revue-increment (verif RUNTIME reelle du rendu PPTX, pas tests verts) et traiter la regression avant l'increment 7.",
+   "proposition": "Amender le contrat du playbook dev-verifie (.claude/orchestration/playbooks/dev-verifie.md) pour faire de revue-increment le gate terminal NON-skippable de tout plan de dev, avec sortie bloquante si la verif runtime du chemin de verif projet echoue."
+  },
+  {
+   "categorie": "inefficacite",
+   "cible": "scan_transcripts",
+   "priorite": 3,
+   "titre": "Etage-1 diagnostique a l'aveugle : 0 session couverte, state/runs vides -> jamais_utilises est un artefact de donnees vides",
+   "preuve": "state.json = {files:{},skills:{},subagents:{}}; runs.jsonl inexistant; scan SessionStart rapporte '0 evenement(s), 0 sessions couvertes' alors que les hooks (SessionStart->scan, PostToolUse->log_usage) SONT cables dans settings.json et que 12+ commits de travail reel existent. Consequence: routing-hints liste TOUT le catalogue (~85 skills) en jamais_utilises.",
+   "recommandation": "Ne prendre AUCUNE decision de desinstallation/mise en sommeil sur la base de jamais_utilises tant que le scan couvre 0 session : la liste ne prouve pas des agents morts, elle prouve une instrumentation qui ne capte pas encore (dispositif deploye aujourd'hui, HEAD 3f84fcc).",
+   "proposition": "Verifier pourquoi scan_transcripts couvre 0 session (mapping du repertoire projet / filtre de dates) et confirmer que log_usage.py ecrit bien un evenement par appel Skill, avant de refaire confiance au prochain diagnostic."
+  },
+  {
+   "categorie": "agent-mort",
+   "cible": "bmad-catalogue-codex",
+   "priorite": 2,
+   "titre": "Duplication .agents/skills/ (Codex) : poids mort structurel, independant du scan",
+   "preuve": "CLAUDE.md: 'Les skills vivent dans deux emplacements... Si seul Claude Code est utilise ici, .agents/skills/ est du poids mort - a retirer'. git status montre des dizaines de fichiers .agents/skills/bmad-* modifies/supprimes = maintenance dupliquee sur une copie Codex non utilisee.",
+   "recommandation": "Trancher l'usage de Codex. Si non utilise, desinstaller la copie Codex (reinstaller BMAD --tools claude-code seul, ou npx bmad-method uninstall puis reinstall). Cible NETTE car fondee sur la structure du repo, pas sur le scan vide.",
+   "proposition": "Reinstaller BMAD avec --tools claude-code uniquement et retirer .agents/skills/ du depot, pour supprimer la double-maintenance et le bruit dans jamais_utilises."
+  }
+ ]
+}

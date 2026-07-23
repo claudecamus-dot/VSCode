@@ -71,7 +71,7 @@ The resolver merges four layers in order: `_bmad/config.toml` (installer base, t
 ```
 **Advanced Elicitation Options**
 _If party mode is active, agents will join in._
-Choose a number (1-5), [r] to Reshuffle, [a] List All, [s] Save summary, or [x] to Proceed:
+Choose a number (1-5), [r] to Reshuffle, [a] List All, or [x] to Proceed:
 
 1. [Method Name]
 2. [Method Name]
@@ -80,7 +80,6 @@ Choose a number (1-5), [r] to Reshuffle, [a] List All, [s] Save summary, or [x] 
 5. [Method Name]
 r. Reshuffle the list with 5 new options
 a. List all methods with descriptions
-s. Save session summary to .decision-log.md
 x. Proceed / No Further Actions
 ```
 
@@ -113,13 +112,6 @@ x. Proceed / No Further Actions
 - List all methods with their descriptions from the CSV in a compact table
 - Allow user to select any method by name or number from the full list
 - After selection, execute the method as described in the Case 1-5 above
-
-**Case s (Save summary):**
-
-- Compile a structured session summary covering: methods used, key findings per method, decisions taken (applied changes), and open questions or deferred actions
-- Write the summary as a new dated entry appended to `.decision-log.md` in the current project root (create the file if absent)
-- Format: `## Elicitation session — {date}`, then sections: **Methods used**, **Key findings**, **Applied changes**, **Open questions**
-- Confirm the path written to the user, then re-present the 1-5,r,a,s,x prompt
 
 **Case: Direct Feedback:**
 

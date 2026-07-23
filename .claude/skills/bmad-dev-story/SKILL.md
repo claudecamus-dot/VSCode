@@ -428,7 +428,6 @@ Activation is complete. If `activation_steps_prepend` or `activation_steps_appen
       - Dev Agent Record contains implementation notes
       - Change Log includes summary of changes
       - Only permitted story sections were modified
-      - Feedback loop documented: time from a code change to visible verification (test run, browser reload, CLI output) is stated in Dev Notes or is under 30 seconds for the primary dev workflow
     </action>
 
     <!-- Mark story ready for review - sprint status conditional -->

@@ -1,0 +1,394 @@
+﻿{
+    "schema_version":  1,
+    "source_template":  "comop-template.pptx",
+    "dimensions":  {
+                       "largeur":  9144000,
+                       "hauteur":  5143500
+                   },
+    "slides":  [
+                   {
+                       "index":  1,
+                       "zones":  [
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;210;g20c3afcc4d7_0_44918",
+                                         "apercu":  "Pilotage Agile AG2R",
+                                         "position":  {
+                                                          "x":  940500,
+                                                          "y":  2246325,
+                                                          "largeur":  7846200,
+                                                          "hauteur":  1498200
+                                                      }
+                                     }
+                                 ]
+                   },
+                   {
+                       "index":  2,
+                       "zones":  [
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;295;g3072d353d33_0_186",
+                                         "apercu":  "COMOP - Evenements passes",
+                                         "position":  {
+                                                          "x":  899592,
+                                                          "y":  194400,
+                                                          "largeur":  7704900,
+                                                          "hauteur":  337500
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;298;g3072d353d33_0_186",
+                                         "apercu":  "FAITS MARQUANTS SUR LA PERIODE",
+                                         "position":  {
+                                                          "x":  95066,
+                                                          "y":  1088073,
+                                                          "largeur":  3253800,
+                                                          "hauteur":  71100
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;299;g3072d353d33_0_186",
+                                         "apercu":  "{{evenements_passes}} - {{faits_marquants}}",
+                                         "position":  {
+                                                          "x":  136521,
+                                                          "y":  1161574,
+                                                          "largeur":  3244800,
+                                                          "hauteur":  1005600
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;300;g3072d353d33_0_186",
+                                         "apercu":  "{{equipe}}",
+                                         "position":  {
+                                                          "x":  154725,
+                                                          "y":  799449,
+                                                          "largeur":  1772100,
+                                                          "hauteur":  486900
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;301;g3072d353d33_0_186",
+                                         "apercu":  "Indicateurs agiles sur la période",
+                                         "position":  {
+                                                          "x":  6299423,
+                                                          "y":  1540450,
+                                                          "largeur":  2769600,
+                                                          "hauteur":  215400
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;302;g3072d353d33_0_186",
+                                         "apercu":  "{{commentaire_indicateurs_agiles}} - {{points_attention}}",
+                                         "position":  {
+                                                          "x":  6313045,
+                                                          "y":  1743601,
+                                                          "largeur":  2769600,
+                                                          "hauteur":  945300
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;304;g3072d353d33_0_186",
+                                         "apercu":  "Periode du {{periode_debut}} au {{periode_fin}}",
+                                         "position":  {
+                                                          "x":  2105450,
+                                                          "y":  799450,
+                                                          "largeur":  6173700,
+                                                          "hauteur":  486900
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;306;g3072d353d33_0_186",
+                                         "apercu":  "Velocite moyenne : {{velocite_moyenne}}",
+                                         "position":  {
+                                                          "x":  6436050,
+                                                          "y":  1854200,
+                                                          "largeur":  774000,
+                                                          "hauteur":  486900
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;321;g3072d353d33_0_186",
+                                         "apercu":  "Taux predictibilite : {{taux_predictibilite}}",
+                                         "position":  {
+                                                          "x":  6403950,
+                                                          "y":  2400900,
+                                                          "largeur":  838200,
+                                                          "hauteur":  486900
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;322;g3072d353d33_0_186",
+                                         "apercu":  "Résultats et impacts métiers",
+                                         "position":  {
+                                                          "x":  6306386,
+                                                          "y":  3846600,
+                                                          "largeur":  2769600,
+                                                          "hauteur":  215400
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;324;g3072d353d33_0_186",
+                                         "apercu":  "Progression des résultats métiers : {{progression_resultats}} (de l\u0027ob…",
+                                         "position":  {
+                                                          "x":  6436050,
+                                                          "y":  4151100,
+                                                          "largeur":  2471700,
+                                                          "hauteur":  486900
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;325;g3072d353d33_0_186",
+                                         "apercu":  "% d\u0027avancement realisation projet : {{avancement_projet}}",
+                                         "position":  {
+                                                          "x":  6512250,
+                                                          "y":  3359125,
+                                                          "largeur":  2550900,
+                                                          "hauteur":  215400
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "OctoFooter",
+                                         "apercu":  "OCTO I PART OF ACCENTURE | \u0026#xA9; 2026 - All rights reserved",
+                                         "position":  {
+                                                          "x":  182880,
+                                                          "y":  4953500,
+                                                          "largeur":  7315200,
+                                                          "hauteur":  152400
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "OctoPageCircle",
+                                         "apercu":  "1",
+                                         "position":  {
+                                                          "x":  8844000,
+                                                          "y":  4893500,
+                                                          "largeur":  228600,
+                                                          "hauteur":  228600
+                                                      }
+                                     }
+                                 ]
+                   },
+                   {
+                       "index":  3,
+                       "zones":  [
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;367;g3072d353d33_0_212",
+                                         "apercu":  "COMOP - Roadmap 3 mois",
+                                         "position":  {
+                                                          "x":  899592,
+                                                          "y":  194400,
+                                                          "largeur":  7704900,
+                                                          "hauteur":  337500
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;369;g3072d353d33_0_212",
+                                         "apercu":  "Roadmap",
+                                         "position":  {
+                                                          "x":  95066,
+                                                          "y":  -291283,
+                                                          "largeur":  4776600,
+                                                          "hauteur":  165000
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;372;g3072d353d33_0_212",
+                                         "apercu":  "Pour information et/ou discussions",
+                                         "position":  {
+                                                          "x":  6732250,
+                                                          "y":  1539375,
+                                                          "largeur":  2313900,
+                                                          "hauteur":  215400
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;374;g3072d353d33_0_212",
+                                         "apercu":  "{{points_discussion}}",
+                                         "position":  {
+                                                          "x":  6924700,
+                                                          "y":  1772050,
+                                                          "largeur":  1785600,
+                                                          "hauteur":  486900
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;377;g3072d353d33_0_212",
+                                         "apercu":  "Roadmap : Niveau de confiance {{niveau_confiance}}",
+                                         "position":  {
+                                                          "x":  6732250,
+                                                          "y":  624975,
+                                                          "largeur":  2313900,
+                                                          "hauteur":  215400
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;394;g3072d353d33_0_212",
+                                         "apercu":  "Pourcentage d\u0027erreur de {{incertitude_roadmap}}",
+                                         "position":  {
+                                                          "x":  6818900,
+                                                          "y":  946425,
+                                                          "largeur":  1573500,
+                                                          "hauteur":  351000
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "OctoFooter",
+                                         "apercu":  "OCTO I PART OF ACCENTURE | \u0026#xA9; 2026 - All rights reserved",
+                                         "position":  {
+                                                          "x":  182880,
+                                                          "y":  4953500,
+                                                          "largeur":  7315200,
+                                                          "hauteur":  152400
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "OctoPageCircle",
+                                         "apercu":  "2",
+                                         "position":  {
+                                                          "x":  8844000,
+                                                          "y":  4893500,
+                                                          "largeur":  228600,
+                                                          "hauteur":  228600
+                                                      }
+                                     }
+                                 ]
+                   },
+                   {
+                       "index":  4,
+                       "zones":  [
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;436;g3072d353d33_0_216",
+                                         "apercu":  "COMOP - Focus incidentologie / recette",
+                                         "position":  {
+                                                          "x":  899592,
+                                                          "y":  194400,
+                                                          "largeur":  7704900,
+                                                          "hauteur":  337500
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;439;g3072d353d33_0_216",
+                                         "apercu":  "FAITS MARQUANTS RETOUR R7 SUR LA PÉRIODE",
+                                         "position":  {
+                                                          "x":  95066,
+                                                          "y":  1088073,
+                                                          "largeur":  3253800,
+                                                          "hauteur":  71100
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;440;g3072d353d33_0_216",
+                                         "apercu":  "{{type_focus}} - {{faits_marquants_incidentologie_recette}}",
+                                         "position":  {
+                                                          "x":  136521,
+                                                          "y":  1161574,
+                                                          "largeur":  3244800,
+                                                          "hauteur":  1005600
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;441;g3072d353d33_0_216",
+                                         "apercu":  "Indicateurs traitement des retour de R7",
+                                         "position":  {
+                                                          "x":  6299423,
+                                                          "y":  1540450,
+                                                          "largeur":  2769600,
+                                                          "hauteur":  215400
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;442;g3072d353d33_0_216",
+                                         "apercu":  "{{commentaire_indicateurs_incidentologie_recette}} - {{commentaire_evo…",
+                                         "position":  {
+                                                          "x":  6313045,
+                                                          "y":  1743601,
+                                                          "largeur":  2769600,
+                                                          "hauteur":  945300
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;444;g3072d353d33_0_216",
+                                         "apercu":  "Periode du {{periode_debut}} au {{periode_fin}}",
+                                         "position":  {
+                                                          "x":  331150,
+                                                          "y":  801875,
+                                                          "largeur":  4829100,
+                                                          "hauteur":  486900
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;445;g3072d353d33_0_216",
+                                         "apercu":  "Exemple : Tickets crees : {{tickets_crees}} | traites : {{tickets_trai…",
+                                         "position":  {
+                                                          "x":  6436050,
+                                                          "y":  1854200,
+                                                          "largeur":  2471700,
+                                                          "hauteur":  945300
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "Google Shape;497;g3072d353d33_0_216",
+                                         "apercu":  "Metiers concernes : {{metiers_concernes}} (et/ou personne du métier)",
+                                         "position":  {
+                                                          "x":  5273450,
+                                                          "y":  801888,
+                                                          "largeur":  2843400,
+                                                          "hauteur":  486900
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "OctoFooter",
+                                         "apercu":  "OCTO I PART OF ACCENTURE | \u0026#xA9; 2026 - All rights reserved",
+                                         "position":  {
+                                                          "x":  182880,
+                                                          "y":  4953500,
+                                                          "largeur":  7315200,
+                                                          "hauteur":  152400
+                                                      }
+                                     },
+                                     {
+                                         "type":  "texte",
+                                         "nom":  "OctoPageCircle",
+                                         "apercu":  "3",
+                                         "position":  {
+                                                          "x":  8844000,
+                                                          "y":  4893500,
+                                                          "largeur":  228600,
+                                                          "hauteur":  228600
+                                                      }
+                                     }
+                                 ]
+                   }
+               ],
+    "detected_at":  "2026-06-08T15:58:28Z"
+}

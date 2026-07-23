@@ -1,0 +1,15 @@
+node_modules/
+__pycache__/
+*.pyc
+.env
+.DS_Store
+
+# Claude Code — réglages/notes propres à une machine ou une personne (jamais
+# partagés), à distinguer de .claude/settings.json et .claude/skills|hooks|
+# agents/ qui eux restent versionnés pour toute l'équipe.
+.claude/settings.local.json
+CLAUDE.local.md
+
+# BMAD — sorties générées (planning/implementation artifacts), pas du
+# contenu source ; _bmad/ (le moteur) reste versionné à part.
+_bmad-output/

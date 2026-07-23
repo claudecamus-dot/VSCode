@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-23T19:31:02+02:00",
+ "generated": "2026-07-23T20:35:36+02:00",
  "eprouves": [],
  "jamais_utilises": [
   "agent-orchestrator",
@@ -91,8 +91,13 @@
  ],
  "playbooks": {},
  "agents": {},
- "prudence": [],
+ "prudence": [
+  {
+   "cible": "scan_transcripts",
+   "raison": "Etage-1 diagnostique a l'aveugle : 0 session couverte, state/runs vides -> jamais_utilises est un artefact de donnees vides"
+  }
+ ],
  "trous_catalogue": [],
- "diagnostic_a_jour": false,
+ "diagnostic_a_jour": true,
  "arbitrages": []
 }
