@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-23T20:38:47+02:00",
+ "generated": "2026-07-23T21:18:07+02:00",
  "eprouves": [],
  "jamais_utilises": [
   "agent-orchestrator",
@@ -99,5 +99,34 @@
  ],
  "trous_catalogue": [],
  "diagnostic_a_jour": true,
- "arbitrages": []
+ "arbitrages": [
+  {
+   "cible": "ppt-designer",
+   "decision": "Sous-agent créé (`.claude/agents/ppt-designer.md`), porté depuis VSCode3 et réécrit pour le pipeline réel de ce projet (générateur COMOP Node.js/PowerShell — mutation d'un template .pptx existant via ZipFile/regex — et non un générateur python-pptx from-scratch comme sur VSCode3). Activé comme voie unique de génération/vérification deck : l'étape 'generation' du playbook export-ppt-verifie l'instancie désormais comme sous-agent plutôt qu'inline. Porte une mise en garde explicite sur la régression active et non résolue de remove-template-shape.ps1 (cf. mémoire projet project_comop_multitemplate_plan) — ne doit jamais patcher ce script silencieusement.",
+   "categories": [
+    "agent-mort",
+    "verification-manquante"
+   ],
+   "date": "2026-07-23",
+   "source": "demande utilisateur « ré implemente toute la structure agent sous agent skills en place sur VScode3 avec bibliotheque, playbook pour la génération de PPT » 2026-07-23 — port adapté après diff VSCode3/VSCode via agent Explore"
+  },
+  {
+   "cible": "deck-design-library",
+   "decision": "Déjà présente et adaptée localement (SKILL.md propre au pipeline COMOP, catalogue-restitution.md identique aux 22 patterns de VSCode3/VSCode2) — NON écrasée par le portage VSCode3 : les deux SKILL.md sont des adaptations divergentes légitimes du même texte-source, écraser la version locale aurait perdu ses références locales (deck-design-review, patterns swot-matrix/priority-matrix). Consultée par ppt-designer comme référence de forme avant toute nouvelle slide.",
+   "categories": [
+    "agent-mort"
+   ],
+   "date": "2026-07-23",
+   "source": "diff Explore VSCode/VSCode3 2026-07-23 — bibliothèque déjà en place, aucun portage de contenu nécessaire"
+  },
+  {
+   "cible": ".agents/skills",
+   "decision": "Retiré (miroir Codex, poids mort structurel confirmé par diagnostic agent-supervisor 2026-07-23) — BMAD réinstallé en --tools claude-code uniquement, .agents/skills/ supprimé du disque.",
+   "categories": [
+    "agent-mort"
+   ],
+   "date": "2026-07-23",
+   "source": "arbitrage utilisateur « reinstalle BMAD, supprime codex » 2026-07-23"
+  }
+ ]
 }

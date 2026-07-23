@@ -9,7 +9,7 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 > Conception et phasage : [../../reflexions/agent-superviseur.md](../../reflexions/agent-superviseur.md).
 
-Dernier scan : 2026-07-23T20:38:47+02:00 · **1 sessions** (transcripts) · **0** invocations de skills · **0** lancements de sous-agents.
+Dernier scan : 2026-07-23T21:18:07+02:00 · **1 sessions** (transcripts) · **0** invocations de skills · **1** lancements de sous-agents.
 
 ## Skills — usage réel
 
@@ -21,7 +21,7 @@ Dernier scan : 2026-07-23T20:38:47+02:00 · **1 sessions** (transcripts) · **0*
 
 | Sous-agent | Lancements | Premier | Dernier |
 | --- | --- | --- | --- |
-| _(aucun)_ | | |
+| `Explore` | 1 | 2026-07-23 | 2026-07-23 |
 
 ## Jamais utilisés
 
@@ -45,7 +45,15 @@ Dernier scan : 2026-07-23T20:38:47+02:00 · **1 sessions** (transcripts) · **0*
 
 1. **Trier les skills BMAD** : 71 installés, 0 invocation à ce jour — décider lesquels garder, customiser ou désinstaller.
 2. **`revue-increment` jamais invoquée** malgré le rappel SessionStart à chaque session — revoir son déclencheur (l'ancrer au flux de commit ?) ou la simplifier.
-3. **Skills projet sans usage** : `agent-orchestrator`, `agent-supervisor`, `deck-design-library`, `pptx-framed-image`, `slide-text-polish` — vérifier pertinence et déclencheurs.
+3. **Skills projet sans usage** : `agent-orchestrator`, `agent-supervisor`, `pptx-framed-image`, `slide-text-polish` — vérifier pertinence et déclencheurs.
+
+## Arbitrages enregistrés
+
+_Constats clos par décision humaine (`.claude/supervision/arbitrages.json`) — l'usage réel reste mesuré ci-dessus._
+
+- **`ppt-designer`** (2026-07-23) : Sous-agent créé (`.claude/agents/ppt-designer.md`), porté depuis VSCode3 et réécrit pour le pipeline réel de ce projet (générateur COMOP Node.js/PowerShell — mutation d'un template .pptx existant via ZipFile/regex — et non un générateur python-pptx from-scratch comme sur VSCode3). Activé comme voie unique de génération/vérification deck : l'étape 'generation' du playbook export-ppt-verifie l'instancie désormais comme sous-agent plutôt qu'inline. Porte une mise en garde explicite sur la régression active et non résolue de remove-template-shape.ps1 (cf. mémoire projet project_comop_multitemplate_plan) — ne doit jamais patcher ce script silencieusement.
+- **`deck-design-library`** (2026-07-23) : Déjà présente et adaptée localement (SKILL.md propre au pipeline COMOP, catalogue-restitution.md identique aux 22 patterns de VSCode3/VSCode2) — NON écrasée par le portage VSCode3 : les deux SKILL.md sont des adaptations divergentes légitimes du même texte-source, écraser la version locale aurait perdu ses références locales (deck-design-review, patterns swot-matrix/priority-matrix). Consultée par ppt-designer comme référence de forme avant toute nouvelle slide.
+- **`.agents/skills`** (2026-07-23) : Retiré (miroir Codex, poids mort structurel confirmé par diagnostic agent-supervisor 2026-07-23) — BMAD réinstallé en --tools claude-code uniquement, .agents/skills/ supprimé du disque.
 
 ## Diagnostic qualitatif (étage 2 — `agent-supervisor`)
 

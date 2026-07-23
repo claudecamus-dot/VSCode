@@ -1,10 +1,16 @@
 {
  "files": {
   "245999fc-e850-43ac-92e9-6e3cd1ca0e06.jsonl": {
-   "offset": 242780
+   "offset": 854518
   }
  },
  "skills": {},
- "subagents": {},
- "last_scan": "2026-07-23T20:38:47+02:00"
+ "subagents": {
+  "Explore": {
+   "n": 1,
+   "first": "2026-07-23T18:58:50.750Z",
+   "last": "2026-07-23T18:58:50.750Z"
+  }
+ },
+ "last_scan": "2026-07-23T21:18:07+02:00"
 }

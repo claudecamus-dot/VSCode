@@ -20,6 +20,12 @@ les premiers runs de ce projet**. `pptx-deck`, `pptx-verify`, `restitution-deck-
 sont des skills globales ; `pptx-framed-image`, `slide-text-polish` et
 `deck-design-library` sont installées dans ce projet.
 
+**Étape `generation` instanciée via le sous-agent `ppt-designer`** (`.claude/agents/ppt-designer.md`,
+porté depuis VSCode3 le 2026-07-23, adapté au canal COMOP réel de ce projet) plutôt qu'en
+inline — il choisit le canal (COMOP vs hors-COMOP), consulte `deck-design-library` avant
+toute nouvelle forme, et porte l'avertissement explicite sur la régression connue de
+`remove-template-shape.ps1` (voir mémoire projet `project_comop_multitemplate_plan`).
+
 **Itération de design ≠ reprise** : la boucle **rendu de contrôle → liste de défauts →
 correction → re-rendu** est l'étape NOMINALE de ce playbook, bornée à **2 itérations**
 au-delà du rendu initial ; à la 3ᵉ, escalade utilisateur avec l'état réel — même livrable
@@ -53,12 +59,12 @@ boucle nominale.
     },
     {
       "id": "generation",
-      "agent": "générateur COMOP (node/generate-comop.ps1) ou pptx-deck",
+      "agent": "ppt-designer",
       "mode": "cascade",
-      "modele": "(session)",
+      "modele": "(session, hérité — jugement visuel, pas de bascule)",
       "contrat": {
         "type": "deterministe",
-        "critere": "export .pptx produit sans exception via le canal du projet (générateur COMOP : smoke-test.ps1 vert ; deck python-pptx : self-check géométrique de pptx-deck passé). Pour une NOUVELLE slide ou une slide retravaillée en profondeur : forme choisie via deck-design-library AVANT de dessiner"
+        "critere": "instancié via le sous-agent ppt-designer (Agent), pas inline ; export .pptx produit sans exception via le canal choisi (COMOP : smoke-test.ps1 vert ; deck python-pptx : self-check géométrique + débordements de pptx-deck passés). Pour une NOUVELLE slide ou une slide retravaillée en profondeur : forme choisie via deck-design-library AVANT de dessiner. Si le chantier touche remove-template-shape.ps1 : régression connue non résolue, escalade utilisateur — pas de correctif silencieux"
       },
       "checkpoint": false
     },

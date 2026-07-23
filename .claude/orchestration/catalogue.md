@@ -26,6 +26,12 @@ encore de recul d'usage dans **ce** projet — les statuts viendront de
 | `agent-orchestrator` | Qualifie une demande, compose un plan (cascade/parallèle/async), exécute, journalise | Déployée 2026-07-23 |
 | `agent-supervisor` | Diagnostic qualitatif étage 2 (KO répétés, inefficacité, agents morts, vérifs manquantes) | Déployée 2026-07-23 |
 
+## Agent projet
+
+| Agent | Usage | Statut |
+| --- | --- | --- |
+| `ppt-designer` (`.claude/agents/ppt-designer.md`) | Voie unique de génération/vérification d'un deck COMOP (ou hors-COMOP via `pptx-deck`) — instancié comme sous-agent à l'étape `generation` du playbook `export-ppt-verifie` | Porté depuis VSCode3, 2026-07-23 |
+
 ## Canal de génération PPT du projet
 
 Le livrable principal est produit par le **générateur COMOP** (`comop-pptx-prototype/`,
@@ -38,8 +44,8 @@ soit le canal (python-pptx ou JS).
 
 71 skills `bmad-*` installées — le catalogue le plus large des projets de l'utilisateur
 (seul projet avec les modules test-architecture `tea`, builder `bmb` et créatif `cis`).
-**À utiliser uniquement sur demande explicite**, via `bmad-help`. NB : dupliquées dans
-`.agents/skills/` (miroir Codex) — ce doublon n'est pas géré par ce catalogue.
+**À utiliser uniquement sur demande explicite**, via `bmad-help`. Réinstallé claude-code-only
+le 2026-07-23 : le miroir Codex (`.agents/skills/`) a été retiré, plus de doublon à gérer.
 
 ## Playbooks (`.claude/orchestration/playbooks/`)
 
