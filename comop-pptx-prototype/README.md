@@ -56,3 +56,16 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\src\smoke-test.ps1
 ```
 
 14 assertions end-to-end : existence des fichiers, generation complete, aucun placeholder residuel.
+
+```bash
+npm install
+npm test        # routage HTTP du serveur (node:test, 10 cas reels sur un serveur lance)
+npm run coverage # idem + mesure de couverture (c8) sur server.js
+```
+
+Les tests `npm test` lancent un vrai `server.js` (process separe, `COMOP_DATA_ROOT` pointe
+vers un dossier temporaire) et l'interrogent en HTTP reel — routage API, garde-fou anti
+traversee de repertoire (`safeTemplatePath`), fichiers statiques. Ils ne touchent jamais
+`templates/`, `output/` ou `data/` du prototype. Premiere mesure de coverage : ~50 %
+lignes sur `server.js` (le reste couvert par `smoke-test.ps1` : generation PPTX complete,
+extraction de charte, detection de zones — hors perimetre du coverage JS).

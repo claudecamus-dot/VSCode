@@ -5,11 +5,15 @@ const path = require("path");
 const { spawn } = require("child_process");
 
 const root = __dirname;
+// COMOP_DATA_ROOT permet aux tests de rediriger templates/output/data vers un
+// dossier temporaire isole, sans jamais toucher aux vrais templates/exports
+// du prototype ; non defini en usage normal, le comportement est inchange.
+const dataRoot = process.env.COMOP_DATA_ROOT ? path.resolve(process.env.COMOP_DATA_ROOT) : root;
 const webDir = path.join(root, "web");
-const templatesDir = path.join(root, "templates");
-const outputDir = path.join(root, "output");
+const templatesDir = path.join(dataRoot, "templates");
+const outputDir = path.join(dataRoot, "output");
 const requestDataDir = path.join(outputDir, "_data");
-const dataDir = path.join(root, "data");
+const dataDir = path.join(dataRoot, "data");
 const port = Number(process.env.PORT || 5177);
 const serverLog = path.join(outputDir, "server-runtime.log");
 const OUTPUT_TTL_MS = 24 * 60 * 60 * 1000; // 24h
@@ -388,3 +392,17 @@ server.listen(port, () => {
   purgeOldOutputs();
   setInterval(purgeOldOutputs, OUTPUT_TTL_MS);
 });
+
+// Arret propre quand le pipe stdin est ferme par le parent (le kill Windows
+// habituel termine le process sans laisser V8 ecrire sa coverage) : permet
+// aux tests de fermer le serveur proprement plutot que de le tuer. Actif
+// UNIQUEMENT sous COMOP_DATA_ROOT (signal "lance par les tests") pour ne
+// jamais changer le cycle de vie du serveur en usage normal (un stdin ferme
+// par un lanceur non interactif — service, tache planifiee — ne doit pas
+// arreter le serveur de production).
+if (process.env.COMOP_DATA_ROOT) {
+  process.stdin.on("end", () => {
+    server.close(() => process.exit(0));
+  });
+  process.stdin.resume();
+}

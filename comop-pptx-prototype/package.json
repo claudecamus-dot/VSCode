@@ -1,0 +1,13 @@
+{
+  "name": "comop-pptx-prototype",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Bac a sable proto PPT COMOP - serveur HTTP de generation de deck",
+  "scripts": {
+    "test": "node --test",
+    "coverage": "c8 --reporter=text --reporter=html --exclude test --exclude test-support --exclude web node --test"
+  },
+  "devDependencies": {
+    "c8": "^10.1.2"
+  }
+}
