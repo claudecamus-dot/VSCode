@@ -387,7 +387,7 @@ process.on("unhandledRejection", error => {
   process.exit(1);
 });
 
-server.listen(port, () => {
+server.listen(port, "127.0.0.1", () => {
   console.log(`Prototype COMOP disponible sur http://localhost:${port}`);
   purgeOldOutputs();
   setInterval(purgeOldOutputs, OUTPUT_TTL_MS);
