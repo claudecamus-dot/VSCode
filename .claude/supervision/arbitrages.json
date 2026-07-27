@@ -20,6 +20,13 @@
    "categories": ["agent-mort"],
    "date": "2026-07-23",
    "source": "arbitrage utilisateur « reinstalle BMAD, supprime codex » 2026-07-23"
+  },
+  {
+   "cible": "bmad-catalogue-codex",
+   "decision": "ACCEPTÉ + APPLIQUÉ (bouton Valider du wiki, session non interactive) : sur le finding « bmad-catalogue-codex — Duplication .agents/skills/ (Codex) : poids mort structurel » du diagnostic local, le cadrage réel (R1) a montré que la remédiation proposée (réinstaller BMAD --tools claude-code uniquement + retirer .agents/skills/) était DÉJÀ appliquée et committée : le commit 5c480d1 « chore(bmad): reinstalle en claude-code-only, retire la copie Codex » a supprimé les dizaines de fichiers .agents/skills/bmad-*, et un arbitrage l'avait déjà consigné sous la cible sœur « .agents/skills » (2026-07-23). Le finding restait pourtant affiché OUVERT dans le wiki car la fermeture du scan matche la cible à l'identique et « bmad-catalogue-codex » ≠ « .agents/skills » : cette entrée aligne la cible sur celle du finding pour le clore. Correction minimale (R1) — aucune suppression refaite, aucun fichier code/config touché. Vérifié PAR LES FAITS : (1) .agents/ ABSENT du disque (Test-Path False, aucun répertoire .agents nulle part sous VSCode) ; (2) git ls-files .agents = 0 fichier suivi ; (3) aucun manifeste/config de _bmad (fichiers config.yaml/config.toml et manifest.yaml) ne référence codex — les seules mentions « Codex » résiduelles sont du contenu de skills claude-code (pact-mcp.md, validation-report BMAD) documentant Codex comme runtime MCP, PAS une install dupliquée ; (4) CLAUDE.md documente déjà « Pas de copie .agents/skills/ (Codex) : l'install est mono-outil ici ». Aucune trace de doublon Codex ne subsiste.",
+   "categories": ["agent-mort"],
+   "date": "2026-07-27",
+   "source": "bouton Valider du wiki « VSCode :: bmad-catalogue-codex » 2026-07-27 (session claude -p non interactive)"
   }
  ]
 }
