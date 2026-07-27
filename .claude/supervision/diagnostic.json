@@ -1,32 +1,32 @@
 {
- "generated": "2026-07-23T20:30:34+02:00",
+ "generated": "2026-07-27T12:13:26+02:00",
  "findings": [
   {
-   "categorie": "verification-manquante",
-   "cible": "revue-increment",
-   "priorite": 3,
-   "titre": "Increment 6 cloture alors qu'une regression PPTX bloquante est capitalisee, sans passage revue-increment",
-   "preuve": "routing-hints.verifications_oubliees = 'revue-increment jamais invoquee malgre le rappel SessionStart'; commit d0115dd 'cloture increment 6' vs MEMORY project_comop_multitemplate_plan qui note 'increment 6 BLOCKED by PPTX-corruption regression, plan paused'. La leçon MEMORY feedback_regression_step_back exige un plan root-cause avant de continuer.",
-   "recommandation": "Ne pas considerer l'increment 6 'livre': rouvrir via revue-increment (verif RUNTIME reelle du rendu PPTX, pas tests verts) et traiter la regression avant l'increment 7.",
-   "proposition": "Amender le contrat du playbook dev-verifie (.claude/orchestration/playbooks/dev-verifie.md) pour faire de revue-increment le gate terminal NON-skippable de tout plan de dev, avec sortie bloquante si la verif runtime du chemin de verif projet echoue."
+   "categorie": "inefficacite",
+   "cible": "dispositif-supervision",
+   "priorite": 4,
+   "titre": "Le meta-outillage capte tout l'effort pendant que la regression PPTX bloquante, rouverte explicitement, reste intouchee depuis 4 jours",
+   "preuve": "Commit 8833ed1 (2026-07-23) 'reouvre l'increment 6 (regression PPTX jamais traitee)'. Depuis, 7 commits : 5 ne touchent QUE le meta-outillage (.claude/supervision, .claude/orchestration, .claude/hooks, CLAUDE.md, docs/wiki) et 2 touchent le produit hors chemin PPTX (server.js : tests c8 en 8dac561, bind 127.0.0.1 en 563388f). git log sur comop-pptx-prototype/src/remove-template-shape.ps1 : dernier commit cb636dc, ANTERIEUR a la reouverture — zero ligne de travail sur la regression. MEMORY project_comop_multitemplate_plan reste sur 'increment 6 BLOCKED by PPTX-corruption regression, plan paused'. Corollaire : le sous-agent ppt-designer, cree le 2026-07-23 (e54583d) pour precisement ce canal, n'a jamais ete instancie (state.json subagents = {Explore: n=1} seul).",
+   "recommandation": "Geler l'investissement dans le dispositif de supervision et ouvrir la prochaine session par le plan cause-racine de la regression PPTX (methode imposee par la memoire feedback_regression_step_back : diagnostic + blast-radius + revue AVANT tout correctif). Le dispositif d'observation n'a plus rien a observer tant que le chantier produit est a l'arret.",
+   "proposition": "Instancier le playbook dev-verifie sur la regression remove-template-shape.ps1 avec ppt-designer en etape de generation et pptx-verify en gate (rendu reel inspecte), et n'accepter aucun nouveau commit .claude/ tant que l'increment 6 n'est pas soit corrige, soit explicitement abandonne dans la roadmap."
   },
   {
    "categorie": "inefficacite",
    "cible": "scan_transcripts",
-   "priorite": 3,
-   "titre": "Etage-1 diagnostique a l'aveugle : 0 session couverte, state/runs vides -> jamais_utilises est un artefact de donnees vides",
-   "preuve": "state.json = {files:{},skills:{},subagents:{}}; runs.jsonl inexistant; scan SessionStart rapporte '0 evenement(s), 0 sessions couvertes' alors que les hooks (SessionStart->scan, PostToolUse->log_usage) SONT cables dans settings.json et que 12+ commits de travail reel existent. Consequence: routing-hints liste TOUT le catalogue (~85 skills) en jamais_utilises.",
-   "recommandation": "Ne prendre AUCUNE decision de desinstallation/mise en sommeil sur la base de jamais_utilises tant que le scan couvre 0 session : la liste ne prouve pas des agents morts, elle prouve une instrumentation qui ne capte pas encore (dispositif deploye aujourd'hui, HEAD 3f84fcc).",
-   "proposition": "Verifier pourquoi scan_transcripts couvre 0 session (mapping du repertoire projet / filtre de dates) et confirmer que log_usage.py ecrit bien un evenement par appel Skill, avant de refaire confiance au prochain diagnostic."
+   "priorite": 4,
+   "titre": "L'offset de state.json survit au remplacement du detecteur : le scan actuel n'a jamais relu les 854 Ko d'historique, donc skills reste vide a jamais",
+   "preuve": "Cause racine du constat 'diagnostic a l'aveugle' du 2026-07-23, desormais identifiee. git show b5ac735^:state.json et git show b5ac735:state.json donnent le MEME offset 854518 : le commit b5ac735 a remplace scan_transcripts.py (alignement canon flotte, detection des slash-commands ajoutee — regex <command-name> ligne 195) sans invalider l'offset. read_new_lines (ligne 127) ne lit que les octets APRES l'offset : le nouveau detecteur n'a donc jamais vu le prefixe deja consomme par l'ancien. Resultat mesure aujourd'hui : offset 883264 sur un transcript de meme taille, skills = {} apres 4 jours, usage.jsonl = 1 seule ligne (un Agent du 2026-07-23), hook SessionStart '+0 evenement(s)'. Aucune notion de version de detecteur dans state.json. Second angle : les skills de ce projet s'invoquent en slash-command (/agent-orchestrator, /agent-supervisor cette session), qui ne declenchent PAS de PostToolUse Skill — log_usage.py (matcher Skill|Agent|Task) est donc structurellement aveugle a ce mode, et le scan differe etait le seul rattrapage possible.",
+   "recommandation": "Reinitialiser les offsets une fois (state.json files -> {}) puis relancer le scan pour rejouer tout l'historique avec le detecteur courant ; tant que ce n'est pas fait, continuer d'ignorer jamais_utilises comme preuve d'agent mort (~85 skills listes a tort).",
+   "proposition": "Ajouter un champ detector_version dans state.json, incremente a chaque modification de la logique de detection de scan_transcripts.py : au demarrage, si la version stockee differe de la version courante, remettre tous les offsets a 0 et rejouer les transcripts. Rend le scan idempotent face a ses propres mises a jour."
   },
   {
-   "categorie": "agent-mort",
-   "cible": "bmad-catalogue-codex",
-   "priorite": 2,
-   "titre": "Duplication .agents/skills/ (Codex) : poids mort structurel, independant du scan",
-   "preuve": "CLAUDE.md: 'Les skills vivent dans deux emplacements... Si seul Claude Code est utilise ici, .agents/skills/ est du poids mort - a retirer'. git status montre des dizaines de fichiers .agents/skills/bmad-* modifies/supprimes = maintenance dupliquee sur une copie Codex non utilisee.",
-   "recommandation": "Trancher l'usage de Codex. Si non utilise, desinstaller la copie Codex (reinstaller BMAD --tools claude-code seul, ou npx bmad-method uninstall puis reinstall). Cible NETTE car fondee sur la structure du repo, pas sur le scan vide.",
-   "proposition": "Reinstaller BMAD avec --tools claude-code uniquement et retirer .agents/skills/ du depot, pour supprimer la double-maintenance et le bruit dans jamais_utilises."
+   "categorie": "interaction",
+   "cible": "agent-orchestrator",
+   "priorite": 3,
+   "titre": "runs.jsonl n'existe toujours pas : la boucle orchestrateur -> superviseur est en circuit ouvert au niveau de la journalisation",
+   "preuve": "Le fichier .claude/orchestration/runs.jsonl est absent du disque 4 jours apres le deploiement du dispositif (3f84fcc, 2026-07-23) et l'import de 3 playbooks. Consequence directe et verifiee dans routing-hints.json : playbooks = {} et agents = {} — aucune statistique plan-vs-reel n'existe, donc les 3 playbooks resteront au statut 'importe, a confirmer' indefiniment et le superviseur ne peut structurellement qualifier ni un playbook mort ni une etape reprise. Or des enchainements multi-etapes ONT eu lieu sans laisser de trace : arbitrages.json documente une remediation complete du 2026-07-27 (cadrage, 4 verifications factuelles, cloture du finding bmad-catalogue-codex) menee en session non interactive, plus 7 commits de travail — zero ligne journalisee.",
+   "recommandation": "Trancher la cause : soit le travail reel contourne l'orchestrateur (dispositif non adopte), soit il l'emprunte sans journaliser (etape 5 sautee). Dans les deux cas la mesure manque a la source, et aucun diagnostic futur ne pourra parler de playbooks.",
+   "proposition": "Deplacer la journalisation de la FIN vers la COMPOSITION du plan : l'orchestrateur ecrit la ligne runs.jsonl des l'etape 2 avec resultat='en-cours', puis la met a jour a la remise. Un run interrompu, abandonne ou tue laisse ainsi une trace — c'est precisement le cas ou le signal vaut le plus, et c'est aujourd'hui le cas ou il se perd."
   }
  ]
 }

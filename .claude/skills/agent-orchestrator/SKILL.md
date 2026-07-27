@@ -98,18 +98,36 @@ tours** (« toujours KO », « pas traité »), la boucle ne converge pas : **ST
 slide/page, capture, écran) avant de retoucher quoi que ce soit. Re-deviner produit
 l'oscillation ; l'oracle, c'est l'utilisateur sur SON artefact.
 
-### 5. Journaliser
+### 5. Journaliser — **ouvrir la ligne dès l'étape 2, la solder à la remise**
 
-À la fin du run (succès **ou** échec), une ligne dans `.claude/orchestration/runs.jsonl` :
+Le journal s'écrit **au moment où le plan est composé**, pas à la fin du run. Journaliser
+en dernier revient à ne rien journaliser dès que le run est interrompu, or c'est
+exactement là que le signal vaut le plus (constat superviseur 2026-07-27 : `runs.jsonl`
+inexistant 4 jours après le déploiement du dispositif, alors que des enchaînements
+multi-étapes avaient bien eu lieu — donc `playbooks: {}` et `agents: {}` dans les hints,
+et aucun playbook jamais confirmable).
+
+**a. À la composition du plan** (étape 2), une ligne dans `.claude/orchestration/runs.jsonl` :
 
 ```bash
-py .claude/orchestration/log_run.py '{"demande": "résumé court", "qualification": "orchestre", "playbook": "dev-verifie", "plan": [{"etape": "revue design", "agent": "Explore", "mode": "parallele", "modele": "haiku"}], "resultat": "succes", "reprises": 0, "notes": ""}'
+py .claude/orchestration/log_run.py '{"demande": "résumé court", "qualification": "orchestre", "playbook": "dev-verifie", "plan": [{"etape": "revue design", "agent": "Explore", "mode": "parallele", "modele": "haiku"}], "resultat": "en-cours", "reprises": 0, "notes": ""}'
+```
+
+Noter le `ts` renvoyé : c'est la clé du solde. Un run laissé `en-cours` est compté à part
+par le scan (jamais mêlé aux taux de réussite) — un `en-cours` qui traîne signale un run
+abandonné, ce que l'ancien schéma perdait en silence.
+
+**b. À la remise**, solder la ligne avec l'issue réelle et le nombre de reprises constaté :
+
+```bash
+py .claude/orchestration/log_run.py --solde 2026-07-27T14:3 succes "note de solde"
 ```
 
 (JSON aussi accepté sur stdin. `qualification` : `orchestre` | `direct-signale` ;
-`resultat` (issue **discriminante** — pas un `succes` réflexe, un journal où tout est
-`succes` ne porte aucun signal) : `succes` = livrable produit ET toutes les exigences
-explicites de la demande couvertes ET vérifications obligatoires faites **ET, pour un
+`resultat` vaut `en-cours` à l'ouverture, puis au solde une issue **discriminante** — pas
+un `succes` réflexe, un journal où tout est `succes` ne porte aucun signal : `succes` =
+livrable produit ET toutes les exigences explicites de la demande couvertes ET
+vérifications obligatoires faites **ET, pour un
 livrable consommé par l'utilisateur, validé PAR l'utilisateur sur l'artefact exact** ;
 `en-attente-validation` = livrable produit et auto-vérifié mais **pas encore validé par
 l'utilisateur** — état par défaut d'un livrable utilisateur tant que le « OK » n'est pas

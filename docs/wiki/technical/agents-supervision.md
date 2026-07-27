@@ -1,5 +1,5 @@
 ---
-updated: 2026-07-23
+updated: 2026-07-27
 generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, étage 1)
 ---
 
@@ -9,25 +9,26 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 > Conception et phasage : [../../reflexions/agent-superviseur.md](../../reflexions/agent-superviseur.md).
 
-Dernier scan : 2026-07-23T21:18:07+02:00 · **1 sessions** (transcripts) · **0** invocations de skills · **1** lancements de sous-agents.
+Dernier scan : 2026-07-27T12:40:21+02:00 · **2 sessions** (transcripts) · **3** invocations de skills · **2** lancements de sous-agents.
 
 ## Skills — usage réel
 
 | Skill | Famille | Invocations | Première | Dernière |
 | --- | --- | --- | --- | --- |
-| _(aucun)_ | | | |
+| `agent-supervisor` | projet | 2 | 2026-07-23 | 2026-07-27 |
+| `agent-orchestrator` | projet | 1 | 2026-07-27 | 2026-07-27 |
 
 ## Sous-agents
 
 | Sous-agent | Lancements | Premier | Dernier |
 | --- | --- | --- | --- |
-| `Explore` | 1 | 2026-07-23 | 2026-07-23 |
+| `Explore` | 2 | 2026-07-23 | 2026-07-27 |
 
 ## Jamais utilisés
 
-**projet** — 6/6 jamais invoqués :
+**projet** — 1/6 jamais invoqués :
 
-`agent-orchestrator`, `agent-supervisor`, `deck-design-library`, `pptx-framed-image`, `revue-increment`, `slide-text-polish`
+`revue-increment`
 
 **BMAD** — 71/71 jamais invoqués :
 
@@ -37,15 +38,20 @@ Dernier scan : 2026-07-23T21:18:07+02:00 · **1 sessions** (transcripts) · **0*
 
 </details>
 
-**global** — 5/5 jamais invoqués :
+**global** — 2/5 jamais invoqués :
 
-`pptx-deck`, `pptx-verify`, `restitution-deck-design`, `roadmap-keeper`, `skill-creator`
+`restitution-deck-design`, `skill-creator`
+
+## Skills bibliothèque / référence
+
+_Consommés en lisant/exécutant leurs `scripts/`, ou via un sous-agent qui les suit (ex. `ppt-designer`, qui n'a pas l'outil Skill) — le compteur d'invocations ne peut structurellement pas les voir. `n=0` n'y vaut donc PAS « mort » : ne pas désinstaller sur ce seul signal (constat superviseur #2)._
+
+`deck-design-library`, `pptx-deck`, `pptx-framed-image`, `pptx-verify`, `roadmap-keeper`, `slide-text-polish`
 
 ## TODO agents (constats automatiques)
 
 1. **Trier les skills BMAD** : 71 installés, 0 invocation à ce jour — décider lesquels garder, customiser ou désinstaller.
 2. **`revue-increment` jamais invoquée** malgré le rappel SessionStart à chaque session — revoir son déclencheur (l'ancrer au flux de commit ?) ou la simplifier.
-3. **Skills projet sans usage** : `agent-orchestrator`, `agent-supervisor`, `pptx-framed-image`, `slide-text-polish` — vérifier pertinence et déclencheurs.
 
 ## Arbitrages enregistrés
 
@@ -54,14 +60,15 @@ _Constats clos par décision humaine (`.claude/supervision/arbitrages.json`) —
 - **`ppt-designer`** (2026-07-23) : Sous-agent créé (`.claude/agents/ppt-designer.md`), porté depuis VSCode3 et réécrit pour le pipeline réel de ce projet (générateur COMOP Node.js/PowerShell — mutation d'un template .pptx existant via ZipFile/regex — et non un générateur python-pptx from-scratch comme sur VSCode3). Activé comme voie unique de génération/vérification deck : l'étape 'generation' du playbook export-ppt-verifie l'instancie désormais comme sous-agent plutôt qu'inline. Porte une mise en garde explicite sur la régression active et non résolue de remove-template-shape.ps1 (cf. mémoire projet project_comop_multitemplate_plan) — ne doit jamais patcher ce script silencieusement.
 - **`deck-design-library`** (2026-07-23) : Déjà présente et adaptée localement (SKILL.md propre au pipeline COMOP, catalogue-restitution.md identique aux 22 patterns de VSCode3/VSCode2) — NON écrasée par le portage VSCode3 : les deux SKILL.md sont des adaptations divergentes légitimes du même texte-source, écraser la version locale aurait perdu ses références locales (deck-design-review, patterns swot-matrix/priority-matrix). Consultée par ppt-designer comme référence de forme avant toute nouvelle slide.
 - **`.agents/skills`** (2026-07-23) : Retiré (miroir Codex, poids mort structurel confirmé par diagnostic agent-supervisor 2026-07-23) — BMAD réinstallé en --tools claude-code uniquement, .agents/skills/ supprimé du disque.
+- **`bmad-catalogue-codex`** (2026-07-27) : ACCEPTÉ + APPLIQUÉ (bouton Valider du wiki, session non interactive) : sur le finding « bmad-catalogue-codex — Duplication .agents/skills/ (Codex) : poids mort structurel » du diagnostic local, le cadrage réel (R1) a montré que la remédiation proposée (réinstaller BMAD --tools claude-code uniquement + retirer .agents/skills/) était DÉJÀ appliquée et committée : le commit 5c480d1 « chore(bmad): reinstalle en claude-code-only, retire la copie Codex » a supprimé les dizaines de fichiers .agents/skills/bmad-*, et un arbitrage l'avait déjà consigné sous la cible sœur « .agents/skills » (2026-07-23). Le finding restait pourtant affiché OUVERT dans le wiki car la fermeture du scan matche la cible à l'identique et « bmad-catalogue-codex » ≠ « .agents/skills » : cette entrée aligne la cible sur celle du finding pour le clore. Correction minimale (R1) — aucune suppression refaite, aucun fichier code/config touché. Vérifié PAR LES FAITS : (1) .agents/ ABSENT du disque (Test-Path False, aucun répertoire .agents nulle part sous VSCode) ; (2) git ls-files .agents = 0 fichier suivi ; (3) aucun manifeste/config de _bmad (fichiers config.yaml/config.toml et manifest.yaml) ne référence codex — les seules mentions « Codex » résiduelles sont du contenu de skills claude-code (pact-mcp.md, validation-report BMAD) documentant Codex comme runtime MCP, PAS une install dupliquée ; (4) CLAUDE.md documente déjà « Pas de copie .agents/skills/ (Codex) : l'install est mono-outil ici ». Aucune trace de doublon Codex ne subsiste.
+- **`scan_transcripts`** (2026-07-27) : ACCEPTÉ + APPLIQUÉ : la proposition (champ `detector_version` invalidant les offsets) est en place, portée DANS LE CANON du hub VScode5 (`.claude/dispositif/canon/scan_transcripts.py`) puis propagée par `sync_dispositif.py --projet VSCode` — l'éditer localement n'aurait servi à rien, le fichier est généré et la synchro l'écrase. Concrètement : constante `DETECTOR_VERSION = 2` + fonction `reset_si_detecteur_change()` qui, sur changement de version, remet à zéro `files`, `skills` et `subagents` (les agrégats dérivant des seuls transcripts, les rejouer sans les réinitialiser doublerait les compteurs) et rejoue tout l'historique disponible. Vérifié PAR LES FAITS : (1) le rejeu s'est déclenché et a fait remonter 5 événements au lieu de 2, dont l'invocation `agent-supervisor` du 2026-07-23T18:26 jusque-là invisible (n=1 first=2026-07-27 AVANT, n=2 first=2026-07-23 APRÈS) ; (2) idempotence confirmée — le scan suivant affiche « +0 evenement(s) » sans rejouer. Traité au passage : `update_wiki_html` distingue désormais trois issues (à jour / page absente / marqueurs manquants), car un projet cible SANS `docs/wiki.html` — le cas normal, seul le hub publie un wiki HTML — déclenchait à chaque session la fausse alerte « wiki.html sans marqueurs ». Contrepartie assumée et documentée dans le code : un rejeu ne voit que les transcripts encore présents sur le disque.
+- **`agent-orchestrator`** (2026-07-27) : ACCEPTÉ + APPLIQUÉ : la journalisation passe de la FIN du run à la COMPOSITION du plan. (1) `.claude/skills/agent-orchestrator/SKILL.md` étape 5 réécrite en deux temps — ouvrir la ligne à l'étape 2 avec `resultat: "en-cours"`, la solder à la remise via `--solde` ; (2) canon `log_run.py` : `RESULTATS_SOLDE` accepte désormais `en-attente-validation`, état que la skill EXIGE pour un livrable utilisateur non validé mais qui n'était atteignable qu'en éditant le journal à la main ; (3) canon `scan_transcripts.py` : `build_runs_stats` compte les `en-cours` dans un compteur séparé `en_cours` et les exclut de `n`/succès/échecs, pour qu'un run ouvert ne dégrade pas les taux — un `en_cours` qui ne se solde jamais devient au contraire le signal d'un run abandonné, ce que l'ancien schéma perdait en silence. Vérifié PAR LES FAITS : cette orchestration elle-même a été journalisée à sa composition (`runs.jsonl` créé, 1 run, ts 2026-07-27T12:22:48) puis soldée à la remise ; le scan affiche « 1 run(s) orchestrateur » et `routing-hints.agents` montre bien `n=0, en_cours=N` pour les agents du plan en cours.
 
 ## Diagnostic qualitatif (étage 2 — `agent-supervisor`)
 
 _Diagnostic à jour._
 
-1. **Increment 6 cloture alors qu'une regression PPTX bloquante est capitalisee, sans passage revue-increment** — Ne pas considerer l'increment 6 'livre': rouvrir via revue-increment (verif RUNTIME reelle du rendu PPTX, pas tests verts) et traiter la regression avant l'increment 7. · **Proposition** : Amender le contrat du playbook dev-verifie (.claude/orchestration/playbooks/dev-verifie.md) pour faire de revue-increment le gate terminal NON-skippable de tout plan de dev, avec sortie bloquante si la verif runtime du chemin de verif projet echoue.
-2. **Etage-1 diagnostique a l'aveugle : 0 session couverte, state/runs vides -> jamais_utilises est un artefact de donnees vides** — Ne prendre AUCUNE decision de desinstallation/mise en sommeil sur la base de jamais_utilises tant que le scan couvre 0 session : la liste ne prouve pas des agents morts, elle prouve une instrumentation qui ne capte pas encore (dispositif deploye aujourd'hui, HEAD 3f84fcc). · **Proposition** : Verifier pourquoi scan_transcripts couvre 0 session (mapping du repertoire projet / filtre de dates) et confirmer que log_usage.py ecrit bien un evenement par appel Skill, avant de refaire confiance au prochain diagnostic.
-3. **Duplication .agents/skills/ (Codex) : poids mort structurel, independant du scan** — Trancher l'usage de Codex. Si non utilise, desinstaller la copie Codex (reinstaller BMAD --tools claude-code seul, ou npx bmad-method uninstall puis reinstall). Cible NETTE car fondee sur la structure du repo, pas sur le scan vide. · **Proposition** : Reinstaller BMAD avec --tools claude-code uniquement et retirer .agents/skills/ du depot, pour supprimer la double-maintenance et le bruit dans jamais_utilises.
+1. **Le meta-outillage capte tout l'effort pendant que la regression PPTX bloquante, rouverte explicitement, reste intouchee depuis 4 jours** — Geler l'investissement dans le dispositif de supervision et ouvrir la prochaine session par le plan cause-racine de la regression PPTX (methode imposee par la memoire feedback_regression_step_back : diagnostic + blast-radius + revue AVANT tout correctif). Le dispositif d'observation n'a plus rien a observer tant que le chantier produit est a l'arret. · **Proposition** : Instancier le playbook dev-verifie sur la regression remove-template-shape.ps1 avec ppt-designer en etape de generation et pptx-verify en gate (rendu reel inspecte), et n'accepter aucun nouveau commit .claude/ tant que l'increment 6 n'est pas soit corrige, soit explicitement abandonne dans la roadmap.
 
 ---
 
