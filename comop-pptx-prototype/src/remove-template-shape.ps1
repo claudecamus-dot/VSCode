@@ -71,17 +71,33 @@ try {
   $xml = $xml.Remove($removedAt, $removedLength)
   Set-Content -LiteralPath $slidePath -Value $xml -Encoding UTF8
 
+  # L'operation ecrase le template EN PLACE : sans sauvegarde, une suppression
+  # de trop est irrattrapable. C'est arrive — le commit e18574f (snapshot WIP) a
+  # embarque un template ampute de ses 3 formes media, et le golden-file du
+  # smoke-test est reste rouge jusqu'au 2026-07-28 sans que personne relie les deux.
+  # La copie va dans archive/ : le serveur ne liste que templates/*.pptx a plat,
+  # elle n'apparait donc pas dans la bibliotheque.
+  $templateDir = Split-Path -Parent (Resolve-Path -LiteralPath $TemplatePath).Path
+  $archiveDir = Join-Path $templateDir "archive"
+  if (-not (Test-Path -LiteralPath $archiveDir)) {
+    New-Item -ItemType Directory -Path $archiveDir | Out-Null
+  }
+  $baseName = [System.IO.Path]::GetFileNameWithoutExtension($TemplatePath)
+  $backupPath = Join-Path $archiveDir ("$baseName-avant-suppression-" + (Get-Date -Format "yyyyMMdd-HHmmss") + ".pptx")
+  Copy-Item -LiteralPath $TemplatePath -Destination $backupPath -Force
+
   if (Test-Path -LiteralPath $TemplatePath) {
     Remove-Item -LiteralPath $TemplatePath -Force
   }
   [System.IO.Compression.ZipFile]::CreateFromDirectory($workDir, $TemplatePath)
 
   [pscustomobject]@{
-    status = "forme_supprimee"
-    output = (Resolve-Path -LiteralPath $TemplatePath).Path
-    slide  = $SlideIndex
-    nom    = $ShapeName
-    type   = $removedType
+    status     = "forme_supprimee"
+    output     = (Resolve-Path -LiteralPath $TemplatePath).Path
+    slide      = $SlideIndex
+    nom        = $ShapeName
+    type       = $removedType
+    sauvegarde = $backupPath
   } | ConvertTo-Json
 
 } finally {
