@@ -1,0 +1,36 @@
+name: CI
+
+# Le prototype avait deja des tests reels (node --test + coverage c8) mais rien
+# ne les rejouait : la regression PPTX du 2026-06-08 a vecu 45 jours. Runner
+# WINDOWS obligatoire — les scripts de mutation du template sont en PowerShell
+# et la gate d'integrite OOXML (src/verify-pptx-integrity.ps1) les execute.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+defaults:
+  run:
+    working-directory: comop-pptx-prototype
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Installer les dependances
+        run: npm ci
+
+      - name: Tests (node --test, dont la gate d'integrite OOXML)
+        run: npm test
+
+      - name: Couverture (informatif, pas de seuil impose)
+        run: npm run coverage
+        continue-on-error: true

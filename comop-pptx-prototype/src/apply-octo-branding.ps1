@@ -52,8 +52,11 @@ function Invoke-ThemeBranding {
   $xml = $xml.Replace('name="Conception personnalis&#233;e"', 'name="OCTO Technology"')
   $xml = $xml.Replace('name="Conception personnalisée"', 'name="OCTO Technology"')
   $xml = $xml.Replace('name="Office"', 'name="OCTO Outfit"')
-  $xml = [regex]::Replace($xml, '(<a:majorFont>)<a:latin typeface="[^"]*"', "<`$1><a:latin typeface=""$font""")
-  $xml = [regex]::Replace($xml, '(<a:minorFont>)<a:latin typeface="[^"]*"', "<`$1><a:latin typeface=""$font""")
+  # $1 CONTIENT deja les chevrons du groupe capture (<a:majorFont>) : les
+  # rajouter produisait "<<a:majorFont>>" — theme1.xml non parsable, donc un
+  # PPTX que PowerPoint refuse d'ouvrir (regression de l'increment 6, 2026-06-08).
+  $xml = [regex]::Replace($xml, '(<a:majorFont>)<a:latin typeface="[^"]*"', "`$1<a:latin typeface=""$font""")
+  $xml = [regex]::Replace($xml, '(<a:minorFont>)<a:latin typeface="[^"]*"', "`$1<a:latin typeface=""$font""")
   return $xml
 }
 
@@ -130,8 +133,23 @@ function Get-AccentLineXml {
 "@
 }
 
+function Remove-OctoElements {
+  param([string]$xml)
+  # Idempotence : le script s'applique EN PLACE sur le template (TemplatePath =
+  # OutputPath par defaut). Sans ce retrait, une 2e passe re-injectait les memes
+  # formes avec les memes ids (9900/9901/9902) -> p:cNvPr id dupliques dans une
+  # meme slide, que PowerPoint traite comme un fichier a reparer.
+  $octoShapes = @([regex]::Matches($xml, '<p:sp>.*?</p:sp>', 'Singleline') |
+    Where-Object { $_.Value -match '<p:cNvPr id="990[0-2]" name="Octo' })
+  foreach ($shape in ($octoShapes | Sort-Object -Property Index -Descending)) {
+    $xml = $xml.Remove($shape.Index, $shape.Length)
+  }
+  return $xml
+}
+
 function Add-OctoElements {
   param([string]$xml, [int]$slideNumber)
+  $xml = Remove-OctoElements $xml
   $footer = Get-FooterXml -slideNumber $slideNumber
   $accentLine = Get-AccentLineXml
   return $xml.Replace('</p:spTree>', "$accentLine$footer</p:spTree>")

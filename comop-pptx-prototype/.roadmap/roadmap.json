@@ -1,6 +1,6 @@
 {
   "title": "Atelier COMOP multi-templates",
-  "subtitle": "Increments 1 a 5 livres - increment 6 committe mais REGRESSE (PPTX corrompu), reouvert",
+  "subtitle": "Increments 1 a 5 livres - increment 6 : regression PPTX diagnostiquee et corrigee le 2026-07-28, en attente de validation utilisateur",
   "session_actual": {
     "tokens_total": 123706533,
     "context_used": 139067,
@@ -15,8 +15,8 @@
     { "phase": "realisation", "title": "3. Gestion de la bibliotheque (suppression)", "description": "Route DELETE /api/templates/:file, nettoyage atomique des sidecars, bouton Supprimer.", "status": "done", "tokens": { "actual": 7872850 } },
     { "phase": "realisation", "title": "4. Restructuration en 3 espaces", "description": "Onglets Configuration / Revue / Utilisation dans web/index.html + app.js.", "status": "done", "tokens": { "actual": 16290034 } },
     { "phase": "realisation", "title": "5. Reperage des zones (onglet Revue)", "description": "Detection des zones de texte et de graphiques dans les slides du template.", "status": "done", "tokens": { "actual": 18406532 } },
-    { "phase": "realisation", "title": "6. Suppression de graphiques existants", "description": "Script remove-template-shape.ps1 + route POST .../remove-shape. REGRESSION 2026-06-08 : le PPTX genere n'est plus ouvrable dans PowerPoint. Cause suspectee : le pattern partage extraction-zip/mutation-XML/repackage .NET ZipFile (utilise aussi par apply-octo-branding.ps1 depuis l'increment 1) pourrait etre structurellement invalide pour produire de l'OOXML correct - jamais teste par ouverture reelle dans PowerPoint jusqu'ici. Root-cause non diagnostiquee, aucun commit de correctif depuis. A traiter via revue-increment (verif runtime reelle) avant de reprendre l'increment 7.", "status": "current", "tokens": { "actual": 19959896 } },
-    { "phase": "realisation", "title": "7. Nettoyage des slides excedentaires", "description": "Detection et suppression des slides au-dela des 3 attendues. Bloque tant que la regression de l'increment 6 n'est pas diagnostiquee (meme pattern de mutation PPTX suspecte).", "status": "todo", "tokens": { "estimate": 9000000 } },
+    { "phase": "realisation", "title": "6. Suppression de graphiques existants", "description": "Script remove-template-shape.ps1 + route POST .../remove-shape. REGRESSION 2026-06-08 DIAGNOSTIQUEE ET CORRIGEE le 2026-07-28 : la cause n'etait pas le pattern zip (remove-template-shape.ps1 produit un paquet sain) mais deux defauts d'apply-octo-branding.ps1 - (1) le groupe capture etait re-emballe dans des chevrons, ecrivant '<<a:majorFont>>' dans ppt/theme/theme1.xml, partie XML non parsable que PowerPoint refuse ; (2) branding non idempotent applique EN PLACE, donc p:cNvPr id 9900/9901/9902 dupliques des la 2e passe. Les deux sont corriges, le template committe est repare (theme1.xml seul, -4 octets), et src/verify-pptx-integrity.ps1 - cable dans npm test - verrouille les deux defauts. Avant de passer 'done' : l'utilisateur ouvre le deck genere dans PowerPoint.", "status": "current", "tokens": { "actual": 19959896 } },
+    { "phase": "realisation", "title": "7. Nettoyage des slides excedentaires", "description": "Detection et suppression des slides au-dela des 3 attendues. Blocage leve : le pattern de mutation OOXML partage est diagnostique et desormais garde par un controle d'integrite (verify-pptx-integrity.ps1) rejoue a chaque npm test.", "status": "todo", "tokens": { "estimate": 9000000 } },
     { "phase": "realisation", "title": "8. Insertion de visuels prepares", "description": "Phase Utilisation : injecter des visuels prets dans les zones reperees.", "status": "todo", "tokens": { "estimate": 24000000 } }
   ]
 }

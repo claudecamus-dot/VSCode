@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="1256" viewBox="0 0 980 1256" font-family="Segoe UI, Arial, sans-serif">
 <rect width="980" height="1256" fill="#F4F6F9"/>
 <text x="32" y="56" font-size="24" font-weight="700" fill="#0E2356">Atelier COMOP multi-templates</text>
-<text x="32" y="78" font-size="13" fill="#5A6B85">Increments 1 a 5 livres - increment 6 committe mais REGRESSE (PPTX corrompu), reouvert</text>
+<text x="32" y="78" font-size="13" fill="#5A6B85">Increments 1 a 5 livres - increment 6 : regression PPTX diagnostiquee et corrigee le 2026-07-28, en attente de validation utilisateur</text>
 <text x="32" y="111" font-size="13" font-weight="600" fill="#0E2356">7 / 10 termines</text>
 <rect x="192" y="100" width="706" height="14" rx="7" fill="#E1E6EF"/>
 <rect x="192" y="100" width="494" height="14" rx="7" fill="#00A693"/>
@@ -93,7 +93,7 @@
 <rect x="799.2" y="944" width="128.8" height="20" rx="10" fill="#2E9E5B"/>
 <text x="809.2" y="958" font-size="11" font-weight="700" fill="#FFFFFF">19 959 896 tokens</text>
 <text x="52" y="980" font-size="15" font-weight="700" fill="#182840">6. Suppression de graphiques existants</text>
-<text x="52" y="1000" font-size="12" fill="#5A6B85">Script remove-template-shape.ps1 + route POST .../remove-shape. REGRESSION 2026-06-08 : le PPTX genere n'est plus ouvrable dans</text>
+<text x="52" y="1000" font-size="12" fill="#5A6B85">Script remove-template-shape.ps1 + route POST .../remove-shape. REGRESSION 2026-06-08 DIAGNOSTIQUEE ET CORRIGEE le 2026-07-28 : la</text>
 <rect x="32" y="1028" width="916" height="84" rx="8" fill="#FFFFFF" stroke="#E1E6EF"/>
 <rect x="32" y="1028" width="6" height="84" rx="3" fill="#B7C0CC"/>
 <rect x="52" y="1042" width="95" height="20" rx="10" fill="#00A693"/>
@@ -103,7 +103,7 @@
 <rect x="754.4" y="1042" width="173.60000000000002" height="20" rx="10" fill="#7A8AA0"/>
 <text x="764.4" y="1056" font-size="11" font-weight="700" fill="#FFFFFF">~9 000 000 tokens (est.)</text>
 <text x="52" y="1078" font-size="15" font-weight="700" fill="#182840">7. Nettoyage des slides excedentaires</text>
-<text x="52" y="1098" font-size="12" fill="#5A6B85">Detection et suppression des slides au-dela des 3 attendues. Bloque tant que la regression de l'increment 6 n'est pas</text>
+<text x="52" y="1098" font-size="12" fill="#5A6B85">Detection et suppression des slides au-dela des 3 attendues. Blocage leve : le pattern de mutation OOXML partage est diagnostique</text>
 <rect x="32" y="1126" width="916" height="84" rx="8" fill="#FFFFFF" stroke="#E1E6EF"/>
 <rect x="32" y="1126" width="6" height="84" rx="3" fill="#B7C0CC"/>
 <rect x="52" y="1140" width="95" height="20" rx="10" fill="#00A693"/>
