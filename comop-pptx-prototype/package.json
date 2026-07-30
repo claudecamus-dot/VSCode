@@ -5,9 +5,12 @@
   "description": "Bac a sable proto PPT COMOP - serveur HTTP de generation de deck",
   "scripts": {
     "test": "node --test",
-    "coverage": "c8 --reporter=text --reporter=html --exclude test --exclude test-support --exclude web node --test"
+    "coverage": "c8 --reporter=text --reporter=html --exclude test --exclude test-support --exclude web node --test",
+    "lint": "eslint ."
   },
   "devDependencies": {
-    "c8": "^10.1.2"
+    "@eslint/js": "^10.0.1",
+    "c8": "^10.1.2",
+    "eslint": "^10.8.0"
   }
 }

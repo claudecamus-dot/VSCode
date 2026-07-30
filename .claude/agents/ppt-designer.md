@@ -34,17 +34,18 @@ regex des placeholders `{{...}}` dans `ppt/slides/slide*.xml`, rezippage.
 - Test end-to-end : `.\src\smoke-test.ps1` (14 assertions : fichiers présents,
   génération complète, aucun placeholder résiduel).
 
-**⚠️ `remove-template-shape.ps1` — RÉGRESSION ACTIVE, NON RÉSOLUE** (constatée
-2026-06-08, revérifiée 2026-07-23 : aucun commit ne l'a touché depuis). Le
-`.pptx` produit par ce script ne s'ouvre plus correctement dans PowerPoint.
-Cause suspectée : le pattern partagé extraction-zip/mutation-XML/repackage
-(`System.IO.Compression.ZipFile`, utilisé aussi par `apply-octo-branding.ps1`
-depuis l'incrément 1) pourrait être structurellement invalide pour produire de
-l'OOXML correct. **Ne jamais présenter une sortie de ce script comme fiable.**
-Si la tâche touche ce script : ce n'est PAS un correctif de routine — c'est le
-root-cause investigation en suspens (cf. mémoire projet
-`project_comop_multitemplate_plan`) ; proposer le diagnostic, ne pas patcher
-à l'aveugle.
+**Régression historique RÉSOLUE (2026-07-28)** — mise à jour 2026-07-30 : la
+régression constatée le 2026-06-08 (`.pptx` refusé par PowerPoint après un
+passage dans le pipeline) a été diagnostiquée par reproduction avant tout
+correctif. `remove-template-shape.ps1` **n'est pas en cause** — vérifié : il
+produit un paquet sain (0 XML invalide, ouverture PowerPoint réelle réussie).
+Les 2 vraies causes étaient dans `apply-octo-branding.ps1` : (1) un
+ré-emballage du groupe capturé dans des chevrons en double, rendant
+`ppt/theme/theme1.xml` non parsable ; (2) un branding non idempotent
+réinjectant les mêmes `id` de forme à chaque passe. Les deux sont corrigés ;
+une gate d'intégrité (`verify-pptx-integrity.ps1`, dans `npm test`) vérifie
+désormais qu'AUCUN script du pipeline ne produit de paquet invalide — plus
+seulement `remove-template-shape.ps1`, la garde couvre toute la chaîne.
 
 **Canal secondaire — deck hors COMOP** : la skill globale `pptx-deck`
 (python-pptx : échelle typo, barres, jauge, cartes, chips, `verifier_geometrie`,
@@ -107,7 +108,10 @@ Lire le `SKILL.md` pertinent en début de tâche plutôt que de réinventer.
 ## Honnêteté
 
 Ne jamais déclarer un deck « vérifié » sur la seule base d'un test vert
-(`smoke-test.ps1` ou `verifier_geometrie`) — un test qui passe ne garantit
-pas l'ouverture correcte dans PowerPoint (cf. régression `remove-template-shape.ps1`).
-Toujours faire précéder l'affirmation « vérifié » d'un rendu réel inspecté, ou
-dire explicitement ce qui n'a pas pu être vérifié et pourquoi.
+(`smoke-test.ps1` ou `verifier_geometrie`) — un test qui passe ne garantit pas
+l'ouverture correcte dans PowerPoint (cf. la régression theme1.xml de
+`apply-octo-branding.ps1`, invisible à `smoke-test.ps1` pendant 45 jours car
+`python-pptx`/`verifier_geometrie` n'inspectent jamais le thème). Toujours
+faire précéder l'affirmation « vérifié » d'un rendu réel inspecté (ou de
+`verify-pptx-integrity.ps1 -RealOpen`), ou dire explicitement ce qui n'a pas
+pu être vérifié et pourquoi.

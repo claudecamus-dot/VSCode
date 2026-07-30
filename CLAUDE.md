@@ -47,6 +47,13 @@ Commandes réelles, depuis `comop-pptx-prototype/` :
 `templates/`, `output/` ni `data/`. Garde-fou en place : `safeTemplatePath`
 (anti-traversée de répertoire) — ne pas contourner.
 
+**Linter** (`comop-pptx-prototype/` : `npm run lint`, config `eslint.config.js` —
+racine du dépôt = pointeur vers celle-ci, pour la détection flotte) : première
+mesure 2026-07-30 : 3 points (`no-unused-vars`/`no-empty` sur un `catch (_) {}`
+volontairement silencieux dans `server.js`). Aucun seuil imposé — on mesure
+d'abord, pas de `--fix` aveugle (leçon VSCode2 2026-07-23 : un `--fix` a supprimé
+un ré-export et cassé un import).
+
 ## Commit scopé
 
 Ce dépôt est une cible d'un hub de supervision qui régénère des données
