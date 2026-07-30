@@ -11,20 +11,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-function Get-ShapeName {
-  param([string]$ShapeXml)
-  $m = [regex]::Match($ShapeXml, '<p:cNvPr[^>]*\sname="([^"]*)"')
-  if ($m.Success) { return $m.Groups[1].Value }
-  return $null
-}
-
-function Get-GraphicType {
-  param([string]$FrameXml)
-  if ($FrameXml -match 'graphicData\s+uri="[^"]*\bchart"') { return "graphique" }
-  if ($FrameXml -match 'graphicData\s+uri="[^"]*\btable"') { return "tableau" }
-  if ($FrameXml -match 'graphicData\s+uri="[^"]*\bdiagram"') { return "diagramme" }
-  return "objet"
-}
+. (Join-Path $PSScriptRoot 'pptx-xml-helpers.ps1')
 
 if (-not (Test-Path -LiteralPath $TemplatePath)) {
   throw "Template introuvable: $TemplatePath"
@@ -32,8 +19,7 @@ if (-not (Test-Path -LiteralPath $TemplatePath)) {
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
-$workDir = Join-Path ([System.IO.Path]::GetTempPath()) ("remove-shape-" + [System.Guid]::NewGuid().ToString("N"))
-New-Item -ItemType Directory -Path $workDir | Out-Null
+$workDir = New-TempDirectory -Prefix "remove-shape-"
 
 try {
   [System.IO.Compression.ZipFile]::ExtractToDirectory($TemplatePath, $workDir)
