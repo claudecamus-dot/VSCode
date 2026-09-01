@@ -13,8 +13,8 @@ d'office, stats plan-vs-réel par playbook/agent, `prudence` issu du diagnostic 
 `docs/wiki/technical/agents-supervision.md` (tableau de bord humain des mêmes données) et
 `.claude/orchestration/playbooks/` (workflows récurrents — format dans `playbooks/FORMAT.md`).
 
-<!-- SOCLE-PROVENANCE: socle : b5d29c5 du 2026-09-01 -->
-> **Socle généré** — tout ce qui suit `## Méthode` vient du hub de supervision (`b5d29c5`, 2026-09-01) et sera **réécrit** à la prochaine propagation.
+<!-- SOCLE-PROVENANCE: socle : f2490bf du 2026-09-01 -->
+> **Socle généré** — tout ce qui suit `## Méthode` vient du hub de supervision (`f2490bf`, 2026-09-01) et sera **réécrit** à la prochaine propagation.
 > Le chapitre « Portée sur ce projet » ci-dessous, lui, n'est jamais réécrit : c'est le travail local.
 
 ## Portée sur ce projet
@@ -33,6 +33,26 @@ signale un run abandonné, ce que l'écriture en fin de course perdait en silenc
 
 **Canal de génération : COMOP (Node.js), pas `python-pptx`.** Un plan qui plaquerait le
 canal d'un projet frère viserait ici un outil qui n'existe pas (R3).
+
+**Les deux écritures du journal, en commandes exactes.** L'idée ne suffit pas : ce sont
+ces deux lignes-là qu'il faut taper.
+
+*a. À la composition du plan* (étape 2), dans `.claude/orchestration/runs.jsonl` :
+
+```bash
+py .claude/orchestration/log_run.py '{"demande": "résumé court", "qualification": "orchestre", "playbook": "dev-verifie", "plan": [{"etape": "revue design", "agent": "Explore", "mode": "parallele", "modele": "haiku"}], "resultat": "en-cours", "reprises": 0, "notes": ""}'
+```
+
+**Noter le `ts` renvoyé : c'est la clé du solde.**
+
+*b. À la remise*, solder la ligne avec l'issue réelle et le nombre de reprises constaté :
+
+```bash
+py .claude/orchestration/log_run.py --solde <ts> succes "note de solde"
+```
+
+Un run laissé `en-cours` est compté à part par le scan, jamais mêlé aux taux de réussite —
+un `en-cours` qui traîne signale un run abandonné, ce que l'ancien schéma perdait en silence.
 
 ## Méthode — 5 étapes
 
