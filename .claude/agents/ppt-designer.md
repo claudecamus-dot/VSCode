@@ -31,7 +31,7 @@ regex des placeholders `{{...}}` dans `ppt/slides/slide*.xml`, rezippage.
 - Charte graphique : `config/branding.json` ; application : `.\src\apply-octo-branding.ps1`.
 - Bibliothèque de templates : `templates/` (upload via `/api/templates`,
   extraction de charte automatique, sidecars `.branding.json`/`.zones.json`).
-- Test end-to-end : `.\src\smoke-test.ps1` (14 assertions : fichiers présents,
+- Test end-to-end : `.\src\smoke-test.ps1` (34 assertions : fichiers présents,
   génération complète, aucun placeholder résiduel).
 
 **Régression historique RÉSOLUE (2026-07-28)** — mise à jour 2026-07-30 : la
@@ -88,7 +88,7 @@ Lire le `SKILL.md` pertinent en début de tâche plutôt que de réinventer.
    passer `slide-text-polish` dessus avant de finaliser.
 3. **Générer** via le canal choisi :
    - COMOP : `generate-comop.ps1` (ou route `/api/generate`), puis
-     `smoke-test.ps1` DOIT rester vert (14 assertions).
+     `smoke-test.ps1` DOIT rester vert (34 assertions), rejoue par `npm test`.
    - Hors COMOP : `pptx-deck`, `verifier_geometrie` et
      `verifier_debordements_texte` DOIVENT rester verts (aucune forme hors
      cadre, aucun débordement de texte).

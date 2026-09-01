@@ -71,6 +71,25 @@ function readRequestBody(req) {
   });
 }
 
+// Un corps JSON malforme est une faute d'appelant (400), pas une panne serveur.
+// Sans ce garde, le JSON.parse des routes remontait au try global du
+// createServer, qui repondait 500 en recopiant le message brut du parseur
+// (« Expected property name or '}' in JSON at position 1 ») : mauvais code de
+// statut ET fuite d'un detail d'implementation. Rend INVALID_BODY apres avoir
+// deja repondu — l'appelant doit sortir immediatement. Le sentinelle evite de
+// confondre l'echec avec un corps valant litteralement `null`.
+const INVALID_BODY = Symbol("corps JSON invalide");
+
+async function readJsonBody(req, res) {
+  const raw = await readRequestBody(req);
+  try {
+    return JSON.parse(raw);
+  } catch {
+    sendJson(res, 400, { error: "Corps JSON invalide" });
+    return INVALID_BODY;
+  }
+}
+
 function readBinaryBody(req, maxBytes) {
   return new Promise((resolve, reject) => {
     const chunks = [];
@@ -266,7 +285,8 @@ async function handleApi(req, res) {
       return;
     }
 
-    const body = JSON.parse(await readRequestBody(req));
+    const body = await readJsonBody(req, res);
+    if (body === INVALID_BODY) return;
     const slideIndex = Number(body.slideIndex);
     const shapeName = String(body.shapeName || "");
     if (!Number.isInteger(slideIndex) || slideIndex < 1 || !shapeName) {
@@ -304,7 +324,8 @@ async function handleApi(req, res) {
   }
 
   if (req.method === "POST" && req.url === "/api/generate") {
-    const body = JSON.parse(await readRequestBody(req));
+    const body = await readJsonBody(req, res);
+    if (body === INVALID_BODY) return;
     const templatePath = safeTemplatePath(body.template);
     if (!fs.existsSync(templatePath)) {
       sendJson(res, 404, { error: "Template introuvable" });

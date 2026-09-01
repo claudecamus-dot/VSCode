@@ -23,8 +23,10 @@ sont des skills globales ; `pptx-framed-image`, `slide-text-polish` et
 **Étape `generation` instanciée via le sous-agent `ppt-designer`** (`.claude/agents/ppt-designer.md`,
 porté depuis VSCode3 le 2026-07-23, adapté au canal COMOP réel de ce projet) plutôt qu'en
 inline — il choisit le canal (COMOP vs hors-COMOP), consulte `deck-design-library` avant
-toute nouvelle forme, et porte l'avertissement explicite sur la régression connue de
-`remove-template-shape.ps1` (voir mémoire projet `project_comop_multitemplate_plan`).
+toute nouvelle forme, et porte l'historique de la régression du 2026-06-08 : **corrigée le
+2026-07-28** (commit `badedf1`), cause réelle `apply-octo-branding.ps1` et non
+`remove-template-shape.ps1`, désormais gardée par `verify-pptx-integrity.ps1` dans
+`npm test` (voir mémoire projet `project_comop_multitemplate_plan`).
 
 **Itération de design ≠ reprise** : la boucle **rendu de contrôle → liste de défauts →
 correction → re-rendu** est l'étape NOMINALE de ce playbook, bornée à **2 itérations**
@@ -64,7 +66,7 @@ boucle nominale.
       "modele": "(session, hérité — jugement visuel, pas de bascule)",
       "contrat": {
         "type": "deterministe",
-        "critere": "instancié via le sous-agent ppt-designer (Agent), pas inline ; export .pptx produit sans exception via le canal choisi (COMOP : smoke-test.ps1 vert ; deck python-pptx : self-check géométrique + débordements de pptx-deck passés). Pour une NOUVELLE slide ou une slide retravaillée en profondeur : forme choisie via deck-design-library AVANT de dessiner. Si le chantier touche remove-template-shape.ps1 : régression connue non résolue, escalade utilisateur — pas de correctif silencieux"
+        "critere": "instancié via le sous-agent ppt-designer (Agent), pas inline ; export .pptx produit sans exception via le canal choisi (COMOP : `npm test` vert — 16 cas, dont la gate d'intégrité et le pont vers les 34 assertions du smoke-test ; deck python-pptx : self-check géométrique + débordements de pptx-deck passés). Pour une NOUVELLE slide ou une slide retravaillée en profondeur : forme choisie via deck-design-library AVANT de dessiner. Garde d'intégrité OOXML : la gate verify-pptx-integrity.ps1 doit être verte (status « valide », xmlInvalides et idsDupliques vides) sur tout paquet produit — elle tourne dans npm test. La régression du 2026-06-08 est CORRIGÉE (2026-07-28, commit badedf1) et sa cause n'était PAS remove-template-shape.ps1, vérifié innocent, mais apply-octo-branding.ps1 (chevrons doublés dans theme1.xml + branding non idempotent) : ne plus escalader sur remove-template-shape.ps1. Aucun passage à « done » sans que l'UTILISATEUR ait ouvert le fichier lui-même — l'auto-évaluation d'un deck est exactement la faute du 2026-06-08"
       },
       "checkpoint": false
     },

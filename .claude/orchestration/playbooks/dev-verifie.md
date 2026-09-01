@@ -58,8 +58,8 @@ lui-même** (layout, contenu, visuel), préférer `export-ppt-verifie`.
       "modele": "(session)",
       "contrat": {
         "type": "deterministe",
-        "critere": "verdict lu sur la ligne de synthèse RÉELLE du test-runner (N passed / 0 failed / 0 error), pas sur une sortie tronquée ou filtrée",
-        "commande": "powershell -NoProfile -ExecutionPolicy Bypass -File comop-pptx-prototype/src/smoke-test.ps1 (ou test ciblé du chantier)"
+        "critere": "verdict lu sur les DEUX lignes de synthèse RÉELLES (« pass N / fail 0 » de node --test, et « Resultat : N OK, 0 echoues » du smoke-test), pas sur une sortie tronquée ou filtrée. `npm test` couvre les 16 cas JS dont la gate d'intégrité OOXML (verify-pptx-integrity.ps1) ET, depuis test/test-smoke.js, la suite smoke elle-même : la lancer séparément ne sert qu'à isoler un échec.",
+        "commande": "cd comop-pptx-prototype && npm test (16 cas, dont la gate OOXML et le pont vers le smoke-test) ; pour isoler le cœur PowerShell : powershell -NoProfile -ExecutionPolicy Bypass -File comop-pptx-prototype/src/smoke-test.ps1 (34 assertions)"
       },
       "checkpoint": false
     },

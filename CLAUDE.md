@@ -37,8 +37,8 @@ Commandes réelles, depuis `comop-pptx-prototype/` :
 
 | Si le changement touche… | Alors… |
 | --- | --- |
-| `server.js` / le routage HTTP | `npm test` (node:test, ~10 cas réels sur un serveur lancé) |
-| La génération PPTX / les scripts `src/*.ps1` | rejouer `.\src\smoke-test.ps1` (assertions end-to-end : fichiers, génération complète, aucun placeholder résiduel) |
+| `server.js` / le routage HTTP | `npm test` (node:test, 16 cas réels sur un serveur lancé — mesuré le 2026-09-01) |
+| La génération PPTX / les scripts `src/*.ps1` | `npm test` suffit : `test/test-smoke.js` y rejoue `.\src\smoke-test.ps1` (34 assertions end-to-end : fichiers, génération complète, aucun placeholder résiduel, mutation OOXML). Lancer le `.ps1` seul ne sert qu'à isoler un échec |
 | Un template `.pptx` | `.\src\validate-template.ps1` sur le template modifié |
 
 `npm run coverage` (c8) mesure `server.js` (~50 % lignes ; le reste est couvert par
