@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-01T17:44:03+02:00",
+ "generated": "2026-09-02T15:14:50+02:00",
  "eprouves": [],
  "jamais_utilises": [
   "bmad-advanced-elicitation",
@@ -94,7 +94,17 @@
  "verifications_oubliees": [
   "revue-increment jamais invoquee malgre le rappel SessionStart -> l'inserer d'office en etape terminale des plans de dev"
  ],
- "playbooks": {},
+ "playbooks": {
+  "evolution-flotte": {
+   "n": 0,
+   "succes": 0,
+   "echecs": 0,
+   "reprises": 0,
+   "en_cours": 0,
+   "en_attente_validation": 0,
+   "partiels": 1
+  }
+ },
  "agents": {
   "Explore": {
    "n": 0,
@@ -112,7 +122,7 @@
    "reprises": 0,
    "en_cours": 0,
    "en_attente_validation": 0,
-   "partiels": 3
+   "partiels": 8
   },
   "revue-increment": {
    "n": 0,
@@ -121,7 +131,7 @@
    "reprises": 0,
    "en_cours": 0,
    "en_attente_validation": 0,
-   "partiels": 1
+   "partiels": 2
   }
  },
  "prudence": [],
@@ -190,6 +200,57 @@
     "inefficacite"
    ],
    "decision": "ACCEPTÉ + APPLIQUÉ : le constat local « le meta-outillage capte tout l'effort pendant que la regression PPTX bloquante reste intouchee » est SOLDÉ par le traitement de la régression elle-même (commit badedf1, 2026-07-28), arbitré depuis le hub de supervision sous la cible VSCode:increment-6-pptx. Cause racine trouvée par reproduction : apply-octo-branding.ps1 écrivait « <<a:majorFont>> » dans ppt/theme/theme1.xml (partie XML non parsable → PowerPoint refuse le fichier) et n'était pas idempotent (p:cNvPr id 9900-9902 dupliqués dès la 2e passe). Les deux causes corrigées, le template committé réparé (theme1.xml seul, −4 octets), et la vérification qui manquait — personne n'ouvrait le fichier produit — ajoutée : src/verify-pptx-integrity.ps1 rejouée dans npm test, plus une CI GitHub Actions (windows-latest) qui rejoue enfin les tests existants. Prouvé avec l'oracle réel : PowerPoint refuse le template d'avant et ouvre celui d'après ; deck COMOP généré et ouvert (3 slides). L'incrément 6 reste 'current' dans la roadmap tant que l'utilisateur n'a pas ouvert le deck lui-même — le passer 'done' sur auto-évaluation serait exactement la faute du 2026-06-08."
+  },
+  {
+   "cible": "smoke-test-hors-ci",
+   "decision": "ACCEPTÉ + APPLIQUÉ : `comop-pptx-prototype/test/test-smoke.js` rejoue `src/smoke-test.ps1` depuis `npm test`, sur le patron de `test-pptx-integrity.js` (skip hors win32, spawnSync, assertions sur exit 0 et « 0 echoues »). La suite qui couvre seule les scripts de mutation OOXML (34 assertions) entre donc dans npm test et dans la CI. Vu ROUGE avant (template inexistant → fail 1). npm test : 13 → 16 cas. CLAUDE.md mis à jour en conséquence.",
+   "categories": [
+    "verification-manquante"
+   ],
+   "date": "2026-09-01",
+   "source": "diagnostic agent-supervisor du 2026-09-01 — traitement appliqué et vérifié (commits 873d836, e322ecd), run journalisé 2026-09-01T15:21:32+02:00"
+  },
+  {
+   "cible": "playbooks-comop",
+   "decision": "ACCEPTÉ + APPLIQUÉ : `dev-verifie` ne fait plus de `smoke-test.ps1` la gate unique (il est désormais chaîné par npm test) ; `export-ppt-verifie` n'escalade plus sur une régression corrigée depuis badedf1, dont la cause réelle était `apply-octo-branding.ps1`. Chiffre faux « 14 assertions » corrigé en 34 là où il était mesurable (ppt-designer.md, playbook).",
+   "categories": [
+    "interaction"
+   ],
+   "date": "2026-09-01",
+   "source": "diagnostic agent-supervisor du 2026-09-01 — traitement appliqué et vérifié (commits 873d836, e322ecd), run journalisé 2026-09-01T15:21:32+02:00"
+  },
+  {
+   "cible": "server-api-corps-json",
+   "decision": "ACCEPTÉ + APPLIQUÉ : `readJsonBody()` rend 400 sur un corps JSON malformé sans propager le message brut du parseur, sur les 2 routes concernées. 2 tests ajoutés, vus ROUGES (500 !== 400) avant correction.",
+   "categories": [
+    "autre"
+   ],
+   "date": "2026-09-01",
+   "source": "diagnostic agent-supervisor du 2026-09-01 — traitement appliqué et vérifié (commits 873d836, e322ecd), run journalisé 2026-09-01T15:21:32+02:00"
+  },
+  {
+   "cible": "state-transcripts-absents",
+   "decision": "DEJA RESOLU - verifie par execution le 2026-09-02, pas de correctif applique ici. .claude/supervision/state.json porte desormais mesure_incomplete = {transcripts_absents: 2, total_fichiers: 3, dernier_evenement: 2026-07-27T10:15:43.048Z}. .claude/orchestration/routing-hints.json (regenere 2026-09-02T11:29:51+02:00) porte mesure_non_fiable = true, qui marque explicitement les listes jamais_utilises (75 entrees) et en_sommeil (Explore, agent-orchestrator, agent-supervisor) comme non concluantes - c'est l'option \"marquer explicitement comme non concluantes\" de la proposition, deja mise en oeuvre et propagee depuis le canon du hub avant ce traitement. Aucun fichier de ce depot modifie pour ce finding ; .claude/supervision/scan_transcripts.py non touche (copie generee du canon).",
+   "categories": [
+    "verification-manquante"
+   ],
+   "date": "2026-09-02",
+   "source": "Mandat utilisateur 2026-09-02 (traitement des findings de l'onglet Arbitrer, R1 - rejoue de la verification avant d'agir) - correctif deja propage depuis le canon du hub VScode5, constate et non reproduit ici."
+  },
+  {
+   "cible": "increment-6-validation",
+   "decision": "REMIS A L'ARBITRAGE - aucun correctif applique. Etat re-verifie par execution le 2026-09-02 (un jour apres la mesure du diagnostic, pas 35) : comop-pptx-prototype/.roadmap/roadmap.json a toujours l'item 6 en status=current et l'item 7 en status=todo ; `git log --oneline -- comop-pptx-prototype/.roadmap/roadmap.json` montre badedf1 (2026-07-28) comme dernier commit sur ce fichier ; `git rev-list --count 9114ec9..HEAD -- comop-pptx-prototype` = 1, et ce commit (873d836) traite les 3 findings deja arbitres le 2026-09-01 (tests/server.js), aucune ligne produit relative a l'increment 6/7. L'arbitrage 'dispositif-supervision' du 2026-07-28 conditionne le passage a done a une ouverture reelle du deck par l'utilisateur : cette ouverture n'est tracee nulle part depuis. Rien n'a bouge : le finding reste valide tel quel. Sa proposition presente un vrai choix (R4, pas mecanique) : (A) poser a l'utilisateur la question fermee d'acceptance sur comop-pptx-prototype/output/<deck>.pptx (OK/KO) - suppose une interaction humaine reelle que cet agent ne peut pas produire lui-meme dans ce traitement ; (B) a defaut de reponse, introduire dans roadmap.json un status 'en-attente-validation' distinct de 'current' - cout technique nul verifie (`grep -ril roadmap` sur *.js/*.py du depot : aucun consommateur programmatique du champ status de roadmap.json, seuls des fichiers de donnees/doc le referencent), mais reste un choix de vocabulaire/schema qui engage la roadmap au-dela d'un correctif mecanique, et un statut invente sans le demander risquerait d'etre lu comme une validation implicite. Aucune option tranchee ici ; dossier remonte a l'utilisateur avec le detail ci-dessus.",
+   "categories": [
+    "autre"
+   ],
+   "date": "2026-09-02",
+   "source": "Mandat utilisateur 2026-09-02 (traitement des findings de l'onglet Arbitrer, R1 + R4) - re-verification de l'etat reel, choix remonte sans arbitrage tranche car il engage l'utilisateur (question d'acceptance) ou la roadmap (nouveau statut)."
   }
- ]
+ ],
+ "mesure_incomplete": {
+  "transcripts_absents": 2,
+  "total_fichiers": 3,
+  "dernier_evenement": "2026-07-27T10:15:43.048Z"
+ },
+ "mesure_non_fiable": true
 }

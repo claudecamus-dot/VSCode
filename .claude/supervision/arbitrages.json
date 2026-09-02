@@ -89,6 +89,24 @@
    ],
    "date": "2026-09-01",
    "source": "diagnostic agent-supervisor du 2026-09-01 — traitement appliqué et vérifié (commits 873d836, e322ecd), run journalisé 2026-09-01T15:21:32+02:00"
+  },
+  {
+   "cible": "state-transcripts-absents",
+   "decision": "DEJA RESOLU - verifie par execution le 2026-09-02, pas de correctif applique ici. .claude/supervision/state.json porte desormais mesure_incomplete = {transcripts_absents: 2, total_fichiers: 3, dernier_evenement: 2026-07-27T10:15:43.048Z}. .claude/orchestration/routing-hints.json (regenere 2026-09-02T11:29:51+02:00) porte mesure_non_fiable = true, qui marque explicitement les listes jamais_utilises (75 entrees) et en_sommeil (Explore, agent-orchestrator, agent-supervisor) comme non concluantes - c'est l'option \"marquer explicitement comme non concluantes\" de la proposition, deja mise en oeuvre et propagee depuis le canon du hub avant ce traitement. Aucun fichier de ce depot modifie pour ce finding ; .claude/supervision/scan_transcripts.py non touche (copie generee du canon).",
+   "categories": [
+    "verification-manquante"
+   ],
+   "date": "2026-09-02",
+   "source": "Mandat utilisateur 2026-09-02 (traitement des findings de l'onglet Arbitrer, R1 - rejoue de la verification avant d'agir) - correctif deja propage depuis le canon du hub VScode5, constate et non reproduit ici."
+  },
+  {
+   "cible": "increment-6-validation",
+   "decision": "REMIS A L'ARBITRAGE - aucun correctif applique. Etat re-verifie par execution le 2026-09-02 (un jour apres la mesure du diagnostic, pas 35) : comop-pptx-prototype/.roadmap/roadmap.json a toujours l'item 6 en status=current et l'item 7 en status=todo ; `git log --oneline -- comop-pptx-prototype/.roadmap/roadmap.json` montre badedf1 (2026-07-28) comme dernier commit sur ce fichier ; `git rev-list --count 9114ec9..HEAD -- comop-pptx-prototype` = 1, et ce commit (873d836) traite les 3 findings deja arbitres le 2026-09-01 (tests/server.js), aucune ligne produit relative a l'increment 6/7. L'arbitrage 'dispositif-supervision' du 2026-07-28 conditionne le passage a done a une ouverture reelle du deck par l'utilisateur : cette ouverture n'est tracee nulle part depuis. Rien n'a bouge : le finding reste valide tel quel. Sa proposition presente un vrai choix (R4, pas mecanique) : (A) poser a l'utilisateur la question fermee d'acceptance sur comop-pptx-prototype/output/<deck>.pptx (OK/KO) - suppose une interaction humaine reelle que cet agent ne peut pas produire lui-meme dans ce traitement ; (B) a defaut de reponse, introduire dans roadmap.json un status 'en-attente-validation' distinct de 'current' - cout technique nul verifie (`grep -ril roadmap` sur *.js/*.py du depot : aucun consommateur programmatique du champ status de roadmap.json, seuls des fichiers de donnees/doc le referencent), mais reste un choix de vocabulaire/schema qui engage la roadmap au-dela d'un correctif mecanique, et un statut invente sans le demander risquerait d'etre lu comme une validation implicite. Aucune option tranchee ici ; dossier remonte a l'utilisateur avec le detail ci-dessus.",
+   "categories": [
+    "autre"
+   ],
+   "date": "2026-09-02",
+   "source": "Mandat utilisateur 2026-09-02 (traitement des findings de l'onglet Arbitrer, R1 + R4) - re-verification de l'etat reel, choix remonte sans arbitrage tranche car il engage l'utilisateur (question d'acceptance) ou la roadmap (nouveau statut)."
   }
  ]
 }
