@@ -7,6 +7,8 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+. (Join-Path $PSScriptRoot 'pptx-xml-helpers.ps1')
+
 function Get-XmlBlock {
   param([string]$Xml, [string]$Tag)
   $pattern = "<a:$Tag[^>]*>.*?</a:$Tag>"
@@ -82,12 +84,6 @@ function Find-LogoCandidate {
   }
 }
 
-function New-TempDirectory {
-  $path = Join-Path ([System.IO.Path]::GetTempPath()) ("branding-extract-" + [System.Guid]::NewGuid().ToString("N"))
-  New-Item -ItemType Directory -Path $path | Out-Null
-  return $path
-}
-
 if (-not (Test-Path -LiteralPath $TemplatePath)) {
   throw "Template introuvable: $TemplatePath"
 }
@@ -100,7 +96,7 @@ if (-not $OutputPath) {
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
-$workDir = New-TempDirectory
+$workDir = New-TempDirectory -Prefix "branding-extract-"
 
 try {
   [System.IO.Compression.ZipFile]::ExtractToDirectory($TemplatePath, $workDir)

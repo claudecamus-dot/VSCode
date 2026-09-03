@@ -5,11 +5,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-function New-TempDirectory {
-  $path = Join-Path ([System.IO.Path]::GetTempPath()) ("comop-template-" + [System.Guid]::NewGuid().ToString("N"))
-  New-Item -ItemType Directory -Path $path | Out-Null
-  return $path
-}
+. (Join-Path $PSScriptRoot 'pptx-xml-helpers.ps1')
 
 function Replace-Text {
   param(
@@ -54,7 +50,7 @@ if (-not (Test-Path -LiteralPath $SourcePath)) {
 }
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
-$workDir = New-TempDirectory
+$workDir = New-TempDirectory -Prefix "comop-template-"
 
 try {
   [System.IO.Compression.ZipFile]::ExtractToDirectory($SourcePath, $workDir)

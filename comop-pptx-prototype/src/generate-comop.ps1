@@ -13,6 +13,8 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+. (Join-Path $PSScriptRoot 'pptx-xml-helpers.ps1')
+
 function ConvertTo-XmlText {
   param($Value)
   if ($null -eq $Value) { return $EmptyPlaceholderValue }
@@ -25,12 +27,6 @@ function ConvertTo-XmlText {
   return [System.Security.SecurityElement]::Escape($text)
 }
 
-function New-TempDirectory {
-  $path = Join-Path ([System.IO.Path]::GetTempPath()) ("comop-pptx-" + [System.Guid]::NewGuid().ToString("N"))
-  New-Item -ItemType Directory -Path $path | Out-Null
-  return $path
-}
-
 if (-not (Test-Path -LiteralPath $TemplatePath)) {
   throw "Template introuvable: $TemplatePath"
 }
@@ -41,7 +37,7 @@ if (-not (Test-Path -LiteralPath $DataPath)) {
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 $data = Get-Content -LiteralPath $DataPath -Raw -Encoding UTF8 | ConvertFrom-Json
-$workDir = New-TempDirectory
+$workDir = New-TempDirectory -Prefix "comop-pptx-"
 
 try {
   [System.IO.Compression.ZipFile]::ExtractToDirectory($TemplatePath, $workDir)

@@ -36,6 +36,29 @@ test("route rejette un nom de template sans extension .pptx (upload)", async t =
   assert.match(body.error, /invalide/i);
 });
 
+test("route rejette un fichier .pptx dont le contenu n'est pas une archive ZIP", async t => {
+  // Audit du 2026-09-02 (securite) : seul le NOM etait valide (extension
+  // .pptx) -- un fichier arbitraire portant cette extension etait accepte,
+  // ecrit durablement, et liste par GET /api/templates comme un template
+  // valide, sans jamais verifier le CONTENU avant cette route.
+  const server = await startServer();
+  t.after(() => server.stop());
+
+  const res = await request(server.baseUrl, "POST", "/api/templates", {
+    headers: { "x-template-name": "faux-pptx.pptx" },
+    body: Buffer.from("ceci n'est pas une archive zip, juste du texte")
+  });
+  const body = JSON.parse(res.text);
+
+  assert.equal(res.status, 400);
+  assert.match(body.error, /zip|ooxml/i);
+
+  const liste = await request(server.baseUrl, "GET", "/api/templates");
+  const templates = JSON.parse(liste.text).templates;
+  assert.ok(!templates.some(t => t.file === "faux-pptx.pptx"), (
+    "le faux template rejete ne doit pas avoir ete ecrit ni liste"));
+});
+
 test("route accepte un nom de template valide (zones) meme si le fichier n'existe pas encore -> 404, pas 500", async t => {
   const server = await startServer();
   t.after(() => server.stop());

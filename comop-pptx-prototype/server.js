@@ -18,6 +18,7 @@ const port = Number(process.env.PORT || 5177);
 const serverLog = path.join(outputDir, "server-runtime.log");
 const OUTPUT_TTL_MS = 24 * 60 * 60 * 1000; // 24h
 const TEMPLATE_UPLOAD_MAX_BYTES = 25 * 1024 * 1024; // 25 Mo (gabarit connu : 1.4 Mo)
+const POWERSHELL_TIMEOUT_MS = 60 * 1000; // un script bloque (zip pathologique...) ne doit pas pendre indefiniment
 
 const contentTypes = {
   ".html": "text/html; charset=utf-8",
@@ -116,9 +117,17 @@ function runPowerShell(args) {
     });
     let stdout = "";
     let stderr = "";
+    let regle = false;
+    const horsDelai = setTimeout(() => {
+      regle = true;
+      child.kill();
+      reject(new Error(`PowerShell script timed out after ${POWERSHELL_TIMEOUT_MS}ms`));
+    }, POWERSHELL_TIMEOUT_MS);
     child.stdout.on("data", data => { stdout += data.toString(); });
     child.stderr.on("data", data => { stderr += data.toString(); });
     child.on("close", code => {
+      if (regle) return; // deja rejete par le timeout, la requete HTTP a deja recu sa reponse
+      clearTimeout(horsDelai);
       if (code !== 0) {
         reject(new Error(stderr || stdout || `PowerShell exit ${code}`));
         return;
@@ -178,6 +187,19 @@ async function handleApi(req, res) {
       buffer = await readBinaryBody(req, TEMPLATE_UPLOAD_MAX_BYTES);
     } catch (error) {
       sendJson(res, 413, { error: error.message });
+      return;
+    }
+
+    // Audit du 2026-09-02 (securite) : rien ne validait que le contenu est une
+    // archive ZIP/OOXML avant ecriture durable et inscription dans la
+    // bibliotheque des templates -- un fichier arbitraire renomme en .pptx
+    // etait accepte tel quel, et n'echouait que plus tard, au moment d'une
+    // extraction ZIP dans une autre route. Signature ZIP locale ("PK\x03\x04"
+    // ou "PK\x05\x06" pour une archive vide) : verification en memoire, avant
+    // toute ecriture, qui ne depend d'aucun sous-processus PowerShell.
+    const SIGNATURE_ZIP = Buffer.from([0x50, 0x4b]); // "PK"
+    if (buffer.length < 4 || !buffer.subarray(0, 2).equals(SIGNATURE_ZIP)) {
+      sendJson(res, 400, { error: "Fichier invalide : ce n'est pas une archive ZIP/OOXML" });
       return;
     }
 
