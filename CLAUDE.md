@@ -35,6 +35,9 @@ Commandes réelles, depuis `comop-pptx-prototype/` :
 
 ## Vérifications avant commit (canal du prototype)
 
+Tout chiffre écrit ici (couverture, nombre de cas, dates) s'appuie sur la commande
+qui l'a produit — sinon marqué non mesuré.
+
 | Si le changement touche… | Alors… |
 | --- | --- |
 | `server.js` / le routage HTTP | `npm test` (node:test, 16 cas réels sur un serveur lancé — mesuré le 2026-09-01) |
