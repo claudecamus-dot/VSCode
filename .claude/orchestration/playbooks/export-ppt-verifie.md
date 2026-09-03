@@ -99,7 +99,7 @@ boucle nominale.
       "modele": "(session)",
       "contrat": {
         "type": "reel",
-        "critere": "export réel rendu en images et inspecté visuellement (valeurs alignées, panneaux ni vides ni étirés, pas de collision avec le chrome du template) — jamais retirée à l'instanciation. BOUCLE NOMINALE : rendu → liste de défauts → correction → re-rendu, ≤ 2 itérations au-delà du rendu initial puis escalade utilisateur — ces itérations ne se journalisent PAS en reprises."
+        "critere": "export réel rendu en images et inspecté visuellement (valeurs alignées, panneaux ni vides ni étirés, pas de collision avec le chrome du template) — jamais retirée à l'instanciation. BOUCLE NOMINALE : rendu → liste de défauts → correction → re-rendu, ≤ 2 itérations au-delà du rendu initial puis escalade utilisateur — ces itérations ne se journalisent PAS en reprises. GARDE-FOU groupe pivoté 180° (constat croisé VSCode3/VSCode4, 2026-09-03, deux templates OCTO distincts, même patrimoine de design) : un groupe de connecteurs pivoté à 180° dans un layout natif peut produire une diagonale parasite SOUS LIBREOFFICE SEULEMENT, absente en PowerPoint réel (COM) — rendre AUSSI en COM avant de corriger l'artwork d'un tel défaut, un défaut du seul pipeline de vérification n'est pas un défaut livré."
       },
       "checkpoint": false
     },
