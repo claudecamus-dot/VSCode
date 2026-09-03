@@ -8,7 +8,7 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-09-03T02:52:15+02:00 · **4 sessions** (transcripts) · **3** invocations de skills · **2** lancements de sous-agents.
+Dernier scan : 2026-09-03T09:14:40+02:00 · **4 sessions** (transcripts) · **3** invocations de skills · **2** lancements de sous-agents.
 
 ## Skills — usage réel
 
@@ -25,9 +25,9 @@ Dernier scan : 2026-09-03T02:52:15+02:00 · **4 sessions** (transcripts) · **3*
 
 ## Jamais utilisés
 
-**projet** — 2/7 jamais invoqués :
+**projet** — 5/13 jamais invoqués :
 
-`deck-design-review`, `revue-increment`
+`audit-technique`, `deck-design-review`, `restitution-deck-design`, `revue-increment`, `veille-agentic`
 
 **BMAD** — 71/71 jamais invoqués :
 
@@ -37,21 +37,21 @@ Dernier scan : 2026-09-03T02:52:15+02:00 · **4 sessions** (transcripts) · **3*
 
 </details>
 
-**global** — 2/5 jamais invoqués :
+**global** — 1/2 jamais invoqués :
 
-`restitution-deck-design`, `skill-creator`
+`skill-creator`
 
 ## Skills bibliothèque / référence
 
 _Consommés en lisant/exécutant leurs `scripts/`, ou via un sous-agent qui les suit (ex. `ppt-designer`, qui n'a pas l'outil Skill) — le compteur d'invocations ne peut structurellement pas les voir. `n=0` n'y vaut donc PAS « mort » : ne pas désinstaller sur ce seul signal (constat superviseur #2)._
 
-`deck-design-library`, `pptx-deck`, `pptx-framed-image`, `pptx-verify`, `roadmap-keeper`, `slide-text-polish`
+`deck-design-library`, `pdf-quality`, `pptx-deck`, `pptx-framed-image`, `pptx-verify`, `roadmap-keeper`, `slide-text-polish`
 
 ## TODO agents (constats automatiques)
 
 1. **Trier les skills BMAD** : 71 installés, 0 invocation à ce jour — décider lesquels garder, customiser ou désinstaller.
 2. **`revue-increment` jamais invoquée** malgré le rappel SessionStart à chaque session — revoir son déclencheur (l'ancrer au flux de commit ?) ou la simplifier.
-3. **Skills projet sans usage** : `deck-design-review` — vérifier pertinence et déclencheurs.
+3. **Skills projet sans usage** : `audit-technique`, `deck-design-review`, `restitution-deck-design`, `veille-agentic` — vérifier pertinence et déclencheurs.
 4. **Skills en sommeil (>30 j sans usage)** : `Explore`, `agent-orchestrator`, `agent-supervisor`.
 
 ## Arbitrages enregistrés

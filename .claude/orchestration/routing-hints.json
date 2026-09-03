@@ -1,7 +1,8 @@
 {
- "generated": "2026-09-03T02:52:15+02:00",
+ "generated": "2026-09-03T09:14:40+02:00",
  "eprouves": [],
  "jamais_utilises": [
+  "audit-technique",
   "bmad-advanced-elicitation",
   "bmad-agent-analyst",
   "bmad-agent-architect",
@@ -76,10 +77,12 @@
   "deck-design-review",
   "restitution-deck-design",
   "revue-increment",
-  "skill-creator"
+  "skill-creator",
+  "veille-agentic"
  ],
  "bibliotheque_reference": [
   "deck-design-library",
+  "pdf-quality",
   "pptx-deck",
   "pptx-framed-image",
   "pptx-verify",

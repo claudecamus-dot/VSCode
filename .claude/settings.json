@@ -17,6 +17,17 @@
             "statusMessage": "Verif reelle avant commit (code applicatif)..."
           }
         ]
+      },
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_salle_skills.py\"",
+            "timeout": 10,
+            "statusMessage": "Convocation de salle : skills BMAD nommees ?"
+          }
+        ]
       }
     ],
     "SessionStart": [
@@ -33,6 +44,16 @@
             "command": "py \"$CLAUDE_PROJECT_DIR/.claude/supervision/scan_transcripts.py\"",
             "timeout": 60,
             "statusMessage": "Supervision agents : scan incremental des transcripts..."
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/remind_veille_agentic.py\"",
+            "timeout": 10,
+            "statusMessage": "Cadence veille agentic..."
           }
         ]
       }
