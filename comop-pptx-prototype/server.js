@@ -326,7 +326,13 @@ async function handleApi(req, res) {
   if (req.method === "POST" && req.url === "/api/generate") {
     const body = await readJsonBody(req, res);
     if (body === INVALID_BODY) return;
-    const templatePath = safeTemplatePath(body.template);
+    let templatePath;
+    try {
+      templatePath = safeTemplatePath(body.template);
+    } catch (err) {
+      sendJson(res, 400, { error: err.message });
+      return;
+    }
     if (!fs.existsSync(templatePath)) {
       sendJson(res, 404, { error: "Template introuvable" });
       return;

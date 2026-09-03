@@ -47,6 +47,32 @@ test("POST /api/generate renvoie 404 quand le template reference n'existe pas", 
   assert.match(body.error, /introuvable/i);
 });
 
+test("POST /api/generate renvoie 400 (pas 500 ni un crash serveur) sur un nom de template invalide", async t => {
+  // Audit du 2026-09-02 : safeTemplatePath() leve une Error sur un nom sans
+  // extension .pptx ou tentant une traversee de repertoire, mais l'appel
+  // n'etait pas try/catche dans la route -- l'exception non rattrapee
+  // remontait au gestionnaire global (process.exit(1) sur uncaughtException),
+  // donc un nom de template invalide pouvait faire mourir tout le serveur au
+  // lieu de renvoyer une simple erreur 400.
+  const server = await startServer();
+  t.after(() => server.stop());
+
+  const payload = JSON.stringify({ template: "../../secret.txt", fields: {} });
+  const res = await request(server.baseUrl, "POST", "/api/generate", {
+    headers: { "Content-Type": "application/json", "Content-Length": Buffer.byteLength(payload) },
+    body: payload
+  });
+  const body = JSON.parse(res.text);
+
+  assert.equal(res.status, 400);
+  assert.match(body.error, /invalide/i);
+
+  // Le serveur doit rester UP apres cette requete : une deuxieme requete
+  // valide, normale, doit encore obtenir une reponse.
+  const suivant = await request(server.baseUrl, "GET", "/api/sample");
+  assert.equal(suivant.status, 200);
+});
+
 test("une route API inconnue renvoie 404 explicite", async t => {
   const server = await startServer();
   t.after(() => server.stop());

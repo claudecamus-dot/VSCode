@@ -8,6 +8,9 @@
   },
   "4b6a9022-ec14-4b77-89b0-cf93ac38c299.jsonl": {
    "offset": 244541
+  },
+  "9953dd5a-9405-4f3a-a7d8-85205b903a3a.jsonl": {
+   "offset": 170014
   }
  },
  "skills": {
@@ -29,7 +32,7 @@
    "last": "2026-07-27T10:15:43.048Z"
   }
  },
- "last_scan": "2026-09-02T15:14:50+02:00",
+ "last_scan": "2026-09-03T02:52:15+02:00",
  "detector_version": 2,
  "last_replay": "2026-07-27T12:19:20+02:00",
  "agents_connus": [
@@ -37,7 +40,7 @@
  ],
  "mesure_incomplete": {
   "transcripts_absents": 2,
-  "total_fichiers": 3,
+  "total_fichiers": 4,
   "dernier_evenement": "2026-07-27T10:15:43.048Z"
  }
 }
