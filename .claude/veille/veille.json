@@ -1,0 +1,118 @@
+{
+  "_genere": {
+    "source": "hub de supervision VScode5, .claude/veille/veille.json",
+    "projection": "entrees dont projets_concernes nomme VSCode",
+    "ne_pas_editer": "Fichier GENERE, en lecture seule : une correction faite ici sera ecrasee a la prochaine propagation. La veille s'ecrit AU HUB, ou elle est lue (section 3 du wiki) et arbitree. Une veille lancee depuis ce depot doit y etre remontee.",
+    "date": "2026-09-04"
+  },
+  "derniere_veille": "2026-09-03T00:00:00",
+  "entrees": [
+    {
+      "titre": "BMAD-METHOD — v7 ANNONCEE (uv standard) — PAS sortie : derniere release v6.10.0",
+      "url": "https://github.com/bmad-code-org/BMAD-METHOD/releases",
+      "type": "framework",
+      "projets_concernes": [
+        "VSCode",
+        "VSCode1",
+        "VSCode2",
+        "VSCode3",
+        "VSCode4",
+        "VScode5"
+      ],
+      "pertinence": "Suivi 2026-07-29 : la v7 est sortie — uv remplace python3 pour tous les scripts (l'installateur le vérifie), bmad-forge-idea nouvelle skill cœur, bmad-architecture réécrite en routage par intention (les shims DEPRECATED de la flotte — create-architecture, create-prd, edit-prd, validate-prd — sont RETIRÉS en v7). Les 6 projets sont en v6.10.0 avec statu quo « aucune customisation jusqu'à la v7 » (arbitrage skills-jamais-utilisees 2026-07-27) : la migration est désormais ARBITRABLE — décider quand migrer et si le tri des 46 skills se fait à cette occasion. [2026-07-30 : ENTREE CORRIGEE apres verification a la source (API GitHub releases/latest = v6.10.0 du 2026-07-03, aucun tag v7*, dist-tag npm latest = 6.10.0). La v7 N EST PAS SORTIE. Deux des trois arguments de cette entree etaient des faits de v6.9.0 DEJA installes (bmad-forge-idea, reecriture de bmad-architecture - le routage par intention est deja en production sur les 6 depots). Le troisieme (uv standard) est une annonce prospective publiee dans les notes de v6.9.0, sans date. Statut repasse de nouveau a etudie : il n y a rien a arbitrer tant que la version n existe pas. CE QUI EST REEL AUJOURD HUI : uv est absent du PATH de la machine alors que 22 fichiers du v6.10.0 installe invoquent deja uv run en forme primaire (repli python3 documente mais non garanti) - c est un manque actuel, pas un prerequis de migration future. Le volet uv est SOLDE le 2026-07-30 : uv 0.11.32 installe (winget), uv run verifie de bout en bout sur un vrai script du dispositif. Reste en veille uniquement la sortie eventuelle de la v7.] [2026-08-31 : SUIVI 32 jours apres. La v7 n'est toujours pas sortie, mais v6.11.0 EST sortie le 2026-08-09/10 (verifie double source : GitHub API releases/latest published_at=2026-08-10T17:49:41Z, et CHANGELOG.md brut du depot). Changements reels, avec breaking changes : bmad-quick-dev renomme bmad-build (ancien id conserve via shim de compatibilite), catalogue de skills core reduit de 14 a 8 (revue+editorial fusionnes dans bmad-review, trio recherche fusionne dans bmad-deep-recon, doc+contexte fusionnes dans bmad-project-context), config bascule en TOML en couches, et surtout : uv + Python 3.11+ devient une EXIGENCE DURE pour les skills rendus (plus un repli documente comme en v6.10.0) — les renderers s'arretent desormais sur config manquante. Ecart de mesure : seul le hub (VScode5) a confirme la presence d'uv (0.11.32, installe le 2026-07-30) ; le statut d'uv sur VSCode/VSCode1/VSCode2/VSCode3/VSCode4 n'est mesure nulle part (grep sur criteres-pratiques.md : aucune occurrence d'uv). Migrer vers v6.11.0 sans verifier uv sur les 5 autres depots casserait les skills rendues. Reste etudie : pas encore arbitre, mais l'arbitrage ne devrait plus attendre la v7 — v6.11.0 est deja un palier avec un prerequis dur non verifie sur 5/6 projets.] [ecarte le 2026-09-01 : Ecartee : le titre dit lui-meme ANNONCEE, PAS sortie, et la verification a la source du 2026-07-30 l'a confirme (API GitHub releases/latest = v6.10.0 du 2026-07-03, aucun tag v7*, dist-tag npm latest = 6.10.0). Deux des trois arguments de l'entree etaient des faits de v6.9.0 DEJA installes. Surtout : la seule decision qu'elle bloquait — le gel « aucune customisation jusqu'a la v7 » — a ete LEVEE le 2026-07-31 sans attendre la v7, au motif qu'un gel conditionne a un evenement qui ne vient pas est un gel definitif qui ne dit pas son nom. Il ne reste donc rien a arbitrer ici. La migration redeviendra une decision a part entiere quand la v7 sortira vraiment ; la cadence de veille la re-signalera.]",
+      "date": "2026-07-29",
+      "statut": "ecarte"
+    },
+    {
+      "titre": "Vérification exécutable fournie à l'agent (checks déterministes, Stop/pré-commit hooks)",
+      "url": "https://code.claude.com/docs/en/best-practices",
+      "type": "pratique",
+      "source_referentiel": "Anthropic — Claude Code docs / best practices (« Give Claude a way to verify its work »)",
+      "projets_concernes": [
+        "VSCode",
+        "VSCode3",
+        "VSCode4"
+      ],
+      "pertinence": "La doc élève la vérification exécutable au rang de pratique n°1 (test, build, screenshot, hook déterministe) ; la flotte l'a en skills mais le hook pré-commit de rappel n'existe que sur VSCode1/VSCode2. [adopte — chantier 1 (2026-07-24) : hook propagé à VSCode/VSCode3/VSCode4, règle mesurée au scan]",
+      "regle_proposee": "Critère scan (dimension revue de code) : hook de vérification pré-commit présent (warn_verif_before_commit ou équivalent) — pas seulement une skill de revue invocable.",
+      "action_corrective": "Propager warn_verif_before_commit à VSCode/VSCode3/VSCode4 (adapté au canal de chaque projet), via evolution-flotte.",
+      "date": "2026-07-24",
+      "statut": "adopte"
+    },
+    {
+      "titre": "CLAUDE.md concis, entretenu comme du code (pruning régulier)",
+      "url": "https://code.claude.com/docs/en/best-practices",
+      "type": "pratique",
+      "source_referentiel": "Anthropic — Claude Code docs / best practices (« Write an effective CLAUDE.md », « The over-specified CLAUDE.md »)",
+      "projets_concernes": [
+        "VSCode",
+        "VSCode1",
+        "VSCode2",
+        "VSCode3",
+        "VSCode4",
+        "VScode5"
+      ],
+      "pertinence": "Un CLAUDE.md trop long fait ignorer les règles importantes (« bloated CLAUDE.md files cause Claude to ignore your actual instructions ») ; la flotte mesure la PRÉSENCE des CLAUDE.md, jamais leur taille ni leur entretien. [adopte — chantier 2 (2026-07-24) : seuil 150 l au scan (testé), VSCode1 149 l / VSCode3 107 l]",
+      "regle_proposee": "Critère scan (dimension pratiques + rules) : taille du CLAUDE.md bornée (alerte au-delà d'un seuil, ex. 150 lignes) — mesurable à froid, 0 token.",
+      "action_corrective": "Passe de pruning des CLAUDE.md de la flotte : chaque ligne justifiée par « sa suppression causerait-elle une erreur ? », convertir en hook ce qui doit être garanti.",
+      "date": "2026-07-24",
+      "statut": "adopte"
+    },
+    {
+      "titre": "Revue adversariale en contexte frais avant de clore (reviewer ≠ implémenteur)",
+      "url": "https://code.claude.com/docs/en/best-practices",
+      "type": "pratique",
+      "source_referentiel": "Anthropic — Claude Code docs / best practices (« Add an adversarial review step ») + Writer/Reviewer pattern",
+      "projets_concernes": [
+        "VSCode",
+        "VSCode3",
+        "VSCode4",
+        "VScode5"
+      ],
+      "pertinence": "Un reviewer en contexte frais ne voit que le diff et les critères, pas le raisonnement qui a produit le code — il juge le résultat ; la flotte n'a cette étape systématique que dans le playbook dev-verifie. [adopte — chantier 3 (2026-07-24) : étape revue-fraiche ancrée dans evolution-flotte + export-ppt-verifie]",
+      "regle_proposee": "Règle playbooks : toute orchestration qui commit porte une étape terminale de revue en contexte frais (sous-agent sur le diff), tracée dans le plan du run.",
+      "action_corrective": "Ancrer l'étape « revue contexte frais » dans les playbooks evolution-flotte et export-ppt-verifie (dev-verifie l'a déjà), et le vérifier au diagnostic étage 2 (catégorie verification-manquante).",
+      "date": "2026-07-24",
+      "statut": "adopte"
+    },
+    {
+      "titre": "Gestion du contexte outillée : statusline de suivi, /compact cadré, sous-agents d'exploration",
+      "url": "https://code.claude.com/docs/en/costs",
+      "type": "pratique",
+      "source_referentiel": "Anthropic — Claude Code docs (reduce token usage, context window) + best practices (context is the fundamental constraint)",
+      "projets_concernes": [
+        "VSCode",
+        "VSCode2",
+        "VSCode4",
+        "VScode5"
+      ],
+      "pertinence": "La doc fait de la fenêtre de contexte LA ressource à gérer (statusline de suivi, /clear entre tâches, /compact ciblé, sous-agents pour l'exploration) ; la flotte a la discipline ÉCRITE sur VSCode1/VSCode3 seulement (sections optimisation tokens), rien de mesuré, et rtk (proxy token-optimisé) était déployé sans suivi de son gain réel [2026-07-29 : rtk retiré de toute la flotte sur décision utilisateur — le volet « mesurer le gain rtk » est caduc]. [2026-07-30 : ADOPTE. Regle entree au referentiel criteres-pratiques.md et OUTILLEE dans scan_projets.py (discipline_tokens : titre de section, pas occurrence du mot token - 5 tests). Mesure reelle a l adoption : 5/6 projets ont deja la section, le seul manque est le HUB lui-meme - la trouvaille annoncait VSCode1/VSCode3 seulement, c etait faux (R1). Action corrective restante, a arbitrer : ecrire la section dans le CLAUDE.md de VScode5.]",
+      "regle_proposee": "Critère scan (dimension pratiques + rules) : discipline tokens écrite dans le CLAUDE.md/conventions du projet (marqueurs /compact, sous-agent, lecture ciblée) — mesurable 0 token.",
+      "action_corrective": "Propager la section « optimisation tokens » (modèle VSCode1/VSCode3, adaptée au canal) aux CLAUDE.md de VSCode/VSCode2/VSCode4/VScode5.",
+      "date": "2026-07-24",
+      "statut": "adopte"
+    },
+    {
+      "titre": "Permission d'incertitude et relecture avant écriture — absentes d'audit-technique, qui force un niveau ok/moyen/critique par dimension sans option « non évalué », et n'a pas de passe de retrait des constats sans citation",
+      "url": "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations",
+      "type": "pratique",
+      "source_referentiel": "Anthropic — Claude Platform docs / Reduce hallucinations : « Allow Claude to say I don't know... This simple technique can drastically reduce false information » ; « Verify with citations... If it can't find a quote, it must retract the claim. »",
+      "projets_concernes": [
+        "VScode5"
+      ],
+      "pertinence": "DÉJÀ EN PLACE, à ne pas re-proposer : la pratique de grounding par citation est déjà câblée — `audit-technique/SKILL.md` l.20 : « Pas de constat sans localisation : chaque point porte fichier:ligne ou une fonction nommée. Un ressenti n'est pas un finding. » C'est le sens « hallucination de contenu » demandé par ce cycle, distinct du sens « non-convergence » traité par les deux entrées précédentes (le run bloqué de cette session est de la seconde sorte : il n'a produit AUCUN contenu, inventé ou non). Ce qui manque réellement, par contraste avec la doc : (1) les 3 niveaux imposés par dimension (ok/moyen/critique, l.26) n'ont pas d'option « non évalué » — un audit pressé par le temps (ou sur un dépôt en contention, cf. entrée précédente) est structurellement poussé à choisir un niveau plutôt qu'admettre l'incertitude, contrairement à « allow Claude to say I don't know » ; (2) aucune étape de relecture qui retire, avant l'écriture du JSON, un constat resté sans `fichier:ligne` — la règle existe au moment de rédiger, pas en vérification a posteriori (« if it can't find a quote, it must retract the claim »). [ADOPTE 2026-09-03 : regle_proposee et action_corrective appliquees (voir arbitrages.json)] [ÉLARGI 2026-09-04, ordre direct utilisateur (« déploie en urgence le mécanisme anti-hallucination sur tous les projets ») : la « permission d'incertitude » ne vivait que dans audit-technique/SKILL.md (hub-only). R1 a trouvé le même principe sous forme dégradée dans les CLAUDE.md flotte — la règle de preuve « tout chiffre s'appuie sur la commande qui l'a produit » y existe partout mais SANS l'échappatoire « sinon marqué non mesuré » que porte déjà VSCode et le hub (R6), sur 4 des 5 projets (VSCode1/2/3/4). Ajoutée, mot pour mot, aux 4 — voir arbitrages.json cible veille:permission-incertitude-relecture.]",
+      "projets_concernes_regle_preuve": [
+        "VSCode",
+        "VSCode1",
+        "VSCode2",
+        "VSCode3",
+        "VSCode4",
+        "VScode5"
+      ],
+      "regle_proposee": "Étendre le format `.claude/audits/<projet>.json` avec un niveau `non_evalue` par dimension (distinct de `ok`, réservé à une dimension non couverte faute de temps/accès) — mesurable à froid par grep sur les audits existants une fois adopté.",
+      "action_corrective": "Proposer dans audit-technique/SKILL.md : ajouter `non_evalue` à la liste des niveaux (§ Règles) et une étape 3bis « relecture : tout finding sans fichier:ligne est retiré avant l'étape 4 » entre Qualifier et Écrire.",
+      "date": "2026-09-03",
+      "statut": "adopte"
+    }
+  ]
+}

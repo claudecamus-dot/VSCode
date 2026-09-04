@@ -1,2 +1,21 @@
 {"ts": "2026-07-23T21:13:12+02:00", "session_id": "245999fc-e850-43ac-92e9-6e3cd1ca0e06", "tool": "Agent", "skill": null, "subagent_type": "Explore", "description": "Diff VSCode vs VSCode3 agent/skill/playbook structure"}
 {"ts": "2026-07-27T12:15:47+02:00", "session_id": "e7f9152c-e8b4-4035-9d28-79aaea5821aa", "tool": "Agent", "skill": null, "subagent_type": "Explore", "description": "Cause racine rÃ©gression PPTX"}
+{"ts": "2026-09-04T14:16:38+02:00", "session_id": "c0c29a01-771b-4f86-8037-9d21d7537777", "tool": "Skill", "skill": "agent-orchestrator", "subagent_type": null, "description": null}
+{"ts": "2026-09-04T14:21:33+02:00", "session_id": "c0c29a01-771b-4f86-8037-9d21d7537777", "tool": "Agent", "skill": null, "subagent_type": "veille-agentic", "description": "Lancer la veille agentic (cadence 3j)"}
+{"ts": "2026-09-04T14:21:41+02:00", "session_id": "c0c29a01-771b-4f86-8037-9d21d7537777", "tool": "Skill", "skill": "veille-agentic", "subagent_type": null, "description": null}
+{"ts": "2026-09-04T14:34:46+02:00", "session_id": "c0c29a01-771b-4f86-8037-9d21d7537777", "tool": "Skill", "skill": "bmad-party-mode", "subagent_type": null, "description": null}
+{"ts": "2026-09-04T14:39:20+02:00", "session_id": "c0c29a01-771b-4f86-8037-9d21d7537777", "tool": "Agent", "skill": null, "subagent_type": "(defaut)", "description": "Atelier-idées — Cadreur, tour 1"}
+{"ts": "2026-09-04T14:39:32+02:00", "session_id": "c0c29a01-771b-4f86-8037-9d21d7537777", "tool": "Agent", "skill": null, "subagent_type": "(defaut)", "description": "Atelier-idées — Portevoix, tour 1"}
+{"ts": "2026-09-04T14:39:45+02:00", "session_id": "c0c29a01-771b-4f86-8037-9d21d7537777", "tool": "Agent", "skill": null, "subagent_type": "(defaut)", "description": "Atelier-idées — Wildcard, tour 1"}
+{"ts": "2026-09-04T14:39:56+02:00", "session_id": "c0c29a01-771b-4f86-8037-9d21d7537777", "tool": "Agent", "skill": null, "subagent_type": "(defaut)", "description": "Atelier-idées — Splinter, tour 1"}
+{"ts": "2026-09-04T14:40:56+02:00", "session_id": "c0c29a01-771b-4f86-8037-9d21d7537777", "tool": "Agent", "skill": null, "subagent_type": "(defaut)", "description": "Atelier-idées — Cadreur, tour 2 (confrontation)"}
+{"ts": "2026-09-04T14:41:13+02:00", "session_id": "c0c29a01-771b-4f86-8037-9d21d7537777", "tool": "Agent", "skill": null, "subagent_type": "(defaut)", "description": "Atelier-idées — Portevoix, tour 2 (confrontation)"}
+{"ts": "2026-09-04T14:41:26+02:00", "session_id": "c0c29a01-771b-4f86-8037-9d21d7537777", "tool": "Agent", "skill": null, "subagent_type": "(defaut)", "description": "Atelier-idées — Wildcard, tour 2 (confrontation)"}
+{"ts": "2026-09-04T14:41:37+02:00", "session_id": "c0c29a01-771b-4f86-8037-9d21d7537777", "tool": "Agent", "skill": null, "subagent_type": "(defaut)", "description": "Atelier-idées — Splinter, tour 2 (confrontation)"}
+{"ts": "2026-09-04T14:52:20+02:00", "session_id": "c0c29a01-771b-4f86-8037-9d21d7537777", "tool": "Skill", "skill": "bmad-forge-idea", "subagent_type": null, "description": null}
+{"ts": "2026-09-04T17:22:34+02:00", "session_id": "44ba00c8-c74a-4179-a9da-1235c6140fcf", "tool": "Skill", "skill": "agent-orchestrator", "subagent_type": null, "description": null}
+{"ts": "2026-09-04T17:26:33+02:00", "session_id": "44ba00c8-c74a-4179-a9da-1235c6140fcf", "tool": "Skill", "skill": "bmad-forge-idea", "subagent_type": null, "description": null}
+{"ts": "2026-09-04T18:46:56+02:00", "session_id": "44ba00c8-c74a-4179-a9da-1235c6140fcf", "tool": "Agent", "skill": null, "subagent_type": "agent-supervisor", "description": "Diagnostic étage 2 périmé"}
+{"ts": "2026-09-04T18:47:01+02:00", "session_id": "44ba00c8-c74a-4179-a9da-1235c6140fcf", "tool": "Skill", "skill": "agent-supervisor", "subagent_type": null, "description": null}
+{"ts": "2026-09-04T18:47:11+02:00", "session_id": "44ba00c8-c74a-4179-a9da-1235c6140fcf", "tool": "Skill", "skill": "bmad-spec", "subagent_type": null, "description": null}
+{"ts": "2026-09-04T19:52:34+02:00", "session_id": "44ba00c8-c74a-4179-a9da-1235c6140fcf", "tool": "Agent", "skill": null, "subagent_type": "general-purpose", "description": "Findings hub-canon (evolution-flotte)"}

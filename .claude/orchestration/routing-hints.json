@@ -1,8 +1,10 @@
 {
- "generated": "2026-09-03T09:38:22+02:00",
- "eprouves": [],
+ "generated": "2026-09-04T20:49:08+02:00",
+ "eprouves": [
+  "(defaut)",
+  "agent-orchestrator"
+ ],
  "jamais_utilises": [
-  "audit-technique",
   "bmad-advanced-elicitation",
   "bmad-agent-analyst",
   "bmad-agent-architect",
@@ -41,13 +43,11 @@
   "bmad-editorial-review-prose",
   "bmad-editorial-review-structure",
   "bmad-eval-runner",
-  "bmad-forge-idea",
   "bmad-generate-project-context",
   "bmad-help",
   "bmad-index-docs",
   "bmad-market-research",
   "bmad-module-builder",
-  "bmad-party-mode",
   "bmad-prd",
   "bmad-prfaq",
   "bmad-product-brief",
@@ -57,7 +57,6 @@
   "bmad-review-adversarial-general",
   "bmad-review-edge-case-hunter",
   "bmad-shard-doc",
-  "bmad-spec",
   "bmad-sprint-planning",
   "bmad-sprint-status",
   "bmad-tea",
@@ -77,8 +76,7 @@
   "deck-design-review",
   "restitution-deck-design",
   "revue-increment",
-  "skill-creator",
-  "veille-agentic"
+  "skill-creator"
  ],
  "bibliotheque_reference": [
   "deck-design-library",
@@ -89,11 +87,10 @@
   "roadmap-keeper",
   "slide-text-polish"
  ],
- "en_sommeil": [
-  "Explore",
-  "agent-orchestrator",
-  "agent-supervisor"
+ "hub_only": [
+  "audit-technique"
  ],
+ "en_sommeil": [],
  "verifications_oubliees": [
   "revue-increment jamais invoquee malgre le rappel SessionStart -> l'inserer d'office en etape terminale des plans de dev"
  ],
@@ -103,9 +100,10 @@
    "succes": 0,
    "echecs": 0,
    "reprises": 0,
-   "en_cours": 0,
+   "en_cours": 1,
    "en_attente_validation": 0,
-   "partiels": 2
+   "partiels": 2,
+   "runs_fortes_reprises": 0
   }
  },
  "agents": {
@@ -116,16 +114,18 @@
    "reprises": 0,
    "en_cours": 0,
    "en_attente_validation": 0,
-   "partiels": 1
+   "partiels": 1,
+   "runs_fortes_reprises": 0
   },
   "(session)": {
    "n": 0,
    "succes": 0,
    "echecs": 0,
    "reprises": 0,
-   "en_cours": 0,
-   "en_attente_validation": 0,
-   "partiels": 11
+   "en_cours": 2,
+   "en_attente_validation": 8,
+   "partiels": 11,
+   "runs_fortes_reprises": 0
   },
   "revue-increment": {
    "n": 0,
@@ -134,7 +134,68 @@
    "reprises": 0,
    "en_cours": 0,
    "en_attente_validation": 0,
-   "partiels": 2
+   "partiels": 2,
+   "runs_fortes_reprises": 0
+  },
+  "veille-agentic": {
+   "n": 0,
+   "succes": 0,
+   "echecs": 0,
+   "reprises": 0,
+   "en_cours": 0,
+   "en_attente_validation": 1,
+   "partiels": 0,
+   "runs_fortes_reprises": 0
+  },
+  "atelier-idees (bmad-party-mode subagent)": {
+   "n": 0,
+   "succes": 0,
+   "echecs": 0,
+   "reprises": 0,
+   "en_cours": 0,
+   "en_attente_validation": 2,
+   "partiels": 0,
+   "runs_fortes_reprises": 0
+  },
+  "bmad-forge-idea (inline)": {
+   "n": 0,
+   "succes": 0,
+   "echecs": 0,
+   "reprises": 0,
+   "en_cours": 0,
+   "en_attente_validation": 1,
+   "partiels": 0,
+   "runs_fortes_reprises": 0
+  },
+  "agent-supervisor": {
+   "n": 0,
+   "succes": 0,
+   "echecs": 0,
+   "reprises": 0,
+   "en_cours": 0,
+   "en_attente_validation": 1,
+   "partiels": 0,
+   "runs_fortes_reprises": 0
+  },
+  "bmad-spec (inline)": {
+   "n": 0,
+   "succes": 0,
+   "echecs": 0,
+   "reprises": 0,
+   "en_cours": 0,
+   "en_attente_validation": 1,
+   "partiels": 0,
+   "runs_fortes_reprises": 0
+  },
+  "general-purpose": {
+   "n": 0,
+   "succes": 0,
+   "echecs": 0,
+   "reprises": 0,
+   "en_cours": 1,
+   "en_attente_validation": 0,
+   "partiels": 0,
+   "runs_fortes_reprises": 0
   }
  },
  "prudence": [],
@@ -248,12 +309,40 @@
    ],
    "date": "2026-09-02",
    "source": "Mandat utilisateur 2026-09-02 (traitement des findings de l'onglet Arbitrer, R1 + R4) - re-verification de l'etat reel, choix remonte sans arbitrage tranche car il engage l'utilisateur (question d'acceptance) ou la roadmap (nouveau statut)."
+  },
+  {
+   "cible": "increment-6-validation",
+   "decision": "ANNULE (pas A, pas B) : l'utilisateur tranche par un troisieme choix, ni ouvrir le deck pour valider (option A) ni introduire un statut roadmap dedie (option B) - il annule purement l'increment 6. comop-pptx-prototype/.roadmap/roadmap.json item 6 passe status=\"annule\" avec la raison tracee (blocage de 35 jours = defaut de PROCESSUS, question de validation jamais posee, pas defaut de produit - constat de la table ronde atelier-idees du meme jour). L'utilisateur demande en meme temps de \"repartir de zero en challengeant tout\" : ce n'est plus un correctif ponctuel sur increment 6, c'est une refonte de cadrage produit qui redefinira la suite du plan (items 7-8 restent \"todo\" mais seront vraisemblablement redefinis). Aucune ligne de code touchee - seul roadmap.json est modifie, sur mandat direct et non ambigu (\"on annule l'increment 6\").",
+   "categories": [
+    "autre"
+   ],
+   "date": "2026-09-04",
+   "source": "demande utilisateur directe 2026-09-04, suite au document de decision de la table ronde atelier-idees (« on annule l'increment 6. je voudrais que l'on reparte de zero en challengeant tout »)"
+  },
+  {
+   "cible": "revue-increment",
+   "decision": "ACCEPTE + APPLIQUE (option B, 'les deux : A propose pas impose' choisi par l'utilisateur) : retire le rappel automatique SessionStart (remind_revue_increment.py) du hook local (settings.json) et la skill de warn_verif_before_commit.json (verif_skill) - 0 invocation sur 43 jours malgre 4 declencheurs deja en place, un cinquieme rappel ne convertira pas. npm test + la verification reelle du playbook export-ppt-verifie assurent deja cet office. La skill reste au catalogue (annotee), invocable a la demande. Commit 027b30c. Option A (log_run.py --solde exige une note 'revue:' des qu'un run touche du code applicatif) ecrite comme proposition OPT-IN dans le canon du hub VScode5 (sur le modele existant de dod_enabled/_DEFAULT_DOD_ENABLED de warn_verif_before_commit.py, deja opt-in par defaut) plutot qu'imposee a toute la flotte - a activer projet par projet.",
+   "categories": [
+    "verification-manquante"
+   ],
+   "date": "2026-09-04",
+   "source": "diagnostic agent-supervisor 2026-09-04 (sujets transmis par vscode5), arbitrage utilisateur 'lance tout' puis choix explicite sur le risque flotte du finding 1"
+  },
+  {
+   "cible": "skills-projet-sans-usage",
+   "decision": "ACCEPTE + APPLIQUE (partiel, volet local) : deck-design-review etait orpheline de tout playbook alors que son propre SKILL.md prescrit d'etre une etape de export-ppt-verifie - cablee comme etape obligatoire des que le changement touche le template/branding COMOP, distincte de restitution-deck-design (generique, deja en place). Commit 027b30c. Les deux autres volets du finding (audit-technique = bucket hub-only manquant dans le scan canon ; restitution-deck-design = differe au bmad-spec de la refonte COMOP, aucune action ici) sont respectivement delegues au canon du hub (agent evolution-flotte) et sans action requise maintenant.",
+   "categories": [
+    "agent-mort"
+   ],
+   "date": "2026-09-04",
+   "source": "diagnostic agent-supervisor 2026-09-04 (sujets transmis par vscode5), arbitrage utilisateur 'lance tout'"
   }
  ],
  "mesure_incomplete": {
   "transcripts_absents": 2,
-  "total_fichiers": 4,
-  "dernier_evenement": "2026-07-27T10:15:43.048Z"
+  "total_fichiers": 6,
+  "dernier_evenement": "2026-09-04T17:52:16.590Z",
+  "journal_usage_muet": false
  },
  "mesure_non_fiable": true
 }
