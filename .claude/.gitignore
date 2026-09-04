@@ -5,3 +5,8 @@ supervision/jobs.jsonl
 supervision/vues.jsonl
 supervision/scan_incidents.jsonl
 supervision/state.json
+
+# Snapshots pris par l'installeur avant de reecrire settings.json
+# (reliquat mesure 2026-09-04 : deux backups non references par aucun
+# script du depot, orphelins d'une synchro hub)
+settings.json.*.avant-installation
