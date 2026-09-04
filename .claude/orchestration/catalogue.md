@@ -19,7 +19,7 @@ encore de recul d'usage dans **ce** projet — les statuts viendront de
 
 | Skill | Usage | Statut |
 | --- | --- | --- |
-| `revue-increment` | Definition-of-done : fin d'incrément, avant commit (rappelée par le hook SessionStart) | Préexistante au déploiement |
+| `revue-increment` | Definition-of-done : fin d'incrément, avant commit | Préexistante — retiré du rappel SessionStart le 2026-09-04 (0 invocation en 43 j malgré 4 déclencheurs déjà en place, finding `revue-increment` du diagnostic ; `npm test` + vérification réelle en jeu de fait) |
 | `deck-design-library` | Choisir la FORME d'une slide depuis son intention (22 patterns OCTO) — à lire AVANT de dessiner | Déployée 2026-07-23 |
 | `pptx-framed-image` | Image épousant la forme exacte d'un cadre de template (« ici mettre une Photo ») | Déployée 2026-07-23 |
 | `slide-text-polish` | Lint qualité rédactionnelle des slides (slide_lint) | Déployée 2026-07-23 |

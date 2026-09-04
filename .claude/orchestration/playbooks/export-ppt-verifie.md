@@ -4,8 +4,12 @@ Chaîne de génération PPT : produire ou faire évoluer un deck, enrichir si pe
 (cadres photo via `pptx-framed-image`, qualité rédactionnelle via `slide-text-polish`),
 puis **toujours** vérifier au rendu réel avec `pptx-verify` — un .pptx qui se génère sans
 erreur peut ne pas s'ouvrir/rendre correctement dans PowerPoint.
-`restitution-deck-design` fournit la review checklist design (hiérarchie, rythme
-d'espacement, couleur=sens, alignement, cohérence de composant).
+`restitution-deck-design` fournit la review checklist design générique (hiérarchie, rythme
+d'espacement, couleur=sens, alignement, cohérence de composant). `deck-design-review`,
+elle, est propre à CE projet : elle régénère le vrai .pptx COMOP, l'ouvre réellement dans
+PowerPoint (COM) et passe chaque slide contre SON contrat de contenu (indicateurs agiles,
+roadmap/décisions, focus incidentologie) — obligatoire dès que le changement touche le
+template ou le branding, pas seulement le contenu des slides.
 
 **Canal de génération propre à CE projet** : le générateur COMOP Node.js/PowerShell
 (`comop-pptx-prototype/` — `node server.js` ou
@@ -17,8 +21,8 @@ verification-rendu.
 Importé depuis les projets VSCode2/VScode5, où cette colonne vertébrale génération →
 vérification rendu était la pratique effective. Ici, **statut `importe` — à confirmer sur
 les premiers runs de ce projet**. `pptx-deck`, `pptx-verify`, `restitution-deck-design`
-sont des skills globales ; `pptx-framed-image`, `slide-text-polish` et
-`deck-design-library` sont installées dans ce projet.
+sont des skills globales ; `pptx-framed-image`, `slide-text-polish`, `deck-design-library`
+et `deck-design-review` sont installées dans ce projet.
 
 **Étape `generation` instanciée via le sous-agent `ppt-designer`** (`.claude/agents/ppt-designer.md`,
 porté depuis VSCode3 le 2026-07-23, adapté au canal COMOP réel de ce projet) plutôt qu'en
@@ -111,6 +115,17 @@ boucle nominale.
       "contrat": {
         "type": "reel",
         "critere": "OBLIGATOIRE dès que le diff touche un layout / composant / couleur de slide (seuil objectif, pas un auto-jugement). Lancer restitution-deck-design et appliquer sa review checklist au rendu réel, corriger, puis retour à verification-rendu."
+      },
+      "checkpoint": false
+    },
+    {
+      "id": "deck-design-review",
+      "agent": "deck-design-review",
+      "mode": "cascade",
+      "modele": "(session)",
+      "contrat": {
+        "type": "reel",
+        "critere": "OBLIGATOIRE des que le changement touche le template ou le branding COMOP (pas seulement le contenu des slides). Regenerer le vrai .pptx, l'ouvrir reellement dans PowerPoint (COM), passer chaque slide contre son contrat de contenu (indicateurs agiles, roadmap/decisions, focus incidentologie) avant de declarer le changement termine."
       },
       "checkpoint": false
     },
