@@ -6,6 +6,8 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+. (Join-Path $PSScriptRoot 'pptx-xml-helpers.ps1')
+
 if (-not (Test-Path -LiteralPath $BrandingConfig)) {
   throw "Fichier de configuration branding introuvable: $BrandingConfig"
 }
@@ -161,8 +163,7 @@ if (-not (Test-Path -LiteralPath $TemplatePath)) {
   throw "Template introuvable: $TemplatePath"
 }
 
-$workDir = Join-Path ([System.IO.Path]::GetTempPath()) ("octo-branding-" + [System.Guid]::NewGuid().ToString("N"))
-New-Item -ItemType Directory -Path $workDir | Out-Null
+$workDir = New-TempDirectory -Prefix "octo-branding-"
 
 try {
   [System.IO.Compression.ZipFile]::ExtractToDirectory($TemplatePath, $workDir)
