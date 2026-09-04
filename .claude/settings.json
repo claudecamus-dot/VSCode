@@ -90,6 +90,12 @@
       "Read(./.env)",
       "Read(./secrets/**)",
       "Read(./config/credentials.json)"
+    ],
+    "allow": [
+      "Bash(node -c *)",
+      "Bash(npm test*)",
+      "Bash(py -m pytest *)",
+      "Bash(py -m py_compile *)"
     ]
   }
 }
