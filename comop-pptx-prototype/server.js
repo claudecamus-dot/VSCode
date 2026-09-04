@@ -400,7 +400,15 @@ function serveStatic(req, res) {
       "Content-Type": contentTypes[".pptx"],
       "Content-Disposition": `attachment; filename="${path.basename(filePath)}"`
     });
-    fs.createReadStream(filePath).pipe(res);
+    const fileStream = fs.createReadStream(filePath);
+    fileStream.on("error", (error) => {
+      if (!res.headersSent) {
+        sendJson(res, 500, { error: error.message });
+        return;
+      }
+      res.destroy();
+    });
+    fileStream.pipe(res);
     return;
   }
 
