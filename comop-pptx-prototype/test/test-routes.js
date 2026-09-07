@@ -121,3 +121,95 @@ test("POST /remove-shape renvoie 400 sur un corps JSON malforme", async t => {
   assert.equal(res.status, 400);
   assert.equal(body.error, "Corps JSON invalide");
 });
+
+// Audit du 2026-09-02 (robustesse) : un corps JSON valant litteralement `null`
+// passe JSON.parse() sans erreur ; la lecture immediate de `body.xxx` levait un
+// TypeError non rattrape -> 500 avec le message brut de Node (fuite d'un detail
+// d'implementation), au lieu d'un 400 propre comme pour un corps malforme.
+test("POST /api/generate renvoie 400 (pas 500) sur un corps JSON valant litteralement null", async t => {
+  const server = await startServer();
+  t.after(() => server.stop());
+
+  const payload = "null";
+  const res = await request(server.baseUrl, "POST", "/api/generate", {
+    headers: { "Content-Type": "application/json", "Content-Length": Buffer.byteLength(payload) },
+    body: payload
+  });
+  const body = JSON.parse(res.text);
+
+  assert.equal(res.status, 400);
+  assert.match(body.error, /objet attendu/i);
+});
+
+test("POST /remove-shape renvoie 400 (pas 500) sur un corps JSON valant litteralement null", async t => {
+  const server = await startServer();
+  t.after(() => server.stop());
+
+  fs.writeFileSync(path.join(server.dataRoot, "templates", "bidon2.pptx"), "pptx factice");
+
+  const payload = "null";
+  const res = await request(server.baseUrl, "POST", "/api/templates/bidon2.pptx/remove-shape", {
+    headers: { "Content-Type": "application/json", "Content-Length": Buffer.byteLength(payload) },
+    body: payload
+  });
+  const body = JSON.parse(res.text);
+
+  assert.equal(res.status, 400);
+  assert.match(body.error, /objet attendu/i);
+
+  // Le serveur doit rester UP apres cette requete.
+  const suivant = await request(server.baseUrl, "GET", "/api/sample");
+  assert.equal(suivant.status, 200);
+});
+
+test("POST /api/generate renvoie 400 (pas 500) sur un corps JSON qui est un tableau, pas un objet", async t => {
+  const server = await startServer();
+  t.after(() => server.stop());
+
+  const payload = "[1,2,3]";
+  const res = await request(server.baseUrl, "POST", "/api/generate", {
+    headers: { "Content-Type": "application/json", "Content-Length": Buffer.byteLength(payload) },
+    body: payload
+  });
+  const body = JSON.parse(res.text);
+
+  assert.equal(res.status, 400);
+  assert.match(body.error, /objet attendu/i);
+});
+
+// Audit du 2026-09-02 (robustesse) : le plafond de corps JSON (1 Mo) rejetait
+// bien un depassement AU NIVEAU DE LA VALEUR, mais le rejet n'etait rattrape
+// nulle part -> 500 avec le message brut, alors qu'un upload binaire trop
+// volumineux (readBinaryBody) renvoie 413 depuis longtemps. Plafond harmonise :
+// meme code HTTP (413) des deux cotes.
+test("POST /api/generate renvoie 413 (pas 500) sur un corps JSON de plus de 1 Mo", async t => {
+  const server = await startServer();
+  t.after(() => server.stop());
+
+  const payload = JSON.stringify({ template: "x.pptx", fields: { blob: "a".repeat(2 * 1024 * 1024) } });
+  const res = await request(server.baseUrl, "POST", "/api/generate", {
+    headers: { "Content-Type": "application/json", "Content-Length": Buffer.byteLength(payload) },
+    body: payload
+  });
+  const body = JSON.parse(res.text);
+
+  assert.equal(res.status, 413);
+  assert.match(body.error, /volumineux/i);
+});
+
+// Audit du 2026-09-02 (robustesse) : decodeURIComponent() sur une sequence %
+// malformee dans l'URL n'etait rattrape nulle part -> 500 avec le message brut
+// du decodeur, au lieu d'un 400 (faute d'appelant, pas panne serveur).
+test("une URI malformee dans le chemin d'un template renvoie 400 (pas 500)", async t => {
+  const server = await startServer();
+  t.after(() => server.stop());
+
+  const res = await request(server.baseUrl, "DELETE", "/api/templates/%E0%A4");
+  const body = JSON.parse(res.text);
+
+  assert.equal(res.status, 400);
+  assert.match(body.error, /invalide/i);
+
+  const suivant = await request(server.baseUrl, "GET", "/api/sample");
+  assert.equal(suivant.status, 200);
+});

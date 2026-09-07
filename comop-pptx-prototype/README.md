@@ -55,12 +55,13 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\src\apply-octo-brandin
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\src\smoke-test.ps1
 ```
 
-14 assertions end-to-end : existence des fichiers, generation complete, aucun placeholder residuel.
+34 assertions end-to-end : existence des fichiers, generation complete, aucun placeholder residuel
+(mesure le 2026-09-07 par execution reelle du script, cf. ligne finale "Resultat : 34 OK, 0 echoues").
 
 ```bash
 npm install
-npm test        # routage HTTP du serveur (node:test, 10 cas reels sur un serveur lance)
-npm run coverage # idem + mesure de couverture (c8) sur server.js
+npm test        # 32 cas node:test (mesure 2026-09-07), dont 27 sur un vrai server.js lance en HTTP
+npm run coverage # idem + mesure de couverture (c8) sur server.js -- 77 % lignes (mesure 2026-09-07)
 ```
 
 Les tests `npm test` lancent un vrai `server.js` (process separe, `COMOP_DATA_ROOT` pointe

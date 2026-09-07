@@ -91,3 +91,43 @@ test("la gate refuse un paquet dont une partie XML est cassee", { skip: !powersh
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
+
+// Audit securite du 2026-09-02 : footer_text/font/color_map de config/branding.json
+// etaient inseres tels quels dans des here-strings OOXML (apply-octo-branding.ps1),
+// sans echappement. Preuve qu'AVANT le correctif ce test aurait echoue : un "<"/">"
+// brut ouvre une vraie balise dans <a:t>...</a:t>, un guillemet dans le nom de
+// police casse hors de l'attribut typeface="..." -- les deux corrompent le XML
+// produit, detecte ici par le meme oracle que la regression du 2026-06-08
+// (verify-pptx-integrity.ps1, qui parse reellement chaque partie XML).
+test("un branding hostile (font/footer_text avec caracteres XML) ne corrompt pas le paquet", { skip: !powershell }, () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "comop-branding-hostile-"));
+  const copie = path.join(dir, "cible.pptx");
+  const brandingConfig = path.join(dir, "branding.json");
+  try {
+    fs.copyFileSync(template, copie);
+    const original = JSON.parse(
+      fs.readFileSync(path.join(projectRoot, "config", "branding.json"), "utf8")
+    );
+    const hostile = {
+      ...original,
+      footer_text: 'Rapport <p:sp><a:t>evil</a:t></p:sp> & "test" {year}',
+      font: 'Outfit"/></a:rPr><a:rPr b="1'
+    };
+    fs.writeFileSync(brandingConfig, JSON.stringify(hostile), "utf8");
+
+    const res = runPowerShell(brandingScript, [
+      "-TemplatePath", copie,
+      "-OutputPath", copie,
+      "-BrandingConfig", brandingConfig
+    ]);
+    assert.equal(res.status, 0, `branding hostile en echec inattendu :\n${res.stderr}`);
+
+    const { code, report } = verify(copie);
+    assert.deepEqual(report.xmlInvalides, [],
+      "un footer_text/font hostile a produit du XML non parsable (injection non echappee)");
+    assert.equal(report.status, "valide");
+    assert.equal(code, 0);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});

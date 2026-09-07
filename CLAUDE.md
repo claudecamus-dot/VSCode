@@ -40,11 +40,11 @@ qui l'a produit — sinon marqué non mesuré.
 
 | Si le changement touche… | Alors… |
 | --- | --- |
-| `server.js` / le routage HTTP | `npm test` (node:test, 16 cas réels sur un serveur lancé — mesuré le 2026-09-01) |
+| `server.js` / le routage HTTP | `npm test` (node:test, 27 cas réels sur un serveur lancé — mesuré le 2026-09-07) |
 | La génération PPTX / les scripts `src/*.ps1` | `npm test` suffit : `test/test-smoke.js` y rejoue `.\src\smoke-test.ps1` (34 assertions end-to-end : fichiers, génération complète, aucun placeholder résiduel, mutation OOXML). Lancer le `.ps1` seul ne sert qu'à isoler un échec |
-| Un template `.pptx` | `.\src\validate-template.ps1` sur le template modifié |
+| Un template `.pptx` | `.\src\validate-template.ps1` sur le template modifié — cette même vérification est désormais aussi rejouée par le serveur à l'upload (`POST /api/templates`), qui remonte `validation.status`/`missing` au client |
 
-`npm run coverage` (c8) mesure `server.js` (~50 % lignes ; le reste est couvert par
+`npm run coverage` (c8) mesure `server.js` (77 % lignes, mesuré le 2026-09-07 ; le reste est couvert par
 `smoke-test.ps1`). Les tests montent un vrai serveur en process séparé avec
 `COMOP_DATA_ROOT` sur un dossier temporaire — ils ne touchent jamais
 `templates/`, `output/` ni `data/`. Garde-fou en place : `safeTemplatePath`

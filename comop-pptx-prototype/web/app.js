@@ -49,7 +49,11 @@ templateUpload.addEventListener("change", async () => {
     }
     await loadTemplates();
     templateSelect.value = result.file;
-    setStatus(`Template "${result.name}" ajoute a la bibliotheque.`, "success");
+    let message = `Template "${result.name}" ajoute a la bibliotheque.`;
+    if (result.validation && result.validation.status === "incomplet") {
+      message += ` Attention : placeholder(s) manquant(s) - ${result.validation.missing.join(", ")}.`;
+    }
+    setStatus(message, "success");
   } catch (err) {
     setStatus(err.message || "Erreur reseau.", "error");
   } finally {

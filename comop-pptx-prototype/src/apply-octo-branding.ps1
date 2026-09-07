@@ -26,13 +26,22 @@ if (-not $branding.font) {
 }
 
 $colorMap = @{}
-$branding.color_map.PSObject.Properties | ForEach-Object { $colorMap[$_.Name] = $_.Value }
+# Audit securite 2026-09-02 : les valeurs de color_map sont du texte libre de
+# config/branding.json (pas de pattern hex impose comme pour primary/accent_color)
+# et finissent inserees dans un attribut XML (val="..."). Protect-XmlAttribute
+# neutralise un guillemet qui casserait hors de l'attribut.
+$branding.color_map.PSObject.Properties | ForEach-Object { $colorMap[$_.Name] = Protect-XmlAttribute $_.Value }
 
 $year = if ($branding.copyright_year) { $branding.copyright_year } else { (Get-Date).Year }
-$footerText = $branding.footer_text -replace '\{year\}', $year
+# footerText est insere en CONTENU d'element XML (<a:t>...</a:t>), font en
+# valeur d'ATTRIBUT (typeface="...") -- deux contextes d'echappement differents,
+# cf. Protect-XmlText / Protect-XmlAttribute dans pptx-xml-helpers.ps1. Sans ca,
+# un footer_text/font contenant "<", ">" ou un guillemet produit un PPTX
+# corrompu (voire une injection d'element XML) -- verifie par test-pptx-integrity.js.
+$footerText = Protect-XmlText ($branding.footer_text -replace '\{year\}', $year)
 $primaryColor = $branding.primary_color
 $accentColor  = $branding.accent_color
-$font         = $branding.font
+$font         = Protect-XmlAttribute $branding.font
 
 function Invoke-Branding {
   param([string]$xml)

@@ -18,7 +18,18 @@ const port = Number(process.env.PORT || 5177);
 const serverLog = path.join(outputDir, "server-runtime.log");
 const OUTPUT_TTL_MS = 24 * 60 * 60 * 1000; // 24h
 const TEMPLATE_UPLOAD_MAX_BYTES = 25 * 1024 * 1024; // 25 Mo (gabarit connu : 1.4 Mo)
+// Audit du 2026-09-02 (robustesse) : ce plafond vivait comme un nombre magique
+// (1_000_000) a l'interieur de readRequestBody, mesure en LONGUEUR DE STRING
+// (donc en caracteres, pas en octets -- imprecis des qu'un corps contient du
+// multi-octet UTF-8) alors que TEMPLATE_UPLOAD_MAX_BYTES est nomme et mesure en
+// octets exacts sur les Buffer recus. Nomme et aligne sur la meme precision.
+const MAX_JSON_BODY_BYTES = 1 * 1024 * 1024; // 1 Mo (formulaire COMOP : quelques Ko en usage normal)
 const POWERSHELL_TIMEOUT_MS = 60 * 1000; // un script bloque (zip pathologique...) ne doit pas pendre indefiniment
+// Audit du 2026-09-02 (securite) : seule extension jamais servie par /output/ --
+// avant ce garde, n'importe quel fichier depose dans outputDir (server-runtime.log,
+// qui contient des traces d'erreur completes avec chemins internes) etait
+// telecharge tel quel des que son nom passait path.basename().
+const ALLOWED_OUTPUT_EXTENSIONS = new Set([".pptx"]);
 
 const contentTypes = {
   ".html": "text/html; charset=utf-8",
@@ -35,6 +46,28 @@ function send(res, status, body, type = "application/json; charset=utf-8") {
 
 function sendJson(res, status, body) {
   send(res, status, JSON.stringify(body), "application/json; charset=utf-8");
+}
+
+// Audit du 2026-09-02 (securite) : plusieurs routes renvoyaient
+// `{ error: error.message }` en 500 -- le message brut d'une exception (stack
+// PowerShell, chemin disque, detail de parseur) part alors au client. Le detail
+// va au log serveur (deja consulte via server-runtime.log), le client ne voit
+// qu'un message generique qui ne fuite rien d'exploitable.
+function sendInternalError(res, error) {
+  log(`ERROR ${error && error.stack ? error.stack : (error && error.message) || error}`);
+  sendJson(res, 500, { error: "Erreur interne du serveur" });
+}
+
+// Audit du 2026-09-02 (robustesse) : decodeURIComponent() leve une URIError sur
+// une sequence % malformee ; aucun appelant ne l'attrapait, l'exception non geree
+// remontait au try global du createServer -> 500 avec le message brut du
+// decodeur. Une URI malformee est une faute d'appelant (400), pas une panne serveur.
+function safeDecodeURIComponent(value) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return null;
+  }
 }
 
 function log(message) {
@@ -59,15 +92,28 @@ function purgeOldOutputs() {
 
 function readRequestBody(req) {
   return new Promise((resolve, reject) => {
-    let body = "";
+    const chunks = [];
+    let length = 0;
+    let rejected = false;
     req.on("data", chunk => {
-      body += chunk;
-      if (body.length > 1_000_000) {
+      // Trouve en ecrivant le test du plafond harmonise (2026-09-02) : un
+      // req.destroy() immediat ici coupe la connexion AVANT que le 413 ne
+      // parte -- le client voit un ECONNRESET au lieu d'une reponse propre.
+      // On arrete d'accumuler (mémoire bornee) mais on laisse le flux se
+      // vider normalement jusqu'a 'end', pour que la reponse d'erreur soit
+      // reellement livree.
+      if (rejected) return;
+      length += chunk.length;
+      if (length > MAX_JSON_BODY_BYTES) {
+        rejected = true;
         reject(new Error("Payload trop volumineux"));
-        req.destroy();
+        return;
       }
+      chunks.push(chunk);
     });
-    req.on("end", () => resolve(body));
+    req.on("end", () => {
+      if (!rejected) resolve(Buffer.concat(chunks).toString("utf8"));
+    });
     req.on("error", reject);
   });
 }
@@ -82,29 +128,56 @@ function readRequestBody(req) {
 const INVALID_BODY = Symbol("corps JSON invalide");
 
 async function readJsonBody(req, res) {
-  const raw = await readRequestBody(req);
+  let raw;
   try {
-    return JSON.parse(raw);
+    raw = await readRequestBody(req);
+  } catch (error) {
+    // Avant ce correctif : le rejet de readRequestBody (payload trop
+    // volumineux) n'etait rattrape nulle part ici, remontait au try global du
+    // createServer -> 500 avec le message brut, alors que le meme depassement
+    // sur un upload binaire (readBinaryBody) renvoie 413 depuis longtemps.
+    // Plafond asymetrique en TRAITEMENT de l'erreur, pas seulement en valeur.
+    sendJson(res, 413, { error: error.message });
+    return INVALID_BODY;
+  }
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
   } catch {
     sendJson(res, 400, { error: "Corps JSON invalide" });
     return INVALID_BODY;
   }
+  // Audit du 2026-09-02 (robustesse) : un corps JSON valant litteralement
+  // `null` (ou un tableau/nombre/chaine) passe JSON.parse sans erreur ; les
+  // routes qui lisent ensuite `body.xxx` plantaient avec un TypeError non
+  // rattrape -> 500 avec le message brut de Node au lieu d'un 400 propre.
+  if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
+    sendJson(res, 400, { error: "Corps JSON invalide (objet attendu)" });
+    return INVALID_BODY;
+  }
+  return parsed;
 }
 
 function readBinaryBody(req, maxBytes) {
   return new Promise((resolve, reject) => {
     const chunks = [];
     let length = 0;
+    let rejected = false;
     req.on("data", chunk => {
+      // Meme correctif que readRequestBody : ne pas detruire la requete tout
+      // de suite, pour laisser le 413 partir au lieu d'un ECONNRESET.
+      if (rejected) return;
       length += chunk.length;
       if (length > maxBytes) {
+        rejected = true;
         reject(new Error("Fichier trop volumineux"));
-        req.destroy();
         return;
       }
       chunks.push(chunk);
     });
-    req.on("end", () => resolve(Buffer.concat(chunks)));
+    req.on("end", () => {
+      if (!rejected) resolve(Buffer.concat(chunks));
+    });
     req.on("error", reject);
   });
 }
@@ -169,7 +242,11 @@ async function handleApi(req, res) {
   }
 
   if (req.method === "POST" && req.url === "/api/templates") {
-    const rawName = decodeURIComponent(req.headers["x-template-name"] || "");
+    const rawName = safeDecodeURIComponent(req.headers["x-template-name"] || "");
+    if (rawName === null) {
+      sendJson(res, 400, { error: "En-tete x-template-name : URI invalide" });
+      return;
+    }
     let templatePath;
     try {
       templatePath = safeTemplatePath(rawName);
@@ -224,13 +301,36 @@ async function handleApi(req, res) {
       log(`EXTRACTION ${error.message}`);
     }
 
+    // Risque technique (audit) : validate-template.ps1 existait sans jamais
+    // etre appele -- aucun point du serveur ne verifiait qu'un template
+    // uploade porte les placeholders attendus (src/placeholders.json). Point
+    // d'appel logique : au moment de l'upload, en meme temps que l'extraction
+    // de charte, pour remonter tout de suite un template incomplet plutot que
+    // de le decouvrir a la generation.
+    let validation = null;
+    try {
+      const validationRaw = await runPowerShell([
+        "-File",
+        path.join(root, "src", "validate-template.ps1"),
+        "-TemplatePath",
+        templatePath
+      ]);
+      validation = JSON.parse(validationRaw);
+    } catch (error) {
+      log(`VALIDATION ${error.message}`);
+    }
+
     const fileName = path.basename(templatePath);
-    sendJson(res, 200, { ...readTemplateMeta(fileName), branding });
+    sendJson(res, 200, { ...readTemplateMeta(fileName), branding, validation });
     return;
   }
 
   if (req.method === "DELETE" && req.url.startsWith("/api/templates/")) {
-    const rawName = decodeURIComponent(req.url.slice("/api/templates/".length));
+    const rawName = safeDecodeURIComponent(req.url.slice("/api/templates/".length));
+    if (rawName === null) {
+      sendJson(res, 400, { error: "URI invalide" });
+      return;
+    }
     let templatePath;
     try {
       templatePath = safeTemplatePath(rawName);
@@ -254,7 +354,11 @@ async function handleApi(req, res) {
   }
 
   if (req.method === "GET" && req.url.startsWith("/api/templates/") && req.url.endsWith("/zones")) {
-    const rawName = decodeURIComponent(req.url.slice("/api/templates/".length, -"/zones".length));
+    const rawName = safeDecodeURIComponent(req.url.slice("/api/templates/".length, -"/zones".length));
+    if (rawName === null) {
+      sendJson(res, 400, { error: "URI invalide" });
+      return;
+    }
     let templatePath;
     try {
       templatePath = safeTemplatePath(rawName);
@@ -277,7 +381,7 @@ async function handleApi(req, res) {
           templatePath
         ]);
       } catch (error) {
-        sendJson(res, 500, { error: error.message });
+        sendInternalError(res, error);
         return;
       }
     }
@@ -294,7 +398,11 @@ async function handleApi(req, res) {
   }
 
   if (req.method === "POST" && req.url.startsWith("/api/templates/") && req.url.endsWith("/remove-shape")) {
-    const rawName = decodeURIComponent(req.url.slice("/api/templates/".length, -"/remove-shape".length));
+    const rawName = safeDecodeURIComponent(req.url.slice("/api/templates/".length, -"/remove-shape".length));
+    if (rawName === null) {
+      sendJson(res, 400, { error: "URI invalide" });
+      return;
+    }
     let templatePath;
     try {
       templatePath = safeTemplatePath(rawName);
@@ -328,7 +436,7 @@ async function handleApi(req, res) {
         shapeName
       ]);
     } catch (error) {
-      sendJson(res, 500, { error: error.message });
+      sendInternalError(res, error);
       return;
     }
 
@@ -367,16 +475,21 @@ async function handleApi(req, res) {
     const outputPath = path.join(outputDir, `comop-${id}.pptx`);
     fs.writeFileSync(dataPath, JSON.stringify(body.fields || {}, null, 2), "utf8");
 
-    await runPowerShell([
-      "-File",
-      path.join(root, "src", "generate-comop.ps1"),
-      "-TemplatePath",
-      templatePath,
-      "-DataPath",
-      dataPath,
-      "-OutputPath",
-      outputPath
-    ]);
+    try {
+      await runPowerShell([
+        "-File",
+        path.join(root, "src", "generate-comop.ps1"),
+        "-TemplatePath",
+        templatePath,
+        "-DataPath",
+        dataPath,
+        "-OutputPath",
+        outputPath
+      ]);
+    } catch (error) {
+      sendInternalError(res, error);
+      return;
+    }
 
     sendJson(res, 200, {
       fileName: path.basename(outputPath),
@@ -389,10 +502,23 @@ async function handleApi(req, res) {
 }
 
 function serveStatic(req, res) {
-  const url = req.url === "/" ? "/index.html" : decodeURIComponent(req.url);
+  let url;
+  if (req.url === "/") {
+    url = "/index.html";
+  } else {
+    url = safeDecodeURIComponent(req.url);
+    if (url === null) {
+      send(res, 400, "URI invalide", "text/plain; charset=utf-8");
+      return;
+    }
+  }
   if (url.startsWith("/output/")) {
     const filePath = path.join(outputDir, path.basename(url));
-    if (!fs.existsSync(filePath)) {
+    // Audit du 2026-09-02 (securite) : /output/ servait n'importe quel fichier
+    // present dans outputDir (server-runtime.log, artefacts intermediaires...),
+    // sans liste blanche d'extension -- seule limite reelle etait
+    // path.basename() contre la traversee de repertoire.
+    if (!ALLOWED_OUTPUT_EXTENSIONS.has(path.extname(filePath).toLowerCase()) || !fs.existsSync(filePath)) {
       send(res, 404, "Fichier introuvable", "text/plain; charset=utf-8");
       return;
     }
@@ -403,7 +529,7 @@ function serveStatic(req, res) {
     const fileStream = fs.createReadStream(filePath);
     fileStream.on("error", (error) => {
       if (!res.headersSent) {
-        sendJson(res, 500, { error: error.message });
+        sendInternalError(res, error);
         return;
       }
       res.destroy();
@@ -421,16 +547,37 @@ function serveStatic(req, res) {
   send(res, 200, fs.readFileSync(filePath), contentTypes[ext] || "application/octet-stream");
 }
 
+// Audit du 2026-09-02 (securite) : le serveur n'ecoute que sur 127.0.0.1, mais
+// ca ne protege pas contre le "DNS rebinding" / une page web ouverte ailleurs
+// dans le navigateur qui appelle fetch("http://127.0.0.1:5177/api/...") --
+// n'importe quel onglet du poste peut alors piloter l'API locale. On verifie
+// que le Host vise bien ce serveur et, si un Origin est fourni (requete
+// navigateur), qu'il correspond au meme host:port. Une requete d'outil (curl,
+// test) n'envoie pas d'Origin : elle n'est pas bloquee par ce controle.
+function isRequestAllowed(req) {
+  const allowedHosts = new Set([`127.0.0.1:${port}`, `localhost:${port}`]);
+  if (!allowedHosts.has(req.headers.host || "")) return false;
+  const origin = req.headers.origin;
+  if (origin) {
+    const allowedOrigins = new Set([`http://127.0.0.1:${port}`, `http://localhost:${port}`]);
+    if (!allowedOrigins.has(origin)) return false;
+  }
+  return true;
+}
+
 const server = http.createServer(async (req, res) => {
   try {
+    if (!isRequestAllowed(req)) {
+      sendJson(res, 403, { error: "Origine non autorisee" });
+      return;
+    }
     if (req.url.startsWith("/api/")) {
       await handleApi(req, res);
       return;
     }
     serveStatic(req, res);
   } catch (error) {
-    log(`ERROR ${error.stack || error.message}`);
-    sendJson(res, 500, { error: error.message });
+    sendInternalError(res, error);
   }
 });
 

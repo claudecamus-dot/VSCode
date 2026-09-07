@@ -30,3 +30,34 @@ function New-TempDirectory {
   New-Item -ItemType Directory -Path $path | Out-Null
   return $path
 }
+
+function Protect-XmlAttribute {
+  # Echappement complet pour une valeur inseree dans un attribut XML (ex:
+  # typeface="$value"). Audit securite 2026-09-02 (branding) : $font/$to
+  # viennent de config/branding.json (texte libre, non valide par un pattern
+  # comme le sont primary_color/accent_color) et etaient inseres tels quels
+  # dans des here-strings OOXML -- un guillemet dans la valeur casse hors de
+  # l'attribut et injecte de l'XML arbitraire (verifie : "/></a:rPr><a:rPr
+  # b="1 corrompt le paquet, cf. test-pptx-integrity.js). Aucun usage legitime
+  # de balise/guillemet brut dans un nom de police ou une couleur : echappement
+  # total, sans exception.
+  param([string]$Text)
+  if ($null -eq $Text) { return $Text }
+  return $Text -replace '&', '&amp;' -replace '<', '&lt;' -replace '>', '&gt;' -replace '"', '&quot;'
+}
+
+function Protect-XmlText {
+  # Echappement pour du texte insere en CONTENU d'element XML (ex:
+  # <a:t>$value</a:t>) qui tolere les references d'entites XML DEJA valides --
+  # config/branding.json ships footer_text avec "&#xA9;" (c) pre-echappe a la
+  # main : un echappement naif de tous les "&" transformerait cette entite
+  # fonctionnelle en "&amp;#xA9;" (le symbole disparait, remplace par du texte
+  # litteral). Seul un "&" qui n'entame PAS une reference existante est
+  # echappe ; "<" et ">" bruts n'ont eux aucun usage legitime en texte OOXML
+  # (ils ouvriraient une vraie balise) et sont toujours echappes.
+  param([string]$Text)
+  if ($null -eq $Text) { return $Text }
+  $escaped = [regex]::Replace($Text, '&(?!(#[0-9]+;|#x[0-9A-Fa-f]+;|amp;|lt;|gt;|quot;|apos;))', '&amp;')
+  $escaped = $escaped -replace '<', '&lt;' -replace '>', '&gt;'
+  return $escaped
+}
