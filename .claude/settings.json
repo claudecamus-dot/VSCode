@@ -52,6 +52,18 @@
         ]
       }
     ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/gate_stop_npm_test_comop.py\"",
+            "timeout": 200,
+            "statusMessage": "Gate COMOP : npm test si server.js/src/*.ps1/templates touches..."
+          }
+        ]
+      }
+    ],
     "UserPromptSubmit": [
       {
         "hooks": [
