@@ -22,7 +22,7 @@ une skill BMAD de revue, pas pour improviser une relecture à la main.
 | Cas limites et conditions frontières non traités | `bmad-review-edge-case-hunter` |
 | Qualité rédactionnelle d'un texte | `bmad-editorial-review-prose` |
 | Structure, organisation, coupes d'un document | `bmad-editorial-review-structure` |
-| Relecture guidée d'un changement (checkpoint humain) | `bmad-checkpoint-preview` |
+| Relecture guidée d'un changement (checkpoint humain) | `bmad-walkthrough` |
 | Approfondir/critiquer une sortie récente (socratique, prémortem, red team) | `bmad-advanced-elicitation` |
 | Rétrospective de fin d'epic ou d'incrément | `bmad-retrospective` |
 | Choisir la bonne skill BMAD quand le besoin est flou | `bmad-help` |

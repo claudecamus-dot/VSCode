@@ -527,7 +527,7 @@ recette = [
 
 [[workflow.party_groups]]
 id = "mise-en-service"
-skills_bmad = ["bmad-checkpoint-preview"]
+skills_bmad = ["bmad-walkthrough"]
 name = "Mise en service"
 members = ["deploiement", "connecteurs", "doc", "qualite"]
 scene = "Passer de « ça tourne chez moi » à « ça tourne ailleurs » : environnements, secrets, connexions externes, doc d'exploitation. Inviter le relais du projet visé."
