@@ -134,6 +134,24 @@
       ],
       "date": "2026-09-04",
       "source": "diagnostic agent-supervisor 2026-09-04 (sujets transmis par vscode5), arbitrage utilisateur 'lance tout'"
+    },
+    {
+      "cible": "veille:stop-hook-gate-npm-test-comop",
+      "decision": "ACCEPTE + APPLIQUE (arbitrage utilisateur \"adopte 1 et 2\") : .claude/hooks/gate_stop_npm_test_comop.py cree, cable en hook Stop dans .claude/settings.json. Si le repertoire de travail COMOP (server.js, src/*.ps1, templates/*.pptx) porte des modifications non committees, rejoue npm test et bloque (exit 2) en cas d echec ; gere stop_hook_active pour eviter une boucle. Verifie par pipe-test reel (stop_hook_active, etat propre, edition sentinelle sur server.js -> npm test reellement lance 19/19 vert, sentinelle revertee). Objectif : que la regression payee le 2026-06-08/07-28 (theme1.xml corrompu, invisible 35 jours faute de gate bloquant) ne puisse plus se reproduire en silence.",
+      "categories": [
+        "verification-manquante"
+      ],
+      "date": "2026-09-07",
+      "source": "veille-agentic 2026-09-07 (relancee en arriere-plan pendant un etat des lieux), arbitrage utilisateur explicite \"adopte 1 et 2\""
+    },
+    {
+      "cible": "veille:bmad-migration-6.12.0",
+      "decision": "ACCEPTE + APPLIQUE (arbitrage utilisateur \"adopte 1 et 2\" puis \"Migrer VSCode maintenant\" sur la question de coordination hub posee avant execution) : npx bmad-method install --directory . --action quick-update --yes execute reellement. core 6.10.0->6.12.0, bmad-method 6.10.0->6.12.0, tea 1.19.1->1.24.0, cis 0.2.1->0.3.2, bmb inchange. 4 fichiers _bmad/custom/*.toml preserves. 21 shims deprecies retenus (bmad-quick-dev, bmad-checkpoint-preview compris) : aucune casse. 3 references locales non-canon mises a jour vers bmad-walkthrough (.claude/agents/bmad-revue.md, .claude/skills/revue-increment/SKILL.md, _bmad/custom/bmad-party-mode.toml). .claude/skills/agent-orchestrator/SKILL.md (table de routage 46 skills, section 2 quinquies) est hub-canon : PAS touche localement (ecrase a la prochaine synchro sync_dispositif.py) - signale au hub VScode5 pour coordination fleet-wide de la migration et de la table. Verifie : 0 fichier comop-pptx-prototype touche (git status), manifest.yaml relu = 6.12.0, TOML edite revalide (tomllib).",
+      "categories": [
+        "agent-mort"
+      ],
+      "date": "2026-09-07",
+      "source": "veille-agentic 2026-09-07 (relancee en arriere-plan pendant un etat des lieux), arbitrage utilisateur explicite \"adopte 1 et 2\" + clarification \"Migrer VSCode maintenant\""
     }
   ]
 }
