@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-04T20:49:08+02:00",
+ "generated": "2026-09-07T12:40:18+02:00",
  "eprouves": [
   "(defaut)",
   "agent-orchestrator"
@@ -11,12 +11,12 @@
   "bmad-agent-builder",
   "bmad-agent-dev",
   "bmad-agent-pm",
-  "bmad-agent-tech-writer",
   "bmad-agent-ux-designer",
   "bmad-architecture",
   "bmad-bmb-setup",
   "bmad-brainstorming",
-  "bmad-check-implementation-readiness",
+  "bmad-build",
+  "bmad-build-auto",
   "bmad-checkpoint-preview",
   "bmad-cis-agent-brainstorming-coach",
   "bmad-cis-agent-creative-problem-solver",
@@ -35,28 +35,31 @@
   "bmad-create-prd",
   "bmad-create-story",
   "bmad-customize",
+  "bmad-deep-recon",
   "bmad-dev-auto",
   "bmad-dev-story",
   "bmad-document-project",
   "bmad-domain-research",
   "bmad-edit-prd",
+  "bmad-editorial-review",
   "bmad-editorial-review-prose",
   "bmad-editorial-review-structure",
   "bmad-eval-runner",
   "bmad-generate-project-context",
   "bmad-help",
-  "bmad-index-docs",
   "bmad-market-research",
   "bmad-module-builder",
   "bmad-prd",
   "bmad-prfaq",
   "bmad-product-brief",
+  "bmad-project-context",
   "bmad-qa-generate-e2e-tests",
   "bmad-quick-dev",
   "bmad-retrospective",
+  "bmad-review",
   "bmad-review-adversarial-general",
   "bmad-review-edge-case-hunter",
-  "bmad-shard-doc",
+  "bmad-review-verification-gap",
   "bmad-sprint-planning",
   "bmad-sprint-status",
   "bmad-tea",
@@ -72,6 +75,7 @@
   "bmad-testarch-trace",
   "bmad-ux",
   "bmad-validate-prd",
+  "bmad-walkthrough",
   "bmad-workflow-builder",
   "deck-design-review",
   "restitution-deck-design",
@@ -96,11 +100,11 @@
  ],
  "playbooks": {
   "evolution-flotte": {
-   "n": 0,
-   "succes": 0,
+   "n": 1,
+   "succes": 1,
    "echecs": 0,
    "reprises": 0,
-   "en_cours": 1,
+   "en_cours": 0,
    "en_attente_validation": 0,
    "partiels": 2,
    "runs_fortes_reprises": 0
@@ -118,11 +122,11 @@
    "runs_fortes_reprises": 0
   },
   "(session)": {
-   "n": 0,
-   "succes": 0,
+   "n": 2,
+   "succes": 2,
    "echecs": 0,
    "reprises": 0,
-   "en_cours": 2,
+   "en_cours": 0,
    "en_attente_validation": 8,
    "partiels": 11,
    "runs_fortes_reprises": 0
@@ -144,7 +148,7 @@
    "reprises": 0,
    "en_cours": 0,
    "en_attente_validation": 1,
-   "partiels": 0,
+   "partiels": 1,
    "runs_fortes_reprises": 0
   },
   "atelier-idees (bmad-party-mode subagent)": {
@@ -188,19 +192,29 @@
    "runs_fortes_reprises": 0
   },
   "general-purpose": {
-   "n": 0,
-   "succes": 0,
+   "n": 1,
+   "succes": 1,
    "echecs": 0,
    "reprises": 0,
-   "en_cours": 1,
+   "en_cours": 0,
    "en_attente_validation": 0,
    "partiels": 0,
+   "runs_fortes_reprises": 0
+  },
+  "session": {
+   "n": 6,
+   "succes": 6,
+   "echecs": 0,
+   "reprises": 0,
+   "en_cours": 0,
+   "en_attente_validation": 1,
+   "partiels": 3,
    "runs_fortes_reprises": 0
   }
  },
  "prudence": [],
  "trous_catalogue": [],
- "diagnostic_a_jour": true,
+ "diagnostic_a_jour": false,
  "arbitrages": [
   {
    "cible": "ppt-designer",
@@ -336,12 +350,30 @@
    ],
    "date": "2026-09-04",
    "source": "diagnostic agent-supervisor 2026-09-04 (sujets transmis par vscode5), arbitrage utilisateur 'lance tout'"
+  },
+  {
+   "cible": "veille:stop-hook-gate-npm-test-comop",
+   "decision": "ACCEPTE + APPLIQUE (arbitrage utilisateur \"adopte 1 et 2\") : .claude/hooks/gate_stop_npm_test_comop.py cree, cable en hook Stop dans .claude/settings.json. Si le repertoire de travail COMOP (server.js, src/*.ps1, templates/*.pptx) porte des modifications non committees, rejoue npm test et bloque (exit 2) en cas d echec ; gere stop_hook_active pour eviter une boucle. Verifie par pipe-test reel (stop_hook_active, etat propre, edition sentinelle sur server.js -> npm test reellement lance 19/19 vert, sentinelle revertee). Objectif : que la regression payee le 2026-06-08/07-28 (theme1.xml corrompu, invisible 35 jours faute de gate bloquant) ne puisse plus se reproduire en silence.",
+   "categories": [
+    "verification-manquante"
+   ],
+   "date": "2026-09-07",
+   "source": "veille-agentic 2026-09-07 (relancee en arriere-plan pendant un etat des lieux), arbitrage utilisateur explicite \"adopte 1 et 2\""
+  },
+  {
+   "cible": "veille:bmad-migration-6.12.0",
+   "decision": "ACCEPTE + APPLIQUE (arbitrage utilisateur \"adopte 1 et 2\" puis \"Migrer VSCode maintenant\" sur la question de coordination hub posee avant execution) : npx bmad-method install --directory . --action quick-update --yes execute reellement. core 6.10.0->6.12.0, bmad-method 6.10.0->6.12.0, tea 1.19.1->1.24.0, cis 0.2.1->0.3.2, bmb inchange. 4 fichiers _bmad/custom/*.toml preserves. 21 shims deprecies retenus (bmad-quick-dev, bmad-checkpoint-preview compris) : aucune casse. 3 references locales non-canon mises a jour vers bmad-walkthrough (.claude/agents/bmad-revue.md, .claude/skills/revue-increment/SKILL.md, _bmad/custom/bmad-party-mode.toml). .claude/skills/agent-orchestrator/SKILL.md (table de routage 46 skills, section 2 quinquies) est hub-canon : PAS touche localement (ecrase a la prochaine synchro sync_dispositif.py) - signale au hub VScode5 pour coordination fleet-wide de la migration et de la table. Verifie : 0 fichier comop-pptx-prototype touche (git status), manifest.yaml relu = 6.12.0, TOML edite revalide (tomllib).",
+   "categories": [
+    "agent-mort"
+   ],
+   "date": "2026-09-07",
+   "source": "veille-agentic 2026-09-07 (relancee en arriere-plan pendant un etat des lieux), arbitrage utilisateur explicite \"adopte 1 et 2\" + clarification \"Migrer VSCode maintenant\""
   }
  ],
  "mesure_incomplete": {
   "transcripts_absents": 2,
-  "total_fichiers": 6,
-  "dernier_evenement": "2026-09-04T17:52:16.590Z",
+  "total_fichiers": 7,
+  "dernier_evenement": "2026-09-07T07:55:43.295Z",
   "journal_usage_muet": false
  },
  "mesure_non_fiable": true

@@ -1,5 +1,5 @@
 ---
-updated: 2026-09-04
+updated: 2026-09-07
 generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, étage 1)
 ---
 
@@ -8,18 +8,19 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-09-04T20:49:06+02:00 · **6 sessions** (transcripts) · **10** invocations de skills · **13** lancements de sous-agents.
+Dernier scan : 2026-09-07T12:40:17+02:00 · **7 sessions** (transcripts) · **13** invocations de skills · **14** lancements de sous-agents.
 
 ## Skills — usage réel
 
 | Skill | Famille | Invocations | Première | Dernière |
 | --- | --- | --- | --- | --- |
-| `agent-orchestrator` | projet | 3 | 2026-07-27 | 2026-09-04 |
+| `agent-orchestrator` | projet | 4 | 2026-07-27 | 2026-09-07 |
 | `agent-supervisor` | projet | 2 | 2026-07-23 | 2026-09-04 |
 | `bmad-forge-idea` | BMAD | 2 | 2026-09-04 | 2026-09-04 |
+| `veille-agentic` | projet | 2 | 2026-09-04 | 2026-09-07 |
 | `bmad-party-mode` | BMAD | 1 | 2026-09-04 | 2026-09-04 |
 | `bmad-spec` | BMAD | 1 | 2026-09-04 | 2026-09-04 |
-| `veille-agentic` | projet | 1 | 2026-09-04 | 2026-09-04 |
+| `update-config` | (builtin/session) | 1 | 2026-09-07 | 2026-09-07 |
 
 ## Sous-agents
 
@@ -27,9 +28,9 @@ Dernier scan : 2026-09-04T20:49:06+02:00 · **6 sessions** (transcripts) · **10
 | --- | --- | --- | --- |
 | `(defaut)` | 8 | 2026-09-04 | 2026-09-04 |
 | `Explore` | 2 | 2026-07-23 | 2026-07-27 |
+| `veille-agentic` | 2 | 2026-09-04 | 2026-09-07 |
 | `agent-supervisor` | 1 | 2026-09-04 | 2026-09-04 |
 | `general-purpose` | 1 | 2026-09-04 | 2026-09-04 |
-| `veille-agentic` | 1 | 2026-09-04 | 2026-09-04 |
 
 ## Jamais utilisés
 
@@ -37,11 +38,11 @@ Dernier scan : 2026-09-04T20:49:06+02:00 · **6 sessions** (transcripts) · **10
 
 `deck-design-review`, `restitution-deck-design`, `revue-increment`
 
-**BMAD** — 68/71 jamais invoqués :
+**BMAD** — 72/75 jamais invoqués :
 
 <details><summary>Voir la liste</summary>
 
-`bmad-advanced-elicitation`, `bmad-agent-analyst`, `bmad-agent-architect`, `bmad-agent-builder`, `bmad-agent-dev`, `bmad-agent-pm`, `bmad-agent-tech-writer`, `bmad-agent-ux-designer`, `bmad-architecture`, `bmad-bmb-setup`, `bmad-brainstorming`, `bmad-check-implementation-readiness`, `bmad-checkpoint-preview`, `bmad-cis-agent-brainstorming-coach`, `bmad-cis-agent-creative-problem-solver`, `bmad-cis-agent-design-thinking-coach`, `bmad-cis-agent-innovation-strategist`, `bmad-cis-agent-presentation-master`, `bmad-cis-agent-storyteller`, `bmad-cis-design-thinking`, `bmad-cis-innovation-strategy`, `bmad-cis-problem-solving`, `bmad-cis-storytelling`, `bmad-code-review`, `bmad-correct-course`, `bmad-create-architecture`, `bmad-create-epics-and-stories`, `bmad-create-prd`, `bmad-create-story`, `bmad-customize`, `bmad-dev-auto`, `bmad-dev-story`, `bmad-document-project`, `bmad-domain-research`, `bmad-edit-prd`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-eval-runner`, `bmad-generate-project-context`, `bmad-help`, `bmad-index-docs`, `bmad-market-research`, `bmad-module-builder`, `bmad-prd`, `bmad-prfaq`, `bmad-product-brief`, `bmad-qa-generate-e2e-tests`, `bmad-quick-dev`, `bmad-retrospective`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-shard-doc`, `bmad-sprint-planning`, `bmad-sprint-status`, `bmad-tea`, `bmad-teach-me-testing`, `bmad-technical-research`, `bmad-testarch-atdd`, `bmad-testarch-automate`, `bmad-testarch-ci`, `bmad-testarch-framework`, `bmad-testarch-nfr`, `bmad-testarch-test-design`, `bmad-testarch-test-review`, `bmad-testarch-trace`, `bmad-ux`, `bmad-validate-prd`, `bmad-workflow-builder`
+`bmad-advanced-elicitation`, `bmad-agent-analyst`, `bmad-agent-architect`, `bmad-agent-builder`, `bmad-agent-dev`, `bmad-agent-pm`, `bmad-agent-ux-designer`, `bmad-architecture`, `bmad-bmb-setup`, `bmad-brainstorming`, `bmad-build`, `bmad-build-auto`, `bmad-checkpoint-preview`, `bmad-cis-agent-brainstorming-coach`, `bmad-cis-agent-creative-problem-solver`, `bmad-cis-agent-design-thinking-coach`, `bmad-cis-agent-innovation-strategist`, `bmad-cis-agent-presentation-master`, `bmad-cis-agent-storyteller`, `bmad-cis-design-thinking`, `bmad-cis-innovation-strategy`, `bmad-cis-problem-solving`, `bmad-cis-storytelling`, `bmad-code-review`, `bmad-correct-course`, `bmad-create-architecture`, `bmad-create-epics-and-stories`, `bmad-create-prd`, `bmad-create-story`, `bmad-customize`, `bmad-deep-recon`, `bmad-dev-auto`, `bmad-dev-story`, `bmad-document-project`, `bmad-domain-research`, `bmad-edit-prd`, `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-eval-runner`, `bmad-generate-project-context`, `bmad-help`, `bmad-market-research`, `bmad-module-builder`, `bmad-prd`, `bmad-prfaq`, `bmad-product-brief`, `bmad-project-context`, `bmad-qa-generate-e2e-tests`, `bmad-quick-dev`, `bmad-retrospective`, `bmad-review`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-review-verification-gap`, `bmad-sprint-planning`, `bmad-sprint-status`, `bmad-tea`, `bmad-teach-me-testing`, `bmad-technical-research`, `bmad-testarch-atdd`, `bmad-testarch-automate`, `bmad-testarch-ci`, `bmad-testarch-framework`, `bmad-testarch-nfr`, `bmad-testarch-test-design`, `bmad-testarch-test-review`, `bmad-testarch-trace`, `bmad-ux`, `bmad-validate-prd`, `bmad-walkthrough`, `bmad-workflow-builder`
 
 </details>
 
@@ -63,9 +64,9 @@ _Consommés en lisant/exécutant leurs `scripts/`, ou via un sous-agent qui les 
 
 ## TODO agents (constats automatiques)
 
-⚠️ **Mesure incomplète** — 2 transcript(s) sur 6 absent(s) du disque. Un `n=0` ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.
+⚠️ **Mesure incomplète** — 2 transcript(s) sur 7 absent(s) du disque. Un `n=0` ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.
 
-1. **Désinstaller les shims BMAD dépréciés** (4) : `bmad-create-architecture` → `bmad-architecture`, `bmad-create-prd` → `bmad-prd`, `bmad-edit-prd` → `bmad-prd`, `bmad-validate-prd` → `bmad-prd` — dépréciés par BMAD dans leur propre `description`, chacun avec son remplaçant ; le seul élagage qui ne repose pas sur notre mesure d'usage.
+1. **Désinstaller les shims BMAD dépréciés** (21) : `bmad-checkpoint-preview`, `bmad-create-architecture`, `bmad-create-prd`, `bmad-create-story`, `bmad-dev-auto`, `bmad-dev-story`, `bmad-document-project`, `bmad-domain-research`, `bmad-edit-prd`, `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-generate-project-context`, `bmad-market-research`, `bmad-quick-dev`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-review-verification-gap`, `bmad-sprint-status`, `bmad-technical-research`, `bmad-validate-prd` — dépréciés par BMAD dans leur propre `description`, chacun avec son remplaçant ; le seul élagage qui ne repose pas sur notre mesure d'usage.
 2. **`revue-increment` jamais invoquée** malgré le rappel SessionStart à chaque session — revoir son déclencheur (l'ancrer au flux de commit ?) ou la simplifier.
 3. **Skills projet sans usage** : `deck-design-review`, `restitution-deck-design` — vérifier pertinence et déclencheurs.
 
@@ -88,10 +89,12 @@ _Constats clos par décision humaine (`.claude/supervision/arbitrages.json`) —
 - **`increment-6-validation`** (2026-09-04) : ANNULE (pas A, pas B) : l'utilisateur tranche par un troisieme choix, ni ouvrir le deck pour valider (option A) ni introduire un statut roadmap dedie (option B) - il annule purement l'increment 6. comop-pptx-prototype/.roadmap/roadmap.json item 6 passe status="annule" avec la raison tracee (blocage de 35 jours = defaut de PROCESSUS, question de validation jamais posee, pas defaut de produit - constat de la table ronde atelier-idees du meme jour). L'utilisateur demande en meme temps de "repartir de zero en challengeant tout" : ce n'est plus un correctif ponctuel sur increment 6, c'est une refonte de cadrage produit qui redefinira la suite du plan (items 7-8 restent "todo" mais seront vraisemblablement redefinis). Aucune ligne de code touchee - seul roadmap.json est modifie, sur mandat direct et non ambigu ("on annule l'increment 6").
 - **`revue-increment`** (2026-09-04) : ACCEPTE + APPLIQUE (option B, 'les deux : A propose pas impose' choisi par l'utilisateur) : retire le rappel automatique SessionStart (remind_revue_increment.py) du hook local (settings.json) et la skill de warn_verif_before_commit.json (verif_skill) - 0 invocation sur 43 jours malgre 4 declencheurs deja en place, un cinquieme rappel ne convertira pas. npm test + la verification reelle du playbook export-ppt-verifie assurent deja cet office. La skill reste au catalogue (annotee), invocable a la demande. Commit 027b30c. Option A (log_run.py --solde exige une note 'revue:' des qu'un run touche du code applicatif) ecrite comme proposition OPT-IN dans le canon du hub VScode5 (sur le modele existant de dod_enabled/_DEFAULT_DOD_ENABLED de warn_verif_before_commit.py, deja opt-in par defaut) plutot qu'imposee a toute la flotte - a activer projet par projet.
 - **`skills-projet-sans-usage`** (2026-09-04) : ACCEPTE + APPLIQUE (partiel, volet local) : deck-design-review etait orpheline de tout playbook alors que son propre SKILL.md prescrit d'etre une etape de export-ppt-verifie - cablee comme etape obligatoire des que le changement touche le template/branding COMOP, distincte de restitution-deck-design (generique, deja en place). Commit 027b30c. Les deux autres volets du finding (audit-technique = bucket hub-only manquant dans le scan canon ; restitution-deck-design = differe au bmad-spec de la refonte COMOP, aucune action ici) sont respectivement delegues au canon du hub (agent evolution-flotte) et sans action requise maintenant.
+- **`veille:stop-hook-gate-npm-test-comop`** (2026-09-07) : ACCEPTE + APPLIQUE (arbitrage utilisateur "adopte 1 et 2") : .claude/hooks/gate_stop_npm_test_comop.py cree, cable en hook Stop dans .claude/settings.json. Si le repertoire de travail COMOP (server.js, src/*.ps1, templates/*.pptx) porte des modifications non committees, rejoue npm test et bloque (exit 2) en cas d echec ; gere stop_hook_active pour eviter une boucle. Verifie par pipe-test reel (stop_hook_active, etat propre, edition sentinelle sur server.js -> npm test reellement lance 19/19 vert, sentinelle revertee). Objectif : que la regression payee le 2026-06-08/07-28 (theme1.xml corrompu, invisible 35 jours faute de gate bloquant) ne puisse plus se reproduire en silence.
+- **`veille:bmad-migration-6.12.0`** (2026-09-07) : ACCEPTE + APPLIQUE (arbitrage utilisateur "adopte 1 et 2" puis "Migrer VSCode maintenant" sur la question de coordination hub posee avant execution) : npx bmad-method install --directory . --action quick-update --yes execute reellement. core 6.10.0->6.12.0, bmad-method 6.10.0->6.12.0, tea 1.19.1->1.24.0, cis 0.2.1->0.3.2, bmb inchange. 4 fichiers _bmad/custom/*.toml preserves. 21 shims deprecies retenus (bmad-quick-dev, bmad-checkpoint-preview compris) : aucune casse. 3 references locales non-canon mises a jour vers bmad-walkthrough (.claude/agents/bmad-revue.md, .claude/skills/revue-increment/SKILL.md, _bmad/custom/bmad-party-mode.toml). .claude/skills/agent-orchestrator/SKILL.md (table de routage 46 skills, section 2 quinquies) est hub-canon : PAS touche localement (ecrase a la prochaine synchro sync_dispositif.py) - signale au hub VScode5 pour coordination fleet-wide de la migration et de la table. Verifie : 0 fichier comop-pptx-prototype touche (git status), manifest.yaml relu = 6.12.0, TOML edite revalide (tomllib).
 
 ## Diagnostic qualitatif (étage 2 — `agent-supervisor`)
 
-_Diagnostic à jour._
+_Diagnostic ⚠️ à relancer (> 14 j)._
 
 1. **Le critere « 69/71 jamais invoquees » aurait supprime le 2026-09-01 les deux skills qui portent aujourd'hui la refonte COMOP** — Elaguer les 4 DEPRECATED, geler l'elagage par usage. · **Proposition** : Remplacer le critere d'elagage « jamais invoque » par deux gestes verifiables. (a) Desinstaller les 4 skills que BMAD declare lui-meme obsoletes dans leur propre frontmatter - bmad-create-architecture, bmad-create-prd, bmad-edit-prd, bmad-validate-prd (« DEPRECATED ... will be removed in v7 in favor of X », remplacants deja installes) : verifie sur disque par grep -rl DEPRECATED .claude/skills/bmad-*/SKILL.md, c'est le seul sous-ensemble ou la suppression ne perd aucune capacite. (b) Pour les 65 autres, ne rien supprimer et traiter le cout reel - les descriptions BMAD pesent 11 981 caracteres de frontmatter charges a chaque session - en demandant au canon du scan de ne plus publier de TODO d'elagage tant que mesure_non_fiable vaut true.
 2. **La veille lancee il y a 6 h n'a rien depose dans ce depot : le volet « etat de l'art agentic » de ce diagnostic est structurellement vide** — Localiser la sortie de la veille avant toute relance ; outiller l'alarme « lancee sans production ». · **Proposition** : (a) Verifier d'abord ou la trouvaille a atterri - le sous-agent a pu ecrire au hub VScode5, non joignable depuis ce chemin - puis, si elle est perdue, relancer veille-agentic avec un brief autoportant imposant le chemin ABSOLU d'ecriture C:/Users/claude.camus/Documents/VSCode/.claude/veille/veille.json, la cause la plus probable etant un chemin relatif resolu ailleurs que dans le depot appelant. (b) Ajouter au canon du scan la meme alarme de fraicheur que pour le diagnostic : « veille lancee le X, aucun veille.json produit » - sans quoi une veille qui echoue reste indistinguable d'une veille jamais lancee, ce qui est exactement l'etat actuel.
@@ -104,7 +107,7 @@ _2 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir 
 
 ## Seuil de qualification — la mesure
 
-Depuis le 2026-09-04 : **18** demande(s) vue(s) hors commande slash (+ 2 slash), **6** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **33 %** des demandes orchestrées.
+Depuis le 2026-09-04 : **25** demande(s) vue(s) hors commande slash (+ 3 slash), **9** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **36 %** des demandes orchestrées.
 _Ce chiffre ne dit pas ce qui AURAIT dû être orchestré : le hook compte, il ne juge pas. Il donne le dénominateur qui manquait pour arbitrer le seuil sur données plutôt que sur habitude._
 
 ---
