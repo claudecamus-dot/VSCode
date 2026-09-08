@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const fs = require("fs");
 const http = require("http");
+const os = require("os");
 const path = require("path");
 const { spawn } = require("child_process");
 
@@ -182,7 +183,16 @@ function readBinaryBody(req, maxBytes) {
   });
 }
 
-function runPowerShell(args) {
+// Audit 09-07 (securite) : au timeout, child.kill() est une terminaison
+// abrupte (TerminateProcess sous Windows) -- le bloc `finally` du script
+// PowerShell, qui nettoie normalement son repertoire de travail temporaire,
+// n'est jamais execute : le dossier extrait (potentiellement volumineux)
+// reste dans %TEMP%. Quand l'appelant fournit `workDir` (repertoire cree par
+// Node AVANT le lancement du script, cf. les 4 sites d'appel ci-dessous),
+// c'est Node qui le supprime lui-meme sur ce chemin -- il en connait le
+// chemin exact, contrairement a un balayage global de %TEMP% qui risquerait
+// de supprimer le repertoire d'un autre processus en cours.
+function runPowerShell(args, { workDir } = {}) {
   return new Promise((resolve, reject) => {
     const child = spawn("powershell.exe", ["-NoProfile", "-ExecutionPolicy", "Bypass", ...args], {
       cwd: root,
@@ -194,6 +204,13 @@ function runPowerShell(args) {
     const horsDelai = setTimeout(() => {
       regle = true;
       child.kill();
+      if (workDir) {
+        try {
+          fs.rmSync(workDir, { recursive: true, force: true });
+        } catch (error) {
+          log(`CLEANUP ${error.message}`);
+        }
+      }
       reject(new Error(`PowerShell script timed out after ${POWERSHELL_TIMEOUT_MS}ms`));
     }, POWERSHELL_TIMEOUT_MS);
     // Audit 09-07 (robustesse) : sans ce handler, un echec de spawn
@@ -295,12 +312,15 @@ async function handleApi(req, res) {
 
     let branding = null;
     try {
+      const brandingWorkDir = fs.mkdtempSync(path.join(os.tmpdir(), "comop-branding-"));
       await runPowerShell([
         "-File",
         path.join(root, "src", "extract-template-branding.ps1"),
         "-TemplatePath",
-        templatePath
-      ]);
+        templatePath,
+        "-WorkDir",
+        brandingWorkDir
+      ], { workDir: brandingWorkDir });
       const brandingPath = templatePath.replace(/\.pptx$/, ".branding.json");
       if (fs.existsSync(brandingPath)) {
         let brandingRaw = fs.readFileSync(brandingPath, "utf8");
@@ -384,12 +404,15 @@ async function handleApi(req, res) {
     const zonesPath = templatePath.replace(/\.pptx$/, ".zones.json");
     if (!fs.existsSync(zonesPath)) {
       try {
+        const zonesWorkDir = fs.mkdtempSync(path.join(os.tmpdir(), "comop-zones-"));
         await runPowerShell([
           "-File",
           path.join(root, "src", "detect-template-zones.ps1"),
           "-TemplatePath",
-          templatePath
-        ]);
+          templatePath,
+          "-WorkDir",
+          zonesWorkDir
+        ], { workDir: zonesWorkDir });
       } catch (error) {
         sendInternalError(res, error);
         return;
@@ -435,6 +458,7 @@ async function handleApi(req, res) {
     }
 
     try {
+      const removeShapeWorkDir = fs.mkdtempSync(path.join(os.tmpdir(), "comop-remove-shape-"));
       await runPowerShell([
         "-File",
         path.join(root, "src", "remove-template-shape.ps1"),
@@ -443,8 +467,10 @@ async function handleApi(req, res) {
         "-SlideIndex",
         String(slideIndex),
         "-ShapeName",
-        shapeName
-      ]);
+        shapeName,
+        "-WorkDir",
+        removeShapeWorkDir
+      ], { workDir: removeShapeWorkDir });
     } catch (error) {
       sendInternalError(res, error);
       return;
@@ -486,6 +512,7 @@ async function handleApi(req, res) {
     fs.writeFileSync(dataPath, JSON.stringify(body.fields || {}, null, 2), "utf8");
 
     try {
+      const generateWorkDir = fs.mkdtempSync(path.join(os.tmpdir(), "comop-generate-"));
       await runPowerShell([
         "-File",
         path.join(root, "src", "generate-comop.ps1"),
@@ -494,8 +521,10 @@ async function handleApi(req, res) {
         "-DataPath",
         dataPath,
         "-OutputPath",
-        outputPath
-      ]);
+        outputPath,
+        "-WorkDir",
+        generateWorkDir
+      ], { workDir: generateWorkDir });
     } catch (error) {
       sendInternalError(res, error);
       return;

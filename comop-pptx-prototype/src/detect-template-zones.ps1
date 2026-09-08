@@ -2,7 +2,15 @@ param(
   [Parameter(Mandatory = $true)]
   [string]$TemplatePath,
 
-  [string]$OutputPath
+  [string]$OutputPath,
+
+  # Fourni par server.js : le repertoire de travail est alors CREE par Node
+  # AVANT le lancement de ce script, pour qu'il puisse le nettoyer lui-meme
+  # si le script est tue au timeout (cf. runPowerShell, server.js) -- un
+  # child.kill() est une terminaison abrupte qui n'execute jamais le bloc
+  # finally ci-dessous. En usage CLI direct, non fourni : le script gere son
+  # propre repertoire temporaire comme avant.
+  [string]$WorkDir
 )
 
 $ErrorActionPreference = "Stop"
@@ -43,9 +51,10 @@ if (-not $OutputPath) {
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
-$workDir = New-TempDirectory -Prefix "zones-detect-"
+$workDir = if ($WorkDir) { $WorkDir } else { New-TempDirectory -Prefix "zones-detect-" }
 
 try {
+  Assert-ZipDecompressedSizeWithinLimit -ZipPath $TemplatePath
   [System.IO.Compression.ZipFile]::ExtractToDirectory($TemplatePath, $workDir)
 
   $presentationPath = Join-Path $workDir "ppt\presentation.xml"

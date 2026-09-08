@@ -6,7 +6,10 @@ param(
   [int]$SlideIndex,
 
   [Parameter(Mandatory = $true)]
-  [string]$ShapeName
+  [string]$ShapeName,
+
+  # Fourni par server.js, cf. detect-template-zones.ps1 pour la raison.
+  [string]$WorkDir
 )
 
 $ErrorActionPreference = "Stop"
@@ -19,9 +22,10 @@ if (-not (Test-Path -LiteralPath $TemplatePath)) {
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
-$workDir = New-TempDirectory -Prefix "remove-shape-"
+$workDir = if ($WorkDir) { $WorkDir } else { New-TempDirectory -Prefix "remove-shape-" }
 
 try {
+  Assert-ZipDecompressedSizeWithinLimit -ZipPath $TemplatePath
   [System.IO.Compression.ZipFile]::ExtractToDirectory($TemplatePath, $workDir)
 
   $slidePath = Join-Path $workDir "ppt\slides\slide$SlideIndex.xml"

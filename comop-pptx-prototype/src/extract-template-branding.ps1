@@ -2,7 +2,10 @@ param(
   [Parameter(Mandatory = $true)]
   [string]$TemplatePath,
 
-  [string]$OutputPath
+  [string]$OutputPath,
+
+  # Fourni par server.js, cf. detect-template-zones.ps1 pour la raison.
+  [string]$WorkDir
 )
 
 $ErrorActionPreference = "Stop"
@@ -96,9 +99,10 @@ if (-not $OutputPath) {
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
-$workDir = New-TempDirectory -Prefix "branding-extract-"
+$workDir = if ($WorkDir) { $WorkDir } else { New-TempDirectory -Prefix "branding-extract-" }
 
 try {
+  Assert-ZipDecompressedSizeWithinLimit -ZipPath $TemplatePath
   [System.IO.Compression.ZipFile]::ExtractToDirectory($TemplatePath, $workDir)
 
   $themePath = Join-Path $workDir "ppt\theme\theme1.xml"

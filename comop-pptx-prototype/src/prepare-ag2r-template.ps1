@@ -37,6 +37,7 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 $workDir = New-TempDirectory -Prefix "comop-template-"
 
 try {
+  Assert-ZipDecompressedSizeWithinLimit -ZipPath $SourcePath
   [System.IO.Compression.ZipFile]::ExtractToDirectory($SourcePath, $workDir)
 
   $presentationPath = Join-Path $workDir "ppt\presentation.xml"

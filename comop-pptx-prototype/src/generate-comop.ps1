@@ -8,7 +8,10 @@ param(
   [Parameter(Mandatory = $true)]
   [string]$OutputPath,
 
-  [string]$EmptyPlaceholderValue = "-"
+  [string]$EmptyPlaceholderValue = "-",
+
+  # Fourni par server.js, cf. detect-template-zones.ps1 pour la raison.
+  [string]$WorkDir
 )
 
 $ErrorActionPreference = "Stop"
@@ -37,9 +40,10 @@ if (-not (Test-Path -LiteralPath $DataPath)) {
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 $data = Get-Content -LiteralPath $DataPath -Raw -Encoding UTF8 | ConvertFrom-Json
-$workDir = New-TempDirectory -Prefix "comop-pptx-"
+$workDir = if ($WorkDir) { $WorkDir } else { New-TempDirectory -Prefix "comop-pptx-" }
 
 try {
+  Assert-ZipDecompressedSizeWithinLimit -ZipPath $TemplatePath
   [System.IO.Compression.ZipFile]::ExtractToDirectory($TemplatePath, $workDir)
 
   # Construire le dictionnaire de substitutions avant toute modification des slides

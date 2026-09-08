@@ -22,6 +22,38 @@ function Get-GraphicType {
   return "objet"
 }
 
+function Assert-ZipDecompressedSizeWithinLimit {
+  # Audit 2026-09-07 (securite) : ExtractToDirectory() decompresse l'archive
+  # ENTIERE sur disque avant tout controle -- seul le poids COMPRESSE d'un
+  # upload est borne, en amont, par le serveur (25 Mo, server.js). Une
+  # archive ZIP peut annoncer un ratio de compression extreme (zip bomb) et
+  # gonfler tres au-dela de ce que le disque/la RAM du poste peuvent
+  # absorber avant qu'aucun de ces scripts n'ait rien verifie. On somme la
+  # taille DECOMPRESSEE annoncee par chaque entree (ZipArchiveEntry.Length,
+  # lue depuis l'en-tete local -- ca ne decompresse rien) et on rejette avant
+  # d'extraire quoi que ce soit si le total depasse la limite. 300 Mo : le
+  # gabarit connu pese 1,4 Mo compresse/decompresse (marge tres large pour un
+  # template legitime avec plusieurs images), tres en-dessous des ratios
+  # d'une archive pathologique.
+  param(
+    [Parameter(Mandatory = $true)][string]$ZipPath,
+    [long]$MaxBytes = 300MB
+  )
+  Add-Type -AssemblyName System.IO.Compression.FileSystem
+  $archive = [System.IO.Compression.ZipFile]::OpenRead($ZipPath)
+  try {
+    $total = 0L
+    foreach ($entry in $archive.Entries) {
+      $total += $entry.Length
+      if ($total -gt $MaxBytes) {
+        throw "Archive rejetee : volume decompresse annonce superieur a $([math]::Round($MaxBytes / 1MB)) Mo (zip bomb potentiel)"
+      }
+    }
+  } finally {
+    $archive.Dispose()
+  }
+}
+
 function New-TempDirectory {
   # Prefixe conserve par appelant (zones-detect- / remove-shape-) : sert de repere
   # au debogage si un repertoire de travail n'est pas nettoye.

@@ -175,6 +175,7 @@ if (-not (Test-Path -LiteralPath $TemplatePath)) {
 $workDir = New-TempDirectory -Prefix "octo-branding-"
 
 try {
+  Assert-ZipDecompressedSizeWithinLimit -ZipPath $TemplatePath
   [System.IO.Compression.ZipFile]::ExtractToDirectory($TemplatePath, $workDir)
 
   $themePath = Join-Path $workDir "ppt\theme\theme1.xml"
