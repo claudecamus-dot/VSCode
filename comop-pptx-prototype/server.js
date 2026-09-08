@@ -196,10 +196,20 @@ function runPowerShell(args) {
       child.kill();
       reject(new Error(`PowerShell script timed out after ${POWERSHELL_TIMEOUT_MS}ms`));
     }, POWERSHELL_TIMEOUT_MS);
+    // Audit 09-07 (robustesse) : sans ce handler, un echec de spawn
+    // (powershell.exe absent du PATH, EACCES...) emet un evenement 'error'
+    // non ecoute -> exception non rattrapee -> process.on('uncaughtException')
+    // -> process.exit(1), soit tout le serveur arrete par une seule requete.
+    child.on("error", error => {
+      if (regle) return;
+      regle = true;
+      clearTimeout(horsDelai);
+      reject(error);
+    });
     child.stdout.on("data", data => { stdout += data.toString(); });
     child.stderr.on("data", data => { stderr += data.toString(); });
     child.on("close", code => {
-      if (regle) return; // deja rejete par le timeout, la requete HTTP a deja recu sa reponse
+      if (regle) return; // deja rejete par le timeout ou 'error', la requete HTTP a deja recu sa reponse
       clearTimeout(horsDelai);
       if (code !== 0) {
         reject(new Error(stderr || stdout || `PowerShell exit ${code}`));
@@ -539,7 +549,10 @@ function serveStatic(req, res) {
   }
 
   const filePath = path.normalize(path.join(webDir, url));
-  if (!filePath.startsWith(webDir) || !fs.existsSync(filePath)) {
+  // Audit 09-07 (securite, latent) : filePath.startsWith(webDir) sans exiger
+  // de separateur laisserait passer un repertoire frere dont le nom commence
+  // par "web" (ex. "webXxx") comme s'il etait sous web/.
+  if ((filePath !== webDir && !filePath.startsWith(webDir + path.sep)) || !fs.existsSync(filePath)) {
     send(res, 404, "Page introuvable", "text/plain; charset=utf-8");
     return;
   }
