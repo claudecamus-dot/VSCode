@@ -72,6 +72,59 @@ test("route rejette un fichier .pptx dont le contenu n'est pas une archive ZIP",
     "le faux template rejete ne doit pas avoir ete ecrit ni liste"));
 });
 
+// Audit 09-07 (robustesse, MESURE M7) : un fichier qui passe la signature
+// "PK" (2 octets) mais n'est pas une archive ZIP valide (central directory
+// absent) etait ecrit durablement, liste par GET /api/templates, puis
+// faisait 500 en boucle sur GET /zones -- template fantome. Desormais rejete
+// avant d'etre inscrit : validate-template.ps1 leve une exception sur cette
+// archive, le fichier ecrit est retire, 422 renvoye.
+test("route rejette un .pptx a signature PK valide mais dont l'archive est illisible (pas de template fantome)", { skip: !powershell }, async t => {
+  const server = await startServer();
+  t.after(() => server.stop());
+
+  const buffer = Buffer.concat([
+    Buffer.from([0x50, 0x4b, 0x03, 0x04]), // "PK\x03\x04" : signature locale valide
+    Buffer.from("mais rien de plus n'est un vrai zip -- pas de central directory")
+  ]);
+  const res = await request(server.baseUrl, "POST", "/api/templates", {
+    headers: { "x-template-name": "signature-seule.pptx" },
+    body: buffer
+  });
+
+  assert.equal(res.status, 422);
+  const body = JSON.parse(res.text);
+  assert.match(body.error, /invalide/i);
+
+  const liste = await request(server.baseUrl, "GET", "/api/templates");
+  const templates = JSON.parse(liste.text).templates;
+  assert.ok(!templates.some(t => t.file === "signature-seule.pptx"),
+    "le template rejete ne doit pas rester ecrit ni liste");
+});
+
+// Audit 09-07 (robustesse, MESURE M11) : x-template-name: NUL.pptx passait
+// safeTemplatePath tel quel -- Node ecrivait un vrai fichier NUL.pptx que
+// PowerShell (qui resout NUL comme le peripherique nul du systeme) ne
+// voyait jamais : template fantome liste, inutilisable.
+test("route rejette un nom de template reserve Windows (NUL.pptx)", async t => {
+  const server = await startServer();
+  t.after(() => server.stop());
+
+  const buffer = fs.readFileSync(realTemplate);
+  const res = await request(server.baseUrl, "POST", "/api/templates", {
+    headers: { "x-template-name": "NUL.pptx" },
+    body: buffer
+  });
+  const body = JSON.parse(res.text);
+
+  assert.equal(res.status, 400);
+  assert.match(body.error, /invalide/i);
+
+  const liste = await request(server.baseUrl, "GET", "/api/templates");
+  const templates = JSON.parse(liste.text).templates;
+  assert.ok(!templates.some(t => t.file.toUpperCase().startsWith("NUL")),
+    "un nom de peripherique reserve ne doit jamais etre ecrit ni liste");
+});
+
 test("route accepte un nom de template valide (zones) meme si le fichier n'existe pas encore -> 404, pas 500", async t => {
   const server = await startServer();
   t.after(() => server.stop());

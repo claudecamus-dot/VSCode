@@ -52,6 +52,14 @@ templateUpload.addEventListener("change", async () => {
     let message = `Template "${result.name}" ajoute a la bibliotheque.`;
     if (result.validation && result.validation.status === "incomplet") {
       message += ` Attention : placeholder(s) manquant(s) - ${result.validation.missing.join(", ")}.`;
+    } else if (!result.validation) {
+      // Audit 09-07 : le serveur repond desormais en erreur (pas 200) si la
+      // validation echoue -- ce cas ne devrait plus survenir, mais rester
+      // silencieux dessus serait retomber dans le meme angle mort mesure.
+      message += " Attention : la verification des placeholders n'a pas pu etre effectuee.";
+    }
+    if (!result.branding) {
+      message += " Charte graphique non detectee automatiquement (a verifier manuellement).";
     }
     setStatus(message, "success");
   } catch (err) {

@@ -237,10 +237,22 @@ function runPowerShell(args, { workDir } = {}) {
   });
 }
 
+// Audit 09-07 (robustesse, MESURE M11) : un nom de fichier reserve Windows
+// (x-template-name: NUL.pptx) passait ce garde tel quel -- Node ecrivait un
+// vrai fichier sur disque (fs.existsSync vrai) mais PowerShell, qui resout
+// NUL comme le peripherique nul du systeme et non un fichier, ne le voyait
+// jamais (Test-Path false) : template fantome liste, inutilisable.
+const RESERVED_WINDOWS_DEVICE_NAMES = new Set([
+  "CON", "PRN", "AUX", "NUL",
+  "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
+  "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
+]);
+
 function safeTemplatePath(name) {
   const fileName = path.basename(name || "");
   const templatePath = path.join(templatesDir, fileName);
-  if (!fileName.endsWith(".pptx") || !templatePath.startsWith(templatesDir)) {
+  const baseNameUpper = fileName.replace(/\.pptx$/i, "").toUpperCase();
+  if (!fileName.endsWith(".pptx") || !templatePath.startsWith(templatesDir) || RESERVED_WINDOWS_DEVICE_NAMES.has(baseNameUpper)) {
     throw new Error("Template invalide");
   }
   return templatePath;
@@ -310,6 +322,33 @@ async function handleApi(req, res) {
     fs.mkdirSync(templatesDir, { recursive: true });
     fs.writeFileSync(templatePath, buffer);
 
+    // Audit 09-07 (robustesse, MESURE M7) : auparavant, l'echec de
+    // validate-template.ps1 etait seulement LOGGE -- le fichier restait
+    // ecrit, liste par GET /api/templates, et chaque GET /zones ulterieur
+    // relancait PowerShell pour echouer a nouveau (pas de cache pour un
+    // template qui n'a jamais reussi une seule extraction) : template
+    // fantome, 500 en boucle. validate-template.ps1 ouvre l'archive
+    // (ZipFile.OpenRead, qui exige un central directory valide) : s'il LEVE
+    // une exception plutot que de rendre un statut valide/incomplet,
+    // l'archive elle-meme n'est pas exploitable -- c'est le signal retenu
+    // pour rejeter, avant d'essayer l'extraction de charte (best-effort,
+    // cosmetique, testee separement plus bas).
+    let validation;
+    try {
+      const validationRaw = await runPowerShell([
+        "-File",
+        path.join(root, "src", "validate-template.ps1"),
+        "-TemplatePath",
+        templatePath
+      ]);
+      validation = JSON.parse(validationRaw);
+    } catch (error) {
+      log(`VALIDATION ${error.message}`);
+      try { fs.unlinkSync(templatePath); } catch (_) { /* deja absent */ }
+      sendJson(res, 422, { error: "Fichier invalide : impossible de lire l'archive comme un template OOXML" });
+      return;
+    }
+
     let branding = null;
     try {
       const brandingWorkDir = fs.mkdtempSync(path.join(os.tmpdir(), "comop-branding-"));
@@ -329,25 +368,6 @@ async function handleApi(req, res) {
       }
     } catch (error) {
       log(`EXTRACTION ${error.message}`);
-    }
-
-    // Risque technique (audit) : validate-template.ps1 existait sans jamais
-    // etre appele -- aucun point du serveur ne verifiait qu'un template
-    // uploade porte les placeholders attendus (src/placeholders.json). Point
-    // d'appel logique : au moment de l'upload, en meme temps que l'extraction
-    // de charte, pour remonter tout de suite un template incomplet plutot que
-    // de le decouvrir a la generation.
-    let validation = null;
-    try {
-      const validationRaw = await runPowerShell([
-        "-File",
-        path.join(root, "src", "validate-template.ps1"),
-        "-TemplatePath",
-        templatePath
-      ]);
-      validation = JSON.parse(validationRaw);
-    } catch (error) {
-      log(`VALIDATION ${error.message}`);
     }
 
     const fileName = path.basename(templatePath);
