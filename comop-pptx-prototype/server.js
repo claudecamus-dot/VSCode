@@ -71,9 +71,37 @@ function safeDecodeURIComponent(value) {
   }
 }
 
+// Audit 09-07 (performance) : mkdirSync + appendFileSync bloquaient la
+// boucle d'evenements sur CHAQUE requete /api/ (log() est le premier appel
+// de handleApi). fs.appendFile est asynchrone -- le dossier est cree une
+// seule fois au demarrage (cf. plus bas), avec un repli defensif (ENOENT) au
+// cas ou il aurait disparu en cours de route. Une erreur de log ne doit
+// jamais faire echouer la requete qui l'a declenchee : purement best-effort.
+const LOG_MAX_BYTES = 5 * 1024 * 1024; // 5 Mo
+const LOG_ROTATE_CHECK_EVERY = 200; // eviter un fs.stat() a chaque requete
+let logCallsSinceRotationCheck = 0;
+
+function rotateLogIfTooLarge() {
+  fs.stat(serverLog, (error, stats) => {
+    if (error || stats.size <= LOG_MAX_BYTES) return;
+    fs.rename(serverLog, `${serverLog}.1`, () => {});
+  });
+}
+
 function log(message) {
-  fs.mkdirSync(outputDir, { recursive: true });
-  fs.appendFileSync(serverLog, `[${new Date().toISOString()}] ${message}\n`, "utf8");
+  const line = `[${new Date().toISOString()}] ${message}\n`;
+  fs.appendFile(serverLog, line, "utf8", error => {
+    if (!error || error.code !== "ENOENT") return;
+    fs.mkdir(outputDir, { recursive: true }, mkdirError => {
+      if (mkdirError) return;
+      fs.appendFile(serverLog, line, "utf8", () => {});
+    });
+  });
+  logCallsSinceRotationCheck += 1;
+  if (logCallsSinceRotationCheck >= LOG_ROTATE_CHECK_EVERY) {
+    logCallsSinceRotationCheck = 0;
+    rotateLogIfTooLarge();
+  }
 }
 
 function purgeOldOutputs() {
@@ -89,6 +117,10 @@ function purgeOldOutputs() {
   };
   purgeDir(outputDir, ".pptx");
   purgeDir(requestDataDir, ".json");
+  // Audit 09-07 (performance) : server-runtime.log n'etait jamais tourne ni
+  // purge par ce mecanisme (qui ne traitait que .pptx/.json) -- verifie ici
+  // aussi, en plus du controle periodique de rotateLogIfTooLarge() (§ log).
+  rotateLogIfTooLarge();
 }
 
 function readRequestBody(req) {
