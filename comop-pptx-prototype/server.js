@@ -25,7 +25,12 @@ const TEMPLATE_UPLOAD_MAX_BYTES = 25 * 1024 * 1024; // 25 Mo (gabarit connu : 1.
 // multi-octet UTF-8) alors que TEMPLATE_UPLOAD_MAX_BYTES est nomme et mesure en
 // octets exacts sur les Buffer recus. Nomme et aligne sur la meme precision.
 const MAX_JSON_BODY_BYTES = 1 * 1024 * 1024; // 1 Mo (formulaire COMOP : quelques Ko en usage normal)
-const POWERSHELL_TIMEOUT_MS = 60 * 1000; // un script bloque (zip pathologique...) ne doit pas pendre indefiniment
+// Audit 09-07 (risque technique) : le chemin de timeout (server.js:195-207)
+// n'etait exerce par aucun test HTTP -- attendre un vrai timeout de 60s dans
+// la suite serait disproportionne. Meme pattern que COMOP_DATA_ROOT :
+// override non defini en usage normal (comportement inchange), les tests le
+// reduisent pour declencher le timeout en quelques centaines de ms.
+const POWERSHELL_TIMEOUT_MS = Number(process.env.COMOP_POWERSHELL_TIMEOUT_MS) || 60 * 1000; // un script bloque (zip pathologique...) ne doit pas pendre indefiniment
 // Audit du 2026-09-02 (securite) : seule extension jamais servie par /output/ --
 // avant ce garde, n'importe quel fichier depose dans outputDir (server-runtime.log,
 // qui contient des traces d'erreur completes avec chemins internes) etait

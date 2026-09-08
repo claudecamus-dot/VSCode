@@ -36,12 +36,12 @@ function freePort() {
   });
 }
 
-async function startServer() {
+async function startServer({ env: extraEnv = {} } = {}) {
   const dataRoot = makeDataRoot();
   const port = await freePort();
   const child = spawn(process.execPath, ["server.js"], {
     cwd: projectRoot,
-    env: { ...process.env, PORT: String(port), COMOP_DATA_ROOT: dataRoot },
+    env: { ...process.env, PORT: String(port), COMOP_DATA_ROOT: dataRoot, ...extraEnv },
     windowsHide: true
   });
 
