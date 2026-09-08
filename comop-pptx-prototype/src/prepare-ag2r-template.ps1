@@ -7,28 +7,6 @@ $ErrorActionPreference = "Stop"
 
 . (Join-Path $PSScriptRoot 'pptx-xml-helpers.ps1')
 
-function Replace-Text {
-  param(
-    [string]$Text,
-    [string]$From,
-    [string]$To
-  )
-  return $Text.Replace($From, $To)
-}
-
-function Replace-Next {
-  param(
-    [string]$Text,
-    [string]$From,
-    [string]$To
-  )
-  $index = $Text.IndexOf($From)
-  if ($index -lt 0) {
-    return $Text
-  }
-  return $Text.Substring(0, $index) + $To + $Text.Substring($index + $From.Length)
-}
-
 function Set-TextNodeByIndex {
   param(
     [string]$Text,

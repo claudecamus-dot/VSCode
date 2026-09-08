@@ -1,3 +1,12 @@
 output/
 *.log
 coverage/
+# Sidecars regeneres par le serveur a chaque upload/detection de zones
+# (server.js: extract-template-branding.ps1, detect-template-zones.ps1) --
+# jamais a committer, source = le .pptx lui-meme.
+templates/*.zones.json
+templates/*.branding.json
+# Sauvegardes horodatees automatiques de remove-template-shape.ps1 avant une
+# suppression de forme -- ne pas confondre avec une sauvegarde deliberement
+# committee (nom different, pas de suffixe horodate).
+templates/archive/*-avant-suppression-*.pptx
