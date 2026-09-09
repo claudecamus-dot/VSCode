@@ -653,9 +653,21 @@ function serveStatic(req, res) {
 // que le Host vise bien ce serveur et, si un Origin est fourni (requete
 // navigateur), qu'il correspond au meme host:port. Une requete d'outil (curl,
 // test) n'envoie pas d'Origin : elle n'est pas bloquee par ce controle.
+// Audit du 2026-09-07 (securite) : residu du controle ci-dessus. Le test
+// "si un Origin est fourni" laisse passer le cas ou le navigateur n'en envoie
+// PAS -- un GET no-cors (<img src>, <iframe>, navigation depuis un autre site)
+// n'a pas d'Origin et vise bien 127.0.0.1:<port>. MESURE M8 de l'audit : un
+// GET cross-site sur /zones repondait 200 en executant reellement
+// detect-template-zones.ps1 (4 626 ms de CPU par appel, relance a chaque appel
+// tant qu'aucun cache n'existe). Sec-Fetch-Site est pose par le navigateur
+// lui-meme et n'est pas modifiable depuis une page : "cross-site" sur /api/
+// signifie "declenche par un autre site", jamais par l'interface locale (qui
+// envoie "same-origin"). Un outil (curl, test) n'envoie pas cet en-tete et
+// reste accepte, comme pour Origin.
 function isRequestAllowed(req) {
   const allowedHosts = new Set([`127.0.0.1:${port}`, `localhost:${port}`]);
   if (!allowedHosts.has(req.headers.host || "")) return false;
+  if (req.url.startsWith("/api/") && req.headers["sec-fetch-site"] === "cross-site") return false;
   const origin = req.headers.origin;
   if (origin) {
     const allowedOrigins = new Set([`http://127.0.0.1:${port}`, `http://localhost:${port}`]);

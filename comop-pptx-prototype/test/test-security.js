@@ -242,6 +242,35 @@ test("une requete sans Origin (outil, pas navigateur) sur le meme Host reste acc
   assert.equal(res.status, 200);
 });
 
+// Audit du 2026-09-07 (securite) : residu du controle ci-dessus -- un navigateur
+// n'envoie PAS d'Origin sur un GET no-cors (<img src>, <iframe>, navigation) et
+// le Host vise reste 127.0.0.1:<port>, donc le controle passait. MESURE M8 de
+// l'audit : GET /api/templates/<n>/zones en cross-site sans Origin -> 200,
+// detect-template-zones.ps1 reellement execute (4 626 ms de CPU par appel).
+// Le garde doit refuser AVANT d'atteindre la route (ici : 403, pas le 404 que
+// renverrait la route sur un template absent).
+test("un GET cross-site sans Origin (img/iframe) est rejete sur /api/ (403), sans atteindre la route", async t => {
+  const server = await startServer();
+  t.after(() => server.stop());
+
+  const res = await request(server.baseUrl, "GET", "/api/templates/comop-template.pptx/zones", {
+    headers: { "Sec-Fetch-Site": "cross-site", "Sec-Fetch-Mode": "no-cors" }
+  });
+
+  assert.equal(res.status, 403);
+});
+
+test("un GET same-origin (page de l'outil) reste accepte", async t => {
+  const server = await startServer();
+  t.after(() => server.stop());
+
+  const res = await request(server.baseUrl, "GET", "/api/sample", {
+    headers: { "Sec-Fetch-Site": "same-origin" }
+  });
+
+  assert.equal(res.status, 200);
+});
+
 // Meme correctif que le plafond JSON (test-routes.js) : readBinaryBody()
 // detruisait la requete des le depassement, avant que le 413 ne parte --
 // ECONNRESET cote client au lieu d'une reponse propre. Verifie sur le chemin
