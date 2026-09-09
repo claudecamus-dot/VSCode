@@ -26,14 +26,25 @@ OUT_PATH = Path(os.environ.get("PLAYBOOK_OUT") or Path(__file__).parent / "playb
 
 MODULE = "BMad Method"
 EXTRAS = {"bmad-code-review"}
-PHASE_RANK = {"1-analysis": 1, "2-planning": 2, "3-solutioning": 3, "4-implementation": 4}
+# La v6.12.0 a changé le VOCABULAIRE des phases du CSV : `plan` / `ship` / `anytime`
+# remplacent `1-analysis` … `4-implementation` (seul `bmad-prd` traîne encore l'ancien
+# `2-planning`). Les deux jeux sont gardés — une phase inconnue tombait à 99 et sortait
+# en fin de playbook sans que rien ne le signale.
+PHASE_RANK = {
+    "1-analysis": 1, "plan": 2, "2-planning": 2, "3-solutioning": 3,
+    "4-implementation": 4, "ship": 4, "anytime": 5,
+}
 CHECKPOINTS = {
-    "bmad-check-implementation-readiness": "gate humain : PRD/UX/architecture/stories alignés avant d'engager l'implémentation",
-    "bmad-code-review": "issues → retour bmad-dev-story (une relance) ; approuvé → story suivante ou fin d'epic",
+    # `bmad-check-implementation-readiness` a disparu en v6.12.0 : la gate est absorbée
+    # par `bmad-sprint-planning`, qui la porte désormais.
+    "bmad-sprint-planning": "gate humain : PRD/UX/architecture/stories alignés avant d'engager l'implémentation",
+    "bmad-code-review": "issues → retour bmad-build (une relance) ; approuvé → story suivante ou fin d'epic",
 }
 # Étapes sans colonne `outputs` exploitable dans le CSV.
 CONTRAT_OVERRIDES = {
-    "bmad-dev-story": {
+    # `bmad-dev-story` jusqu'en v6.10.0 ; `bmad-build` est l'implémentation officielle
+    # depuis la v6.12.0 (l'ancien id n'est plus qu'un shim de redirection).
+    "bmad-build": {
         "type": "deterministe",
         "critere": "story implémentée, suite du projet verte",
         "commande": "pytest -q",
@@ -78,6 +89,31 @@ def _selectionner(rows):
     return [r for r in rows if _cle(r) in retenues]
 
 
+def _ordonner(retenues, index):
+    """Phase, puis ordre du CSV — mais JAMAIS avant son `preceded-by`.
+
+    Le tri par (phase, index) seul suffisait tant que la phase portait l'ordre du cycle
+    (`1-analysis` … `4-implementation`). La v6.12.0 l'a réduite à `plan`/`ship`/`anytime` :
+    tout le cadrage retombe dans un seul rang, et l'ordre du CSV y place `bmad-prd` AVANT
+    `bmad-product-brief` dont il déclare pourtant dépendre. Un playbook qui rédige le PRD
+    avant le brief est faux sans être vide — donc silencieux. On dépile en topologique
+    (Kahn), la paire (phase, index) ne servant plus que de départage stable.
+    """
+    par_cle = {_cle(r): r for r in retenues}
+    prio = {c: (PHASE_RANK.get(r["phase"].strip(), 99), index[id(r)])
+            for c, r in par_cle.items()}
+    restants = dict(par_cle)
+    sortie = []
+    while restants:
+        prets = [c for c, r in restants.items()
+                 if (r.get("preceded-by") or "").strip() not in restants]
+        if not prets:                      # cycle dans le CSV : on ne perd personne
+            prets = sorted(restants, key=lambda c: prio[c])[:1]
+        choisi = min(prets, key=lambda c: prio[c])
+        sortie.append(restants.pop(choisi))
+    return sortie
+
+
 def _etape(row):
     cle = _cle(row)
     outputs = (row.get("outputs") or "").strip()
@@ -107,11 +143,11 @@ def generer():
                 if r["module"] == MODULE and r["skill"] != "_meta"]
     retenues = _selectionner(rows)
     index = {id(r): i for i, r in enumerate(rows)}
-    retenues.sort(key=lambda r: (PHASE_RANK.get(r["phase"].strip(), 99), index[id(r)]))
+    retenues = _ordonner(retenues, index)
 
     playbook = {
         "nom": "cycle-produit-bmad",
-        "description": "Cycle produit BMAD complet : brief → PRD → architecture → epics/stories → readiness → sprint → cycle story (create/validate/dev/review), clos par revue-increment.",
+        "description": "Cycle produit BMAD complet (v6.12.0) : brief → PRD → architecture → epics/stories → sprint (qui porte la gate readiness) → build → code-review, clos par revue-increment.",
         "statut": "jamais-joue",
         "source": "genere:generate_bmad_playbook.py",
         "declencheurs": [
