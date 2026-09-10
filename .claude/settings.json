@@ -56,6 +56,22 @@
             "statusMessage": "Cadence veille agentic..."
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/remind_revue_increment.py\"",
+            "timeout": 10,
+            "statusMessage": "Rappel revue-increment..."
+          },
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/point_du_jour.py\"",
+            "timeout": 15,
+            "statusMessage": "Ce qui attend votre decision..."
+          }
+        ]
       }
     ],
     "Stop": [
