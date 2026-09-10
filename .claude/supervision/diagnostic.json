@@ -1,15 +1,6 @@
 {
- "generated": "2026-09-04T18:58:09+02:00",
+ "generated": "2026-09-10T08:01:47+02:00",
  "findings": [
-  {
-   "categorie": "verification-manquante",
-   "cible": "revue-increment",
-   "priorite": 4,
-   "titre": "revue-increment n'a jamais tourne en 43 jours malgre QUATRE declencheurs deja en place - un cinquieme rappel ne convertira pas",
-   "preuve": "state.json ne porte aucune entree revue-increment : 0 invocation sur les 6 transcripts couvrant 2026-07-23 -> 2026-09-04, alors que (1) .claude/hooks/remind_revue_increment.py reinjecte le rappel a CHAQUE SessionStart (non bloquant par conception, additionalContext), (2) .claude/warn_verif_before_commit.json la liste deja au moment du commit dans verif_skill = [pptx-verify, revue-increment], (3) runs.jsonl l'inscrit comme etape terminale « revue finale avant remise » dans le run du 2026-07-27T12:22:48 et « revue finale en contexte frais avant remise » dans celui du 2026-09-01T15:21:32 - les deux soldes « partiel », l'etape jamais executee (routing-hints.agents revue-increment : n=0, partiels=2). Quatre declencheurs, zero conversion : le TODO du scan (« revoir son declencheur ») propose donc le seul remede deja demontre inefficace.",
-   "proposition": "Cesser d'ajouter des rappels non bloquants et rendre l'etape PROUVABLE plutot que rappelee. Option A (recommandee) : log_run.py --solde refuse de solder un run dont le plan touche les watched_prefixes du hook sans une note « revue: <commande reellement lancee> » - l'absence de revue devient visible dans runs.jsonl au lieu d'etre silencieuse. Option B (si A est jugee trop rigide) : acter que la revue est de fait assuree par npm test + l'etape « verification reelle » presente dans les plans, retirer revue-increment de verif_skill et du catalogue des skills projet, et cesser d'afficher un TODO pour une skill qu'on a decide de ne pas utiliser. Ce qu'il ne faut PAS faire : un troisieme rappel.",
-   "recommandation": "Trancher A ou B ; ne pas reconduire un rappel supplementaire."
-  },
   {
    "categorie": "agent-mort",
    "cible": "bmad-catalogue-elagage",
@@ -29,15 +20,6 @@
    "recommandation": "Localiser la sortie de la veille avant toute relance ; outiller l'alarme « lancee sans production »."
   },
   {
-   "categorie": "agent-mort",
-   "cible": "skills-projet-sans-usage",
-   "priorite": 2,
-   "titre": "Les 3 « skills projet sans usage » ont trois causes distinctes, dont deux qu'aucun usage ne pourra jamais corriger",
-   "preuve": "(1) audit-technique est HUB-ONLY par conception : son propre SKILL.md, section « Portee : artefact HUB uniquement, aucun miroir local », dit « s'invoque depuis le hub, en ciblant un projet de la flotte - jamais depuis le projet cible lui-meme », et .claude/audits/ n'existe pas ici ; le commit 6de0e92 du 2026-09-03 a clarifie cette portee dans la doc sans l'apprendre au scan, qui continue de la compter comme skill projet inutilisee. Son n=0 local est structurel : il ne baissera jamais. (2) deck-design-review est ORPHELINE : grep -rn deck-design-review sur .claude/orchestration/ et .claude/agents/ ne rend AUCUN resultat - ni playbook, ni catalogue.md, ni ppt-designer.md ne la declenchent (les seules occurrences hors listes generees sont des citations d'exemple dans agent-orchestrator/SKILL.md, agent-supervisor/SKILL.md et deck-design-library/SKILL.md). Rien ne l'appelle, donc rien ne l'invoquera. (3) restitution-deck-design est au contraire cablee en etape OBLIGATOIRE de export-ppt-verifie.md (lignes 108-113) - mais ce playbook n'a jamais ete joue : sur les 7 runs de runs.jsonl, le champ playbook vaut null ou evolution-flotte, jamais export-ppt-verifie.",
-   "proposition": "Trois gestes distincts au lieu d'un TODO commun. (a) Classer audit-technique dans un bucket « hub-only » du canon du scan, a cote du bucket « bibliotheque/reference » qui porte deja ce type d'avertissement dans le wiki - cela supprime un TODO definitivement incorrigible. (b) Trancher deck-design-review : soit la cabler comme etape de export-ppt-verifie (le role que sa propre description revendique : « ou comme etape de revue du playbook export-ppt-verifie »), soit la desinstaller - le statu quo garantit qu'elle restera a zero. (c) Laisser restitution-deck-design en l'etat et re-decider au bmad-spec de la refonte COMOP : la ligne produit deck est en cadrage depuis l'annulation de l'increment 6 le 2026-09-04, decider maintenant serait decider sans le cadrage.",
-   "recommandation": "Reclasser audit-technique, trancher deck-design-review, differer restitution-deck-design au bmad-spec."
-  },
-  {
    "categorie": "autre",
    "cible": "en-sommeil-indicateur",
    "priorite": 2,
@@ -45,6 +27,15 @@
    "preuve": "Explore est un type de sous-agent NATIF de Claude Code, pas un actif installe de ce depot : il n'existe aucun .claude/agents/Explore.md, il n'y a donc ni desinstallation ni mise en sommeil possible - le TODO ne peut aboutir a aucune action. agent-supervisor est CADENCE a 14 jours et sa fraicheur est deja suivie separement sur la MEME page (« Diagnostic a relancer (> 14 j) ») : le meme fait est compte deux fois sous deux indicateurs, et usage.jsonl porte deja son invocation du 2026-09-04T18:47:01 - la ligne disparaitra au prochain scan sans que personne n'ait rien decide, ce qui confirme que l'entree ne mesurait pas un probleme. Enfin, le drapeau routing-hints.mesure_non_fiable = true (2 transcripts absents sur 6) n'est rendu NULLE PART sur cette page en dehors du texte d'un arbitrage clos : les 4 TODO y sont donc publies comme des faits alors que la mesure qui les produit est declaree non concluante dans le JSON.",
    "proposition": "Restreindre en_sommeil aux actifs sur lesquels « desinstaller / mettre en sommeil » est une option reelle : exclure les types de sous-agents natifs (Explore, Plan, general-purpose) et les skills a cadence propre deja dotees d'un indicateur de fraicheur et d'un hook de rappel (agent-supervisor 14 j, veille-agentic 3 j). Et rendre le drapeau mesure_non_fiable la ou l'humain arbitre : afficher en tete du bloc « TODO agents » un avertissement « mesure incomplete : N transcripts sur M absents - listes non concluantes », ou suspendre le bloc tant que le drapeau est vrai. Correction a porter dans le canon du hub (scan_transcripts.py), l'edition locale etant ecrasee par la synchro.",
    "recommandation": "Filtrer en_sommeil des actifs non elaguables ; rendre visible mesure_non_fiable sur la page des TODO."
+  },
+  {
+   "categorie": "pratique-dev",
+   "priorite": 2,
+   "cible": "flotte:point-du-jour-absent-des-5-cibles",
+   "titre": "Le hook qui liste ce qui attend une decision n'existe QUE au hub : les 5 cibles ne l'ont pas, et le kit ne le distribue pas",
+   "preuve": "Mesure du 2026-09-10 : test -f .claude/hooks/point_du_jour.py rend NON sur VSCode, VSCode1, VSCode2, VSCode3 et VSCode4 ; grep sur export/MANIFESTE.json : aucune entree point_du_jour. Les cinq portent pourtant un diagnostic.json local non vide (3, 10, 8, 1 et 2 findings) que leur scan_transcripts.py fusionne bien dans la section TODO de docs/wiki/technical/agents-supervision.md et docs/wiki/index.md — le canal d'affichage existe, mais aucune ligne ne dit a l'ouverture de session « voici ce qui attend une decision ».",
+   "recommandation": "Le hub a construit ce hook pour lui-meme le 2026-09-09 (finding : les decisions n'etaient affichees nulle part). La flotte a exactement le meme besoin, et son mandat de garant l'oblige a propager ce qu'il se donne. Attention : sa fonction ligne_decisions_audit() lit .claude/audits/, repertoire qui n'existe QUE au hub — la version distribuee doit degrader proprement (repertoire absent = ligne vide, le fail-open est deja ecrit).",
+   "proposition": "(A) Ajouter point_du_jour.py au kit exporte et le cabler en SessionStart chez les 5 cibles, apres verification qu'il degrade bien sans repertoire d'audits. (B) Ou, si l'on juge que le point du jour est une fonction de pilotage propre au hub, le dire explicitement dans la doc du kit — pour que l'absence soit un choix trace et non un oubli."
   }
  ]
 }
