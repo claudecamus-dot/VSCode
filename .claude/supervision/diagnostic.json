@@ -1,32 +1,4 @@
 {
  "generated": "2026-09-10T08:01:47+02:00",
- "findings": [
-  {
-   "categorie": "agent-mort",
-   "cible": "bmad-catalogue-elagage",
-   "priorite": 3,
-   "titre": "Le critere « 69/71 jamais invoquees » aurait supprime le 2026-09-01 les deux skills qui portent aujourd'hui la refonte COMOP",
-   "preuve": "git show 1f65beb:.claude/orchestration/routing-hints.json (etat au diagnostic du 2026-09-01) : jamais_utilises = 75 entrees, incluant bmad-forge-idea ET bmad-party-mode. Trois jours plus tard state.json les mesure a n=2 (2026-09-04T12:52 et 15:26) et n=1 (12:34) : bmad-party-mode a porte la table ronde atelier-idees et bmad-forge-idea le forged-idea.md HARDENED - c'est-a-dire la decision qui a conduit l'utilisateur a annuler l'increment 6 le jour meme (arbitrage increment-6-validation du 2026-09-04). bmad-spec, egalement dans cette liste, est l'etape en cours du run 2026-09-04T18:46:24. Par ailleurs routing-hints porte mesure_non_fiable = true : 2 transcripts sur 6 sont absents du disque (245999fc, e7f9152c), donc la liste n'est pas rejouable et une desinstallation prise sur elle serait irreversible sans base pour la contester. « Jamais invoquee » mesure l'anteriorite, pas l'utilite.",
-   "proposition": "Remplacer le critere d'elagage « jamais invoque » par deux gestes verifiables. (a) Desinstaller les 4 skills que BMAD declare lui-meme obsoletes dans leur propre frontmatter - bmad-create-architecture, bmad-create-prd, bmad-edit-prd, bmad-validate-prd (« DEPRECATED ... will be removed in v7 in favor of X », remplacants deja installes) : verifie sur disque par grep -rl DEPRECATED .claude/skills/bmad-*/SKILL.md, c'est le seul sous-ensemble ou la suppression ne perd aucune capacite. (b) Pour les 65 autres, ne rien supprimer et traiter le cout reel - les descriptions BMAD pesent 11 981 caracteres de frontmatter charges a chaque session - en demandant au canon du scan de ne plus publier de TODO d'elagage tant que mesure_non_fiable vaut true.",
-   "recommandation": "Elaguer les 4 DEPRECATED, geler l'elagage par usage."
-  },
-  {
-   "categorie": "interaction",
-   "cible": "veille-sans-depot",
-   "priorite": 3,
-   "titre": "La veille lancee il y a 6 h n'a rien depose dans ce depot : le volet « etat de l'art agentic » de ce diagnostic est structurellement vide",
-   "preuve": "state.json mesure le sous-agent veille-agentic lance le 2026-09-04T12:21:30 et la skill a 14:21:41 (usage.jsonl) ; runs.jsonl (run 2026-09-04T14:20:33) la journalise « veille-agentic lancee en arriere-plan (jamais enregistree, cf notification a venir) » et solde le run a 14:26 sans elle. Quatre heures plus tard, .claude/veille/ est ABSENT du disque (find -name veille*.json : aucun resultat) alors que veille-agentic/SKILL.md ligne 55 prescrit « Mettre a jour .claude/veille/veille.json (creer le dossier au besoin) ». Consequence mesurable sur CE diagnostic : aucune trouvaille, aucune regle_proposee, aucune section veille dans docs/wiki/ - donc zero ecart a l'etat de l'art arbitrable, alors que la methode en fait un volet obligatoire. A noter : usage.jsonl de ce depot ne porte ni duree_s ni evenement SubagentStop (20 lignes, champs ts/skill seulement), donc le signal « sous-agent d'arriere-plan qui ne rend jamais » n'est pas outillable localement.",
-   "proposition": "(a) Verifier d'abord ou la trouvaille a atterri - le sous-agent a pu ecrire au hub VScode5, non joignable depuis ce chemin - puis, si elle est perdue, relancer veille-agentic avec un brief autoportant imposant le chemin ABSOLU d'ecriture C:/Users/claude.camus/Documents/VSCode/.claude/veille/veille.json, la cause la plus probable etant un chemin relatif resolu ailleurs que dans le depot appelant. (b) Ajouter au canon du scan la meme alarme de fraicheur que pour le diagnostic : « veille lancee le X, aucun veille.json produit » - sans quoi une veille qui echoue reste indistinguable d'une veille jamais lancee, ce qui est exactement l'etat actuel.",
-   "recommandation": "Localiser la sortie de la veille avant toute relance ; outiller l'alarme « lancee sans production »."
-  },
-  {
-   "categorie": "autre",
-   "cible": "en-sommeil-indicateur",
-   "priorite": 2,
-   "titre": "Le TODO « skills en sommeil » est inactionnable par construction : aucune de ses deux entrees n'est elaguable, et l'une se vide toute seule",
-   "preuve": "Explore est un type de sous-agent NATIF de Claude Code, pas un actif installe de ce depot : il n'existe aucun .claude/agents/Explore.md, il n'y a donc ni desinstallation ni mise en sommeil possible - le TODO ne peut aboutir a aucune action. agent-supervisor est CADENCE a 14 jours et sa fraicheur est deja suivie separement sur la MEME page (« Diagnostic a relancer (> 14 j) ») : le meme fait est compte deux fois sous deux indicateurs, et usage.jsonl porte deja son invocation du 2026-09-04T18:47:01 - la ligne disparaitra au prochain scan sans que personne n'ait rien decide, ce qui confirme que l'entree ne mesurait pas un probleme. Enfin, le drapeau routing-hints.mesure_non_fiable = true (2 transcripts absents sur 6) n'est rendu NULLE PART sur cette page en dehors du texte d'un arbitrage clos : les 4 TODO y sont donc publies comme des faits alors que la mesure qui les produit est declaree non concluante dans le JSON.",
-   "proposition": "Restreindre en_sommeil aux actifs sur lesquels « desinstaller / mettre en sommeil » est une option reelle : exclure les types de sous-agents natifs (Explore, Plan, general-purpose) et les skills a cadence propre deja dotees d'un indicateur de fraicheur et d'un hook de rappel (agent-supervisor 14 j, veille-agentic 3 j). Et rendre le drapeau mesure_non_fiable la ou l'humain arbitre : afficher en tete du bloc « TODO agents » un avertissement « mesure incomplete : N transcripts sur M absents - listes non concluantes », ou suspendre le bloc tant que le drapeau est vrai. Correction a porter dans le canon du hub (scan_transcripts.py), l'edition locale etant ecrasee par la synchro.",
-   "recommandation": "Filtrer en_sommeil des actifs non elaguables ; rendre visible mesure_non_fiable sur la page des TODO."
-  }
- ]
+ "findings": []
 }

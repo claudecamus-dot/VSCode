@@ -152,6 +152,26 @@
       ],
       "date": "2026-09-07",
       "source": "veille-agentic 2026-09-07 (relancee en arriere-plan pendant un etat des lieux), arbitrage utilisateur explicite \"adopte 1 et 2\" + clarification \"Migrer VSCode maintenant\""
+    },
+    {
+      "cible": "flotte:point-du-jour-absent-des-5-cibles",
+      "date": "2026-09-11",
+      "decision": "ACCEPTE + APPLIQUE (option A, 'ajouter au kit + installer sur VSCode2') : cadrage reel avant application a corrige le finding lui-meme -- le manifeste export_agentic.py du hub porte deja point_du_jour.py depuis le 2026-09-10 (commit hub 6b0aed5, 'distribue a la flotte'), et VSCode/VSCode1/VSCode3/VSCode4 l'avaient deja (md5 be2556a8 identique au hub) -- seul VSCode2 en etait reellement depourvu malgre la formule '5 cibles' de ce commit hub (verifie : git log de VSCode2 sur ces 2 fichiers ne montre aucune trace avant ce jour). Installe sur VSCode2 (.claude/hooks/point_du_jour.py copie du hub, entree SessionStart ajoutee dans settings.json, meme pattern que les 4 autres) -- commit VSCode2 7e61193, verifie par execution reelle (exit 0, findings et veille affiches). Rien a faire au hub (deja fait). Signale au hub, pas corrige ici : son commit 6b0aed5 surclamait 'chez les 5 cibles' alors qu'une ne l'avait pas recue."
+    },
+    {
+      "cible": "bmad-catalogue-elagage",
+      "date": "2026-09-11",
+      "decision": "ACCEPTE + DEJA RESOLU sur les deux volets, verifie avant d ecrire. Volet (a) desinstaller les 4 skills DEPRECATED (bmad-create-architecture, bmad-create-prd, bmad-edit-prd, bmad-validate-prd) : SANS OBJET, elles ne sont plus sur le disque de ce depot -- la migration BMAD 6.10.0 -> 6.12.0 (commit 0ef6d7c du 2026-09-07, independante de ce finding) les a retirees ; test -d rend absent pour les 4, et grep -rl DEPRECATED sur les SKILL.md restants ne les cite pas. Volet (b) ne plus publier de TODO d elagage sur la foi d un compteur non fiable : DEJA IMPLEMENTE au canon -- skills_depreciees() lit la declaration d obsolescence dans le frontmatter de chaque skill (donnee de l editeur, independante de notre compteur) et avertissement_mesure() affiche en tete du bloc TODO « Ne rien desinstaller sur cette base » quand mesure_non_fiable vaut true. Les deux fonctions sont presentes dans la copie locale de CE depot (verifie par grep 'def <nom>'), pas seulement au hub."
+    },
+    {
+      "cible": "veille-sans-depot",
+      "date": "2026-09-11",
+      "decision": "ACCEPTE + APPLIQUE. Volet (a) « ou la sortie a-t-elle atterri ? » : REPONDU, elle n etait pas perdue -- .claude/veille/veille.json existe dans ce depot, projection filtree generee par le hub (_genere.date 2026-09-09, derniere_veille 2026-09-08), propagee par sync_dispositif.py qui projette la veille du hub chez chaque cible. Aucune relance de veille faite : elle aurait coute un appel LLM pour un probleme deja resolu. Volet (b) alarme de fraicheur « veille lancee le X, aucun artefact produit » : APPLIQUE au canon du hub (commit hub 13d7355, fonction veille_sans_production, rendue en tete du bloc TODO en md ET en html), puis propagee ici par sync_dispositif.py. 6 tests, dont les 3 qui exigent que l alarme crie vus ROUGES avant d etre crus."
+    },
+    {
+      "cible": "en-sommeil-indicateur",
+      "date": "2026-09-11",
+      "decision": "ACCEPTE + DEJA RESOLU, verifie avant d ecrire. Les deux volets de la proposition sont implementes au canon et presents dans la copie locale de CE depot : (1) hors_perimetre_sommeil() exclut du TODO « en sommeil » ce sur quoi aucun geste n existe -- les types de sous-agents NATIFS du harnais (Explore, Plan, general-purpose : aucun .claude/agents/<nom>.md, donc rien a desinstaller ni a reveiller) et les noms a cadence propre deja suivie ailleurs sur la meme page, calcules par _cadence_propre() (tout hook remind_*.py plus agent-supervisor et ses 14 jours) ; (2) avertissement_mesure() rend le drapeau mesure_non_fiable visible LA OU L HUMAIN ARBITRE, en tete du bloc TODO, avec le nombre de transcripts absents et la consigne de ne rien desinstaller sur cette base. Le docstring de hors_perimetre_sommeil cite nommement ce finding."
     }
   ]
 }
