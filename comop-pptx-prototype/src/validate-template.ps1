@@ -7,6 +7,8 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+. (Join-Path $PSScriptRoot 'pptx-xml-helpers.ps1')
+
 function Read-ZipTextEntries {
   param([string]$Path)
 
@@ -36,6 +38,14 @@ function Read-ZipTextEntries {
 if (-not (Test-Path -LiteralPath $TemplatePath)) {
   throw "Template introuvable: $TemplatePath"
 }
+
+# Audit 2026-09-13 (securite) : ce script est le PREMIER lance sur un template
+# uploade (server.js, POST /api/templates) et etait le seul a ouvrir l'archive
+# SANS la garde anti-zip-bomb cablee le 2026-09-07 dans les six autres --
+# Read-ZipTextEntries concatene l'integralite de ppt/slides/*.xml dans un
+# StringBuilder non borne, et la garde d'extract-template-branding n'entrait en
+# jeu qu'apres. Controle du volume decompresse annonce AVANT toute lecture.
+Assert-ZipDecompressedSizeWithinLimit -ZipPath $TemplatePath
 
 if (-not $PlaceholdersPath) {
   $PlaceholdersPath = Join-Path $PSScriptRoot "placeholders.json"

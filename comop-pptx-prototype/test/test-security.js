@@ -101,6 +101,51 @@ test("route rejette un .pptx a signature PK valide mais dont l'archive est illis
     "le template rejete ne doit pas rester ecrit ni liste");
 });
 
+// Audit du 2026-09-13 (securite, finding GRAVE) : la garde anti-zip-bomb
+// (Assert-ZipDecompressedSizeWithinLimit) cablee le 2026-09-07 dans 6 scripts
+// n'avait jamais ete branchee dans validate-template.ps1 -- qui est pourtant le
+// PREMIER script lance sur un upload (POST /api/templates) : l'archive etait
+// ouverte et ses slides concatenees dans un StringBuilder non borne avant tout
+// controle de volume, la garde des scripts suivants n'entrant en jeu qu'apres.
+// Preuve qu'AVANT le correctif ce test echouait : sur cette archive (320 Mo
+// annonces decompresses pour 1,4 Mo sur disque, donc sous le plafond d'upload de
+// 25 Mo), validate-template.ps1 sortait en 0 avec status "incomplet" et le
+// serveur repondait 200 en inscrivant le template dans la bibliotheque.
+test("route rejette un template dont le volume decompresse annonce depasse la limite (zip bomb)", { skip: !powershell }, async t => {
+  const server = await startServer();
+  t.after(() => server.stop());
+
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "comop-zip-bomb-"));
+  const bombe = path.join(dir, "bombe.pptx");
+  try {
+    const prep = spawnSync(
+      powershell,
+      [
+        "-NoProfile", "-ExecutionPolicy", "Bypass",
+        "-File", path.join(projectRoot, "test-support", "fabrique-zip-bomb.ps1"),
+        "-Destination", bombe
+      ],
+      { encoding: "utf8", windowsHide: true }
+    );
+    assert.equal(prep.status, 0, `fabrication de l'archive piegee en echec :\n${prep.stderr}`);
+
+    const res = await request(server.baseUrl, "POST", "/api/templates", {
+      headers: { "x-template-name": "bombe.pptx" },
+      body: fs.readFileSync(bombe)
+    });
+
+    assert.equal(res.status, 422,
+      "une archive au volume decompresse hors limite doit etre rejetee, pas inscrite");
+
+    const liste = await request(server.baseUrl, "GET", "/api/templates");
+    const templates = JSON.parse(liste.text).templates;
+    assert.ok(!templates.some(t => t.file === "bombe.pptx"),
+      "l'archive piegee ne doit pas rester ecrite ni listee");
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 // Audit 09-07 (robustesse, MESURE M11) : x-template-name: NUL.pptx passait
 // safeTemplatePath tel quel -- Node ecrivait un vrai fichier NUL.pptx que
 // PowerShell (qui resout NUL comme le peripherique nul du systeme) ne
