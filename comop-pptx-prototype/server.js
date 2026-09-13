@@ -117,7 +117,7 @@ function purgeOldOutputs() {
       try {
         const full = path.join(dir, f);
         if (fs.statSync(full).mtimeMs < cutoff) fs.unlinkSync(full);
-      } catch (_) {}
+      } catch { /* purge best-effort : fichier deja retire, verrouille, ou disparu entre readdir et stat */ }
     });
   };
   purgeDir(outputDir, ".pptx");
@@ -308,7 +308,7 @@ function readTemplateMeta(file) {
   try {
     const meta = JSON.parse(fs.readFileSync(metaPath, "utf8"));
     return { file, name: meta.name || file };
-  } catch (_) {
+  } catch {
     return { file, name: file };
   }
 }
@@ -388,7 +388,7 @@ async function handleApi(req, res) {
       validation = JSON.parse(validationRaw);
     } catch (error) {
       log(`VALIDATION ${error.message}`);
-      try { fs.unlinkSync(templatePath); } catch (_) { /* deja absent */ }
+      try { fs.unlinkSync(templatePath); } catch { /* deja absent */ }
       sendJson(res, 422, { error: "Fichier invalide : impossible de lire l'archive comme un template OOXML" });
       return;
     }
