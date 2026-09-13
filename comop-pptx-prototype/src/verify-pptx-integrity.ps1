@@ -24,9 +24,17 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+. (Join-Path $PSScriptRoot 'pptx-xml-helpers.ps1')
+
 if (-not (Test-Path -LiteralPath $TemplatePath)) {
   throw "PPTX introuvable: $TemplatePath"
 }
+
+# Audit 2026-09-13 (securite) : comme validate-template.ps1, cette gate ouvrait
+# l'archive sans la garde anti-zip-bomb du 2026-09-07 et lisait CHAQUE partie
+# .xml/.rels en entier en memoire (ReadToEnd) sans borne. Controle du volume
+# decompresse annonce avant d'ouvrir la moindre entree.
+Assert-ZipDecompressedSizeWithinLimit -ZipPath $TemplatePath
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 

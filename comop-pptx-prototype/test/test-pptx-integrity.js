@@ -92,6 +92,32 @@ test("la gate refuse un paquet dont une partie XML est cassee", { skip: !powersh
   }
 });
 
+// Audit du 2026-09-13 (securite) : meme trou que validate-template.ps1, avec une
+// exposition moindre (script hors perimetre serveur, appele par ce seul fichier
+// de test) -- verify-pptx-integrity.ps1 lit CHAQUE partie .xml/.rels en entier en
+// memoire (ReadToEnd) sans borne ni appel a Assert-ZipDecompressedSizeWithinLimit.
+// Preuve qu'AVANT le correctif ce test echouait : la gate rendait son JSON
+// habituel (status "corrompu", faute de [Content_Types].xml) sans un mot sur le
+// volume, stderr vide -- elle avait donc bien ouvert et parcouru l'archive.
+test("la gate refuse une archive dont le volume decompresse annonce depasse la limite", { skip: !powershell }, () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "comop-integrity-bombe-"));
+  const bombe = path.join(dir, "bombe.pptx");
+  try {
+    const prep = runPowerShell(path.join(projectRoot, "test-support", "fabrique-zip-bomb.ps1"), [
+      "-Destination", bombe
+    ]);
+    assert.equal(prep.status, 0, `fabrication de l'archive piegee en echec :\n${prep.stderr}`);
+
+    const res = runPowerShell(verifyScript, ["-TemplatePath", bombe]);
+
+    assert.notEqual(res.status, 0, "la gate doit sortir en erreur sur une archive hors limite");
+    assert.match(res.stderr, /volume decompresse|zip bomb/,
+      `la gate doit rejeter sur le VOLUME annonce, avant toute lecture d'entree ; stderr recu :\n${res.stderr}`);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 // Audit securite du 2026-09-02 : footer_text/font/color_map de config/branding.json
 // etaient inseres tels quels dans des here-strings OOXML (apply-octo-branding.ps1),
 // sans echappement. Preuve qu'AVANT le correctif ce test aurait echoue : un "<"/">"
