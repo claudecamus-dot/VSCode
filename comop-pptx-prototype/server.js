@@ -285,8 +285,15 @@ const RESERVED_WINDOWS_DEVICE_NAMES = new Set([
   "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
 ]);
 
+// Audit 2026-09-13 (robustesse) : la normalisation du nom reserve se faisait
+// deja en /i, mais le controle d'extension ci-dessous etait sensible a la casse
+// -- un upload legitime nomme MODELE.PPTX repartait en 400. On NORMALISE
+// l'extension en minuscules plutot que de relacher le controle : toutes les
+// derivations en aval (sidecars .meta.json / .branding.json / .zones.json,
+// filtre de GET /api/templates) sont ecrites en /\.pptx$/ sensible a la casse et
+// produiraient sinon un fichier ecrit mais jamais liste ni supprimable.
 function safeTemplatePath(name) {
-  const fileName = path.basename(name || "");
+  const fileName = path.basename(name || "").replace(/\.pptx$/i, ".pptx");
   const templatePath = path.join(templatesDir, fileName);
   const baseNameUpper = fileName.replace(/\.pptx$/i, "").toUpperCase();
   if (!fileName.endsWith(".pptx") || !templatePath.startsWith(templatesDir) || RESERVED_WINDOWS_DEVICE_NAMES.has(baseNameUpper)) {

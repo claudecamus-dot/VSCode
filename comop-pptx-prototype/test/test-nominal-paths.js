@@ -139,6 +139,34 @@ test("DELETE /api/templates/<n> renvoie 404 si le template n'existe pas", async 
   assert.match(body.error, /introuvable/i);
 });
 
+// Audit 2026-09-13 (robustesse) : safeTemplatePath normalisait deja le nom de
+// peripherique reserve en /i, mais controlait l'extension avec un
+// endsWith(".pptx") sensible a la casse -- un upload parfaitement legitime nomme
+// MODELE.PPTX (casse frequente en sortie d'export Office, et indifferente pour
+// Windows) repartait en 400 "Template invalide". Preuve qu'AVANT le correctif ce
+// test echouait : 400 au lieu de 200.
+test("POST /api/templates accepte une extension en majuscules (MODELE.PPTX) et la liste", { skip: !powershell }, async t => {
+  const server = await startServer();
+  t.after(() => server.stop());
+
+  const res = await request(server.baseUrl, "POST", "/api/templates", {
+    headers: { "x-template-name": "MODELE.PPTX" },
+    body: fs.readFileSync(realTemplate)
+  });
+
+  assert.equal(res.status, 200, `un .PPTX valide doit etre accepte, recu : ${res.text}`);
+
+  // L'extension est normalisee en minuscules a l'entree : toutes les derivations
+  // en aval (sidecars .meta.json / .branding.json / .zones.json, filtre de
+  // GET /api/templates) sont ecrites en /\.pptx$/ sensible a la casse. Sans cette
+  // normalisation, accepter le fichier l'ecrirait sur disque sans jamais le
+  // lister ni pouvoir le supprimer : template fantome.
+  const liste = await request(server.baseUrl, "GET", "/api/templates");
+  const templates = JSON.parse(liste.text).templates;
+  assert.ok(templates.some(x => x.file === "MODELE.pptx"),
+    `le template uploade doit etre liste, recu : ${JSON.stringify(templates)}`);
+});
+
 test("POST /api/generate (chemin nominal) genere un vrai .pptx telechargeable", { skip: !powershell }, async t => {
   const server = await startServer();
   t.after(() => server.stop());
