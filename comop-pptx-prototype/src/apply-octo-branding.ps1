@@ -224,11 +224,22 @@ try {
   if ($outputDirectory -and -not (Test-Path -LiteralPath $outputDirectory)) {
     New-Item -ItemType Directory -Path $outputDirectory | Out-Null
   }
-  if (Test-Path -LiteralPath $OutputPath) {
-    Remove-Item -LiteralPath $OutputPath -Force
+  # Audit 2026-09-13 (robustesse) : la cible etait SUPPRIMEE puis recompressee.
+  # Avec OutputPath = TemplatePath (valeur par defaut, et usage nominal :
+  # rebrander le template en place), tout echec de la recompression laissait
+  # templates/comop-template.pptx detruit, sans aucune sauvegarde. On ecrit
+  # desormais l'archive complete dans un fichier temporaire voisin et on ne
+  # remplace la cible qu'une fois cette ecriture terminee : a aucun instant la
+  # cible n'est absente alors que son remplacant n'existe pas encore.
+  $tempOutput = "$OutputPath.tmp-$([System.Guid]::NewGuid().ToString('N'))"
+  try {
+    [System.IO.Compression.ZipFile]::CreateFromDirectory($workDir, $tempOutput)
+    Move-Item -LiteralPath $tempOutput -Destination $OutputPath -Force
+  } finally {
+    if (Test-Path -LiteralPath $tempOutput) {
+      Remove-Item -LiteralPath $tempOutput -Force
+    }
   }
-
-  [System.IO.Compression.ZipFile]::CreateFromDirectory($workDir, $OutputPath)
 
   [pscustomobject]@{
     status   = "branding_applique"
