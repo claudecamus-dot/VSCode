@@ -35,6 +35,49 @@ test("route rejette une tentative de traversee de repertoire (DELETE)", async t 
   assert.match(body.error, /invalide/i);
 });
 
+// Audit du 2026-09-13 (securite) : le test ci-dessus passe par la clause
+// d'extension, et la branche !startsWith(templatesDir) de safeTemplatePath est
+// INATTEIGNABLE puisque path.basename() a deja neutralise le chemin -- la garde
+// est saine, mais aucune variante d'evasion propre a Windows n'etait essayee, si
+// bien que rien ne le PROUVAIT. On eprouve ici chaque forme qu'un attaquant
+// tenterait reellement : separateur antislash, chemin absolu de lecteur, chemin
+// UNC, double-encodage. Propriete verifiee : le chemin obtenu reste TOUJOURS
+// dans templates/ -- soit rejete en 400, soit rebase sur le dossier des
+// templates (la suppression porte alors sur le fichier de templates/, jamais sur
+// la cible hors perimetre designee par le nom).
+test("aucune variante d'evasion Windows ne fait sortir safeTemplatePath de templates/", async t => {
+  const server = await startServer();
+  t.after(() => server.stop());
+
+  const templatesDir = path.join(server.dataRoot, "templates");
+  const leurre = path.join(templatesDir, "evasion.pptx");
+
+  // Rejetees en 400 : apres basename(), le nom restant n'a pas l'extension .pptx.
+  for (const variante of [
+    "..%5C..%5Cserver.js",              // separateur Windows (antislash)
+    "..%252F..%252Fserver.js",          // double-encodage (%252F -> %2F litteral)
+    "C%3A%5CWindows%5Cwin.ini"          // chemin absolu de lecteur
+  ]) {
+    const res = await request(server.baseUrl, "DELETE", `/api/templates/${variante}`);
+    assert.equal(res.status, 400, `la variante ${variante} doit etre rejetee, recu ${res.status}`);
+  }
+
+  // Rebasees dans templates/ : le nom se termine bien par .pptx, mais le chemin
+  // qui le precede est ignore. La preuve porte sur l'EFFET : c'est le fichier de
+  // templates/ qui disparait, donc le chemin hostile n'a jamais ete suivi.
+  for (const variante of [
+    "C%3A%5CWindows%5CTemp%5Cevasion.pptx",   // chemin absolu de lecteur
+    "%5C%5Cserveur%5Cpartage%5Cevasion.pptx", // chemin UNC
+    "..%5C..%5Cevasion.pptx"                  // remontee en antislash
+  ]) {
+    fs.writeFileSync(leurre, "leurre");
+    const res = await request(server.baseUrl, "DELETE", `/api/templates/${variante}`);
+    assert.equal(res.status, 200, `la variante ${variante} devait etre rebasee dans templates/, recu ${res.text}`);
+    assert.equal(fs.existsSync(leurre), false,
+      `la variante ${variante} doit agir sur templates/evasion.pptx, pas sur la cible hors perimetre`);
+  }
+});
+
 test("route rejette un nom de template sans extension .pptx (upload)", async t => {
   const server = await startServer();
   t.after(() => server.stop());
