@@ -337,15 +337,40 @@ test("une requete sans Origin (outil, pas navigateur) sur le meme Host reste acc
 // detect-template-zones.ps1 reellement execute (4 626 ms de CPU par appel).
 // Le garde doit refuser AVANT d'atteindre la route (ici : 403, pas le 404 que
 // renverrait la route sur un template absent).
-test("un GET cross-site sans Origin (img/iframe) est rejete sur /api/ (403), sans atteindre la route", async t => {
+// Audit du 2026-09-13 (securite) : ce test prouvait bien le 403 (rouge sans la
+// garde) mais PAS la propriete qu'il annonce dans son nom -- templates/ etant
+// vide dans le harnais, detect-template-zones.ps1 n'aurait de toute facon pas
+// tourne, quel que soit le sort de la garde. La non-execution est desormais
+// mesuree : on seme le vrai template, la route visee devient reellement
+// servable, et son execution laisse une trace observable (le sidecar de cache
+// .zones.json, ecrit par la route apres detection).
+test("un GET cross-site sans Origin (img/iframe) est rejete sur /api/ (403), sans atteindre la route", { skip: !powershell }, async t => {
   const server = await startServer();
   t.after(() => server.stop());
+
+  const templatePath = path.join(server.dataRoot, "templates", "comop-template.pptx");
+  fs.copyFileSync(realTemplate, templatePath);
+  const zonesCache = templatePath.replace(/\.pptx$/, ".zones.json");
 
   const res = await request(server.baseUrl, "GET", "/api/templates/comop-template.pptx/zones", {
     headers: { "Sec-Fetch-Site": "cross-site", "Sec-Fetch-Mode": "no-cors" }
   });
 
   assert.equal(res.status, 403);
+  assert.equal(fs.existsSync(zonesCache), false,
+    "la route ne doit pas avoir ete atteinte : aucune detection de zones ne doit avoir tourne");
+
+  // Contre-epreuve, sans laquelle l'assertion ci-dessus resterait vraie par
+  // construction : la MEME requete en same-origin atteint bien la route et
+  // declenche reellement la detection (4 626 ms de CPU par appel, MESURE M8 de
+  // l'audit du 09-07). Le 403 vient donc de la garde, pas d'une route inerte.
+  const meme = await request(server.baseUrl, "GET", "/api/templates/comop-template.pptx/zones", {
+    headers: { "Sec-Fetch-Site": "same-origin" }
+  });
+
+  assert.equal(meme.status, 200, `la route doit etre servable en same-origin, recu : ${meme.text}`);
+  assert.equal(fs.existsSync(zonesCache), true,
+    "la detection de zones doit avoir reellement tourne sur le chemin autorise");
 });
 
 test("un GET same-origin (page de l'outil) reste accepte", async t => {
