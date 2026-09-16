@@ -63,6 +63,36 @@ function New-TempDirectory {
   return $path
 }
 
+function Set-TextNodeByIndex {
+  # Deplacee ici depuis prepare-ag2r-template.ps1 (2026-09-16) : fonction sans
+  # effet de bord, testable isolement via test-support/invoke-set-text-node.ps1,
+  # comme les autres helpers de ce fichier.
+  param(
+    [string]$Text,
+    [int]$Index,
+    [string]$Value
+  )
+
+  # Risque technique (audit) : nommer cette variable "$matches" ecrase la
+  # variable AUTOMATIQUE de PowerShell (celle que remplit l'operateur
+  # -match), meme si l'ecriture reste locale a cette fonction ici. Tout appel
+  # a -match ajoute plus tard dans cette fonction lirait/ecraserait silencieusement
+  # cette collection au lieu du resultat du -match, un bug tres difficile a
+  # diagnostiquer. Nom distinct pour eliminer la collision par construction.
+  $textNodeMatches = [regex]::Matches($Text, '<a:t>(.*?)</a:t>')
+  if ($Index -lt 0 -or $Index -ge $textNodeMatches.Count) {
+    # Correctif du 2026-09-16 (atelier-dev) : un retour silencieux du texte
+    # INCHANGE laissait le script continuer et ecrire un statut
+    # "template_prepare" de succes alors qu'une mutation attendue n'avait pas
+    # eu lieu. Echec dur : remonte via le try/finally de prepare-ag2r-template.ps1,
+    # empeche l'ecriture du pptx et du JSON de succes.
+    throw "Index $Index hors bornes ($($textNodeMatches.Count) noeuds <a:t> trouves)"
+  }
+
+  $match = $textNodeMatches[$Index]
+  return $Text.Substring(0, $match.Index) + "<a:t>$Value</a:t>" + $Text.Substring($match.Index + $match.Length)
+}
+
 function Protect-XmlAttribute {
   # Echappement complet pour une valeur inseree dans un attribut XML (ex:
   # typeface="$value"). Audit securite 2026-09-02 (branding) : $font/$to

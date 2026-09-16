@@ -7,28 +7,6 @@ $ErrorActionPreference = "Stop"
 
 . (Join-Path $PSScriptRoot 'pptx-xml-helpers.ps1')
 
-function Set-TextNodeByIndex {
-  param(
-    [string]$Text,
-    [int]$Index,
-    [string]$Value
-  )
-
-  # Risque technique (audit) : nommer cette variable "$matches" ecrase la
-  # variable AUTOMATIQUE de PowerShell (celle que remplit l'operateur
-  # -match), meme si l'ecriture reste locale a cette fonction ici. Tout appel
-  # a -match ajoute plus tard dans cette fonction lirait/ecraserait silencieusement
-  # cette collection au lieu du resultat du -match, un bug tres difficile a
-  # diagnostiquer. Nom distinct pour eliminer la collision par construction.
-  $textNodeMatches = [regex]::Matches($Text, '<a:t>(.*?)</a:t>')
-  if ($Index -lt 0 -or $Index -ge $textNodeMatches.Count) {
-    return $Text
-  }
-
-  $match = $textNodeMatches[$Index]
-  return $Text.Substring(0, $match.Index) + "<a:t>$Value</a:t>" + $Text.Substring($match.Index + $match.Length)
-}
-
 if (-not (Test-Path -LiteralPath $SourcePath)) {
   throw "PowerPoint source introuvable: $SourcePath"
 }
