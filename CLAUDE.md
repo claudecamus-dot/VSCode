@@ -95,3 +95,6 @@ changer le ton des réponses :
   `.claude/skills/bmad-*` (77 skills BMAD installées).
 - **Sous-agent pour toute sortie volumineuse** plutôt que polluer le contexte principal.
 - **`/compact` dès ~40 %** de fenêtre utilisée si la session doit continuer longtemps.
+- **`/clear` (pas une 3e rustine) après deux corrections ratées consécutives** sur le
+  même problème — un contexte pollué par deux tentatives échouées fait moins bien
+  qu'une reprise à froid avec un meilleur prompt.
