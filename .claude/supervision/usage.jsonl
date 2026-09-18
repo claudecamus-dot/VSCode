@@ -23,3 +23,12 @@
 {"ts": "2026-09-07T09:16:57+02:00", "session_id": "b158fd18-2410-4e52-bd13-be04f5e9a16f", "tool": "Agent", "skill": null, "subagent_type": "veille-agentic", "description": "Veille agentic sur VSCode (hub)"}
 {"ts": "2026-09-07T09:17:02+02:00", "session_id": "b158fd18-2410-4e52-bd13-be04f5e9a16f", "tool": "Skill", "skill": "veille-agentic", "subagent_type": null, "description": null}
 {"ts": "2026-09-07T09:55:46+02:00", "session_id": "b158fd18-2410-4e52-bd13-be04f5e9a16f", "tool": "Skill", "skill": "update-config", "subagent_type": null, "description": null}
+{"ts": "2026-09-07T20:01:15+02:00", "session_id": "ae0f775c-2f6e-4ba9-8a4b-f7d6d71493f0", "tool": "Skill", "skill": "agent-orchestrator", "subagent_type": null, "description": null}
+{"ts": "2026-09-07T20:11:47+02:00", "session_id": "ae0f775c-2f6e-4ba9-8a4b-f7d6d71493f0", "tool": "Agent", "skill": null, "subagent_type": "bmad-revue", "description": "Revue SPEC refonte COMOP"}
+{"ts": "2026-09-07T20:11:57+02:00", "session_id": "ae0f775c-2f6e-4ba9-8a4b-f7d6d71493f0", "tool": "Skill", "skill": "bmad-review", "subagent_type": null, "description": null}
+{"ts": "2026-09-07T20:13:46+02:00", "session_id": "ae0f775c-2f6e-4ba9-8a4b-f7d6d71493f0", "tool": "Agent", "skill": null, "subagent_type": "general-purpose", "description": "Adversarial lens"}
+{"ts": "2026-09-07T20:14:01+02:00", "session_id": "ae0f775c-2f6e-4ba9-8a4b-f7d6d71493f0", "tool": "Agent", "skill": null, "subagent_type": "general-purpose", "description": "Edge-case lens"}
+{"ts": "2026-09-07T20:14:19+02:00", "session_id": "ae0f775c-2f6e-4ba9-8a4b-f7d6d71493f0", "tool": "Agent", "skill": null, "subagent_type": "general-purpose", "description": "Verification-gap lens"}
+{"ts": "2026-09-08T09:41:15+02:00", "session_id": "74de7f0a-0a0b-4c84-904e-ca555d6f595f", "tool": "Skill", "skill": "agent-orchestrator", "subagent_type": null, "description": null}
+{"ts": "2026-09-10T18:29:27+02:00", "session_id": "d7faba4a-f4d8-4993-9660-cf9b2199f613", "tool": "Skill", "skill": "agent-orchestrator", "subagent_type": null, "description": null}
+{"ts": "2026-09-11T08:47:04+02:00", "session_id": "4551f398-62e2-4fbb-bc05-0893afdfa543", "tool": "Skill", "skill": "agent-orchestrator", "subagent_type": null, "description": null}

@@ -1,5 +1,5 @@
 ---
-updated: 2026-09-10
+updated: 2026-09-18
 generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, étage 1)
 ---
 
@@ -8,13 +8,13 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-09-10T08:01:59+02:00 · **9 sessions** (transcripts) · **16** invocations de skills · **18** lancements de sous-agents.
+Dernier scan : 2026-09-18T10:40:43+02:00 · **11 sessions** (transcripts) · **18** invocations de skills · **18** lancements de sous-agents.
 
 ## Skills — usage réel
 
 | Skill | Famille | Invocations | Première | Dernière |
 | --- | --- | --- | --- | --- |
-| `agent-orchestrator` | projet | 6 | 2026-07-27 | 2026-09-08 |
+| `agent-orchestrator` | projet | 8 | 2026-07-27 | 2026-09-11 |
 | `agent-supervisor` | projet | 2 | 2026-07-23 | 2026-09-04 |
 | `bmad-forge-idea` | BMAD | 2 | 2026-09-04 | 2026-09-04 |
 | `veille-agentic` | projet | 2 | 2026-09-04 | 2026-09-07 |
@@ -36,9 +36,9 @@ Dernier scan : 2026-09-10T08:01:59+02:00 · **9 sessions** (transcripts) · **16
 
 ## Jamais utilisés
 
-**projet** — 3/13 jamais invoqués :
+**projet** — 4/14 jamais invoqués :
 
-`deck-design-review`, `restitution-deck-design`, `revue-increment`
+`agent-securite`, `deck-design-review`, `restitution-deck-design`, `revue-increment`
 
 **BMAD** — 67/71 jamais invoqués :
 
@@ -48,9 +48,9 @@ Dernier scan : 2026-09-10T08:01:59+02:00 · **9 sessions** (transcripts) · **16
 
 </details>
 
-**global** — 1/2 jamais invoqués :
+**global** — 2/3 jamais invoqués :
 
-`skill-creator`
+`skill-creator`, `synced`
 
 ## Skills hub-only
 
@@ -66,11 +66,11 @@ _Consommés en lisant/exécutant leurs `scripts/`, ou via un sous-agent qui les 
 
 ## TODO agents (constats automatiques)
 
-⚠️ **Mesure incomplète** — 2 transcript(s) sur 9 absent(s) du disque. Un `n=0` ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.
+⚠️ **Mesure incomplète** — 2 transcript(s) sur 11 absent(s) du disque. Un `n=0` ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.
 
 1. **Désinstaller les shims BMAD dépréciés** (17) : `bmad-checkpoint-preview`, `bmad-create-story`, `bmad-dev-auto`, `bmad-dev-story`, `bmad-document-project`, `bmad-domain-research`, `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-generate-project-context`, `bmad-market-research`, `bmad-quick-dev`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-review-verification-gap`, `bmad-sprint-status`, `bmad-technical-research` — dépréciés par BMAD dans leur propre `description`, chacun avec son remplaçant ; le seul élagage qui ne repose pas sur notre mesure d'usage.
 2. **`revue-increment` jamais invoquée** malgré le rappel SessionStart à chaque session — revoir son déclencheur (l'ancrer au flux de commit ?) ou la simplifier.
-3. **Skills projet sans usage** : `deck-design-review`, `restitution-deck-design` — vérifier pertinence et déclencheurs.
+3. **Skills projet sans usage** : `agent-securite`, `deck-design-review`, `restitution-deck-design` — vérifier pertinence et déclencheurs.
 
 ## Arbitrages enregistrés
 
@@ -93,25 +93,18 @@ _Constats clos par décision humaine (`.claude/supervision/arbitrages.json`) —
 - **`skills-projet-sans-usage`** (2026-09-04) : ACCEPTE + APPLIQUE (partiel, volet local) : deck-design-review etait orpheline de tout playbook alors que son propre SKILL.md prescrit d'etre une etape de export-ppt-verifie - cablee comme etape obligatoire des que le changement touche le template/branding COMOP, distincte de restitution-deck-design (generique, deja en place). Commit 027b30c. Les deux autres volets du finding (audit-technique = bucket hub-only manquant dans le scan canon ; restitution-deck-design = differe au bmad-spec de la refonte COMOP, aucune action ici) sont respectivement delegues au canon du hub (agent evolution-flotte) et sans action requise maintenant.
 - **`veille:stop-hook-gate-npm-test-comop`** (2026-09-07) : ACCEPTE + APPLIQUE (arbitrage utilisateur "adopte 1 et 2") : .claude/hooks/gate_stop_npm_test_comop.py cree, cable en hook Stop dans .claude/settings.json. Si le repertoire de travail COMOP (server.js, src/*.ps1, templates/*.pptx) porte des modifications non committees, rejoue npm test et bloque (exit 2) en cas d echec ; gere stop_hook_active pour eviter une boucle. Verifie par pipe-test reel (stop_hook_active, etat propre, edition sentinelle sur server.js -> npm test reellement lance 19/19 vert, sentinelle revertee). Objectif : que la regression payee le 2026-06-08/07-28 (theme1.xml corrompu, invisible 35 jours faute de gate bloquant) ne puisse plus se reproduire en silence.
 - **`veille:bmad-migration-6.12.0`** (2026-09-07) : ACCEPTE + APPLIQUE (arbitrage utilisateur "adopte 1 et 2" puis "Migrer VSCode maintenant" sur la question de coordination hub posee avant execution) : npx bmad-method install --directory . --action quick-update --yes execute reellement. core 6.10.0->6.12.0, bmad-method 6.10.0->6.12.0, tea 1.19.1->1.24.0, cis 0.2.1->0.3.2, bmb inchange. 4 fichiers _bmad/custom/*.toml preserves. 21 shims deprecies retenus (bmad-quick-dev, bmad-checkpoint-preview compris) : aucune casse. 3 references locales non-canon mises a jour vers bmad-walkthrough (.claude/agents/bmad-revue.md, .claude/skills/revue-increment/SKILL.md, _bmad/custom/bmad-party-mode.toml). .claude/skills/agent-orchestrator/SKILL.md (table de routage 46 skills, section 2 quinquies) est hub-canon : PAS touche localement (ecrase a la prochaine synchro sync_dispositif.py) - signale au hub VScode5 pour coordination fleet-wide de la migration et de la table. Verifie : 0 fichier comop-pptx-prototype touche (git status), manifest.yaml relu = 6.12.0, TOML edite revalide (tomllib).
-- **`bmad-catalogue-elagage`** (2026-09-07) : ACCEPTE + APPLIQUE (campagne de nettoyage mecanique du 2026-09-07, mandat utilisateur) : option (a) du finding retenue -- desinstallation des seules skills que BMAD declare lui-meme obsoletes, verifiee sur disque par grep -rl DEPRECATED et non sur une liste supposee. 4 dossiers supprimes (bmad-create-architecture, bmad-create-prd, bmad-edit-prd, bmad-validate-prd), les ~65 autres intactes conformement a option (b) -- gel de l elagage par usage tant que mesure_non_fiable vaut true. Commit d563a43. Verifie : 13 tests bmad-customize rejoues, verts, aucune dependance reelle aux dossiers supprimes. Signale : bmad-sprint-status porte aussi une declaration de suppression, non traitee ici (hors perimetre mecanique).
-- **`veille-sans-depot`** (2026-09-07) : REFERME SUR RE-MESURE (2026-09-07) : le finding decrivait .claude/veille/ absent du disque. Re-verifie ce jour : .claude/veille/veille.json existe, 8 entrees reelles, derniere_veille peuple. Resolu depuis la redaction du finding, rien code par cette passe.
-- **`en-sommeil-indicateur`** (2026-09-07) : REFERME SUR RE-MESURE (2026-09-07), correctif deja present : le finding demandait de filtrer les sous-agents natifs (Explore) et les skills a cadence propre du TODO en_sommeil. Verifie dans le code reel -- le canon du hub porte deja ce filtre (scan_transcripts.py:1121 hors_perimetre_sommeil, :1194 dormants) et la copie locale synchronisee aussi (.claude/supervision/scan_transcripts.py:1132). Le finding etait une entree non purgee d un diagnostic anterieur, pas un defaut actif.
+- **`flotte:point-du-jour-absent-des-5-cibles`** (2026-09-11) : ACCEPTE + APPLIQUE (option A, 'ajouter au kit + installer sur VSCode2') : cadrage reel avant application a corrige le finding lui-meme -- le manifeste export_agentic.py du hub porte deja point_du_jour.py depuis le 2026-09-10 (commit hub 6b0aed5, 'distribue a la flotte'), et VSCode/VSCode1/VSCode3/VSCode4 l'avaient deja (md5 be2556a8 identique au hub) -- seul VSCode2 en etait reellement depourvu malgre la formule '5 cibles' de ce commit hub (verifie : git log de VSCode2 sur ces 2 fichiers ne montre aucune trace avant ce jour). Installe sur VSCode2 (.claude/hooks/point_du_jour.py copie du hub, entree SessionStart ajoutee dans settings.json, meme pattern que les 4 autres) -- commit VSCode2 7e61193, verifie par execution reelle (exit 0, findings et veille affiches). Rien a faire au hub (deja fait). Signale au hub, pas corrige ici : son commit 6b0aed5 surclamait 'chez les 5 cibles' alors qu'une ne l'avait pas recue.
+- **`bmad-catalogue-elagage`** (2026-09-11) : ACCEPTE + DEJA RESOLU sur les deux volets, verifie avant d ecrire. Volet (a) desinstaller les 4 skills DEPRECATED (bmad-create-architecture, bmad-create-prd, bmad-edit-prd, bmad-validate-prd) : SANS OBJET, elles ne sont plus sur le disque de ce depot -- la migration BMAD 6.10.0 -> 6.12.0 (commit 0ef6d7c du 2026-09-07, independante de ce finding) les a retirees ; test -d rend absent pour les 4, et grep -rl DEPRECATED sur les SKILL.md restants ne les cite pas. Volet (b) ne plus publier de TODO d elagage sur la foi d un compteur non fiable : DEJA IMPLEMENTE au canon -- skills_depreciees() lit la declaration d obsolescence dans le frontmatter de chaque skill (donnee de l editeur, independante de notre compteur) et avertissement_mesure() affiche en tete du bloc TODO « Ne rien desinstaller sur cette base » quand mesure_non_fiable vaut true. Les deux fonctions sont presentes dans la copie locale de CE depot (verifie par grep 'def <nom>'), pas seulement au hub.
+- **`veille-sans-depot`** (2026-09-11) : ACCEPTE + APPLIQUE. Volet (a) « ou la sortie a-t-elle atterri ? » : REPONDU, elle n etait pas perdue -- .claude/veille/veille.json existe dans ce depot, projection filtree generee par le hub (_genere.date 2026-09-09, derniere_veille 2026-09-08), propagee par sync_dispositif.py qui projette la veille du hub chez chaque cible. Aucune relance de veille faite : elle aurait coute un appel LLM pour un probleme deja resolu. Volet (b) alarme de fraicheur « veille lancee le X, aucun artefact produit » : APPLIQUE au canon du hub (commit hub 13d7355, fonction veille_sans_production, rendue en tete du bloc TODO en md ET en html), puis propagee ici par sync_dispositif.py. 6 tests, dont les 3 qui exigent que l alarme crie vus ROUGES avant d etre crus.
+- **`en-sommeil-indicateur`** (2026-09-11) : ACCEPTE + DEJA RESOLU, verifie avant d ecrire. Les deux volets de la proposition sont implementes au canon et presents dans la copie locale de CE depot : (1) hors_perimetre_sommeil() exclut du TODO « en sommeil » ce sur quoi aucun geste n existe -- les types de sous-agents NATIFS du harnais (Explore, Plan, general-purpose : aucun .claude/agents/<nom>.md, donc rien a desinstaller ni a reveiller) et les noms a cadence propre deja suivie ailleurs sur la meme page, calcules par _cadence_propre() (tout hook remind_*.py plus agent-supervisor et ses 14 jours) ; (2) avertissement_mesure() rend le drapeau mesure_non_fiable visible LA OU L HUMAIN ARBITRE, en tete du bloc TODO, avec le nombre de transcripts absents et la consigne de ne rien desinstaller sur cette base. Le docstring de hors_perimetre_sommeil cite nommement ce finding.
 
 ## Diagnostic qualitatif (étage 2 — `agent-supervisor`)
 
-_Diagnostic à jour._
-
-1. **Le hook qui liste ce qui attend une decision n'existe QUE au hub : les 5 cibles ne l'ont pas, et le kit ne le distribue pas** — Le hub a construit ce hook pour lui-meme le 2026-09-09 (finding : les decisions n'etaient affichees nulle part). La flotte a exactement le meme besoin, et son mandat de garant l'oblige a propager ce qu'il se donne. Attention : sa fonction ligne_decisions_audit() lit .claude/audits/, repertoire qui n'existe QUE au hub — la version distribuee doit degrader proprement (repertoire absent = ligne vide, le fail-open est deja ecrit). · **Proposition** : (A) Ajouter point_du_jour.py au kit exporte et le cabler en SessionStart chez les 5 cibles, apres verification qu'il degrade bien sans repertoire d'audits. (B) Ou, si l'on juge que le point du jour est une fonction de pilotage propre au hub, le dire explicitement dans la doc du kit — pour que l'absence soit un choix trace et non un oubli.
-
-_3 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir un, demander au superviseur un `re_challenge` avec des données nouvelles :_
-
-- ~~Le critere « 69/71 jamais invoquees » aurait supprime le 2026-09-01 les deux skills qui portent aujourd'hui la refonte COMOP~~ (`bmad-catalogue-elagage`)
-- ~~La veille lancee il y a 6 h n'a rien depose dans ce depot : le volet « etat de l'art agentic » de ce diagnostic est structurellement vide~~ (`veille-sans-depot`)
-- ~~Le TODO « skills en sommeil » est inactionnable par construction : aucune de ses deux entrees n'est elaguable, et l'une se vide toute seule~~ (`en-sommeil-indicateur`)
+_Diagnostic à jour — rien à signaler, tous les constats précédents ont été arbitrés._
 
 ## Seuil de qualification — la mesure
 
-Depuis le 2026-09-04 : **37** demande(s) vue(s) hors commande slash (+ 4 slash), **10** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **27 %** des demandes orchestrées.
+Depuis le 2026-09-04 : **37** demande(s) vue(s) hors commande slash (+ 6 slash), **12** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **32 %** des demandes orchestrées.
 _Ce chiffre ne dit pas ce qui AURAIT dû être orchestré : le hook compte, il ne juge pas. Il donne le dénominateur qui manquait pour arbitrer le seuil sur données plutôt que sur habitude._
 
 ---
