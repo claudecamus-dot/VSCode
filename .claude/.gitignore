@@ -10,3 +10,7 @@ supervision/state.json
 # (reliquat mesure 2026-09-04 : deux backups non references par aucun
 # script du depot, orphelins d'une synchro hub)
 settings.json.*.avant-installation
+
+# Archives datees du gabarit generique repose par install_agentic
+# (CLAUDE.md.propose) : memoire locale, jamais versionnee.
+gabarits/
