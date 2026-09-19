@@ -32,6 +32,21 @@ test("GET /api/sample renvoie le JSON d'exemple", async t => {
   assert.equal(typeof body, "object");
 });
 
+test("GET /api/sample renvoie 404 quand le jeu d'exemple est absent", async t => {
+  const server = await startServer();
+  t.after(() => server.stop());
+
+  const samplePath = path.join(server.dataRoot, "data", "sample-comop.json");
+  assert.ok(fs.existsSync(samplePath), "le fixture doit exister avant d etre supprime");
+  fs.rmSync(samplePath);
+
+  const res = await request(server.baseUrl, "GET", "/api/sample");
+  const body = JSON.parse(res.text);
+
+  assert.equal(res.status, 404);
+  assert.match(body.error, /introuvable/i);
+});
+
 test("POST /api/generate renvoie 404 quand le template reference n'existe pas", async t => {
   const server = await startServer();
   t.after(() => server.stop());

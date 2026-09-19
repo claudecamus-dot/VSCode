@@ -1,5 +1,5 @@
 param(
-  [string]$SourcePath = "$PSScriptRoot\..\..\Pilotage Agile AG2R - exemple.pptx",
+  [string]$SourcePath = "$PSScriptRoot\..\..\Pilotage Agile - exemple.pptx",
   [string]$OutputPath = "$PSScriptRoot\..\templates\comop-template.pptx"
 )
 

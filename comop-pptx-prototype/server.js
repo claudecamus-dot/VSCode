@@ -548,7 +548,12 @@ async function handleApi(req, res) {
   }
 
   if (req.method === "GET" && req.url === "/api/sample") {
-    const sample = fs.readFileSync(path.join(dataDir, "sample-comop.json"), "utf8");
+    const samplePath = path.join(dataDir, "sample-comop.json");
+    if (!fs.existsSync(samplePath)) {
+      sendJson(res, 404, { error: "Jeu de donnees d'exemple introuvable" });
+      return;
+    }
+    const sample = fs.readFileSync(samplePath, "utf8");
     send(res, 200, sample, "application/json; charset=utf-8");
     return;
   }
