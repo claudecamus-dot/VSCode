@@ -364,7 +364,20 @@ async function handleApi(req, res) {
     }
 
     fs.mkdirSync(templatesDir, { recursive: true });
-    fs.writeFileSync(templatePath, buffer);
+
+    // Audit 2026-09-20 (securite) : la taille est bornee (25 Mo) et la signature
+    // ZIP "PK" verifiee en memoire, mais le fichier etait ecrit DIRECTEMENT a son
+    // nom definitif dans templates/ avant l'appel a validate-template.ps1 qui peut
+    // le rejeter. Entre les deux, une archive non validee residait sous un nom en
+    // .pptx : listee par GET /api/templates (filtre f.endsWith(".pptx")) et
+    // exploitable par les routes qui l'extraient. Le unlink du chemin d'erreur
+    // n'intervenait qu'apres coup, et pas du tout si le process mourait entre les
+    // deux. Ecriture en quarantaine sous un suffixe .part (hors du filtre de
+    // listing, hors de safeTemplatePath), validation sur CE chemin, puis rename
+    // atomique (meme volume) vers le nom definitif : aucune fenetre pendant
+    // laquelle un .pptx non valide est visible dans la bibliotheque.
+    const quarantinePath = `${templatePath}.${crypto.randomBytes(8).toString("hex")}.part`;
+    fs.writeFileSync(quarantinePath, buffer);
 
     // Audit 09-07 (robustesse, MESURE M7) : auparavant, l'echec de
     // validate-template.ps1 etait seulement LOGGE -- le fichier restait
@@ -383,15 +396,21 @@ async function handleApi(req, res) {
         "-File",
         path.join(root, "src", "validate-template.ps1"),
         "-TemplatePath",
-        templatePath
+        quarantinePath
       ]);
       validation = JSON.parse(validationRaw);
     } catch (error) {
       log(`VALIDATION ${error.message}`);
-      try { fs.unlinkSync(templatePath); } catch { /* deja absent */ }
+      try { fs.unlinkSync(quarantinePath); } catch { /* deja absent */ }
       sendJson(res, 422, { error: "Fichier invalide : impossible de lire l'archive comme un template OOXML" });
       return;
     }
+
+    // Validation passee : le fichier entre dans la bibliotheque, sous son nom.
+    fs.renameSync(quarantinePath, templatePath);
+    // Le rapport de validation porte le chemin de quarantaine : il est rendu au
+    // client, on y remet le chemin definitif plutot qu'un nom temporaire.
+    if (validation && typeof validation === "object") validation.template = templatePath;
 
     let branding = null;
     try {

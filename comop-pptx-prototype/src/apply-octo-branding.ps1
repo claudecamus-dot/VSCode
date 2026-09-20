@@ -71,6 +71,19 @@ function Invoke-ThemeBranding {
   return $xml
 }
 
+# Ids des formes injectees par ce script. Double source de verite supprimee
+# (finding risque_technique de l'audit) : ces trois nombres etaient ecrits en dur
+# a la creation des formes ET re-ecrits sous forme de classe de caracteres
+# "990[0-2]" dans la regex d'idempotence de Remove-OctoElements. Ajouter une 4e
+# forme (9903) sans penser a elargir la classe laissait une forme non retiree a la
+# repasse -> p:cNvPr id duplique, PPTX a reparer (le defaut meme que l'idempotence
+# doit empecher, verrouille par test/test-pptx-integrity.js). Une seule liste, la
+# regex de retrait en est derivee.
+$OctoFooterId = 9900
+$OctoPageCircleId = 9901
+$OctoAccentLineId = 9902
+$OctoShapeIds = @($OctoFooterId, $OctoPageCircleId, $OctoAccentLineId)
+
 function Get-FooterXml {
   param([int]$slideNumber)
   $pageCircle = ""
@@ -78,7 +91,7 @@ function Get-FooterXml {
     $pageCircle = @"
 <p:sp>
   <p:nvSpPr>
-    <p:cNvPr id="9901" name="OctoPageCircle"/>
+    <p:cNvPr id="$OctoPageCircleId" name="OctoPageCircle"/>
     <p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr>
     <p:nvPr/>
   </p:nvSpPr>
@@ -102,7 +115,7 @@ function Get-FooterXml {
   return @"
 <p:sp>
   <p:nvSpPr>
-    <p:cNvPr id="9900" name="OctoFooter"/>
+    <p:cNvPr id="$OctoFooterId" name="OctoFooter"/>
     <p:cNvSpPr txBox="1"><a:spLocks noGrp="1"/></p:cNvSpPr>
     <p:nvPr/>
   </p:nvSpPr>
@@ -129,7 +142,7 @@ function Get-AccentLineXml {
   return @"
 <p:sp>
   <p:nvSpPr>
-    <p:cNvPr id="9902" name="OctoAccentLine"/>
+    <p:cNvPr id="$OctoAccentLineId" name="OctoAccentLine"/>
     <p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr>
     <p:nvPr/>
   </p:nvSpPr>
@@ -148,10 +161,11 @@ function Remove-OctoElements {
   param([string]$xml)
   # Idempotence : le script s'applique EN PLACE sur le template (TemplatePath =
   # OutputPath par defaut). Sans ce retrait, une 2e passe re-injectait les memes
-  # formes avec les memes ids (9900/9901/9902) -> p:cNvPr id dupliques dans une
+  # formes avec les memes ids ($OctoShapeIds) -> p:cNvPr id dupliques dans une
   # meme slide, que PowerPoint traite comme un fichier a reparer.
+  $octoIdPattern = '<p:cNvPr id="(' + (($OctoShapeIds | ForEach-Object { [regex]::Escape([string]$_) }) -join '|') + ')" name="Octo'
   $octoShapes = @([regex]::Matches($xml, '<p:sp>.*?</p:sp>', 'Singleline') |
-    Where-Object { $_.Value -match '<p:cNvPr id="990[0-2]" name="Octo' })
+    Where-Object { $_.Value -match $octoIdPattern })
   foreach ($shape in ($octoShapes | Sort-Object -Property Index -Descending)) {
     $xml = $xml.Remove($shape.Index, $shape.Length)
   }

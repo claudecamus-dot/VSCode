@@ -63,6 +63,27 @@ function New-TempDirectory {
   return $path
 }
 
+function Assert-TextNodeCount {
+  # Fragilite mesuree (audit risque_technique) : prepare-ag2r-template.ps1 pilote
+  # la preparation par 23 index positionnels bruts dans un .pptx SOURCE externe.
+  # Le throw de Set-TextNodeByIndex n'attrape qu'un index HORS BORNES : un deck
+  # source qui gagne ou perd un noeud <a:t> AVANT les index vises garde un compte
+  # suffisant, tous les index restent valides, et la preparation ecrit chaque
+  # placeholder dans la MAUVAISE zone -- succes silencieux, template faux.
+  # Un controle du compte exact, avant toute mutation, transforme ce cas en echec
+  # dur et nomme la slide qui a bouge. Comptes releves sur le deck source
+  # versionne (Pilotage Agile - exemple.pptx) le 2026-09-20 : 13 / 14 / 11.
+  param(
+    [string]$Text,
+    [int]$Expected,
+    [string]$Label
+  )
+  $actual = [regex]::Matches($Text, '<a:t>(.*?)</a:t>').Count
+  if ($actual -ne $Expected) {
+    throw "$Label : $actual noeuds <a:t> au lieu des $Expected attendus -- le deck source a bouge, les index de preparation ne sont plus fiables"
+  }
+}
+
 function Set-TextNodeByIndex {
   # Deplacee ici depuis prepare-ag2r-template.ps1 (2026-09-16) : fonction sans
   # effet de bord, testable isolement via test-support/invoke-set-text-node.ps1,

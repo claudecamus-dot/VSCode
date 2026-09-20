@@ -37,6 +37,7 @@ try {
 
   $slide2 = Join-Path $workDir "ppt\slides\slide2.xml"
   $xml = Get-Content -LiteralPath $slide2 -Raw -Encoding UTF8
+  Assert-TextNodeCount -Text $xml -Expected 13 -Label "slide2.xml"
   $xml = Set-TextNodeByIndex $xml 0 "COMOP - Evenements passes"
   $xml = Set-TextNodeByIndex $xml 2 "{{evenements_passes}} - {{faits_marquants}}"
   $xml = Set-TextNodeByIndex $xml 3 "{{equipe}}"
@@ -50,6 +51,7 @@ try {
 
   $slide3 = Join-Path $workDir "ppt\slides\slide3.xml"
   $xml = Get-Content -LiteralPath $slide3 -Raw -Encoding UTF8
+  Assert-TextNodeCount -Text $xml -Expected 14 -Label "slide3.xml"
   $xml = Set-TextNodeByIndex $xml 0 "COMOP - Roadmap 3 mois"
   $xml = Set-TextNodeByIndex $xml 3 "{{points_discussion}}"
   $xml = Set-TextNodeByIndex $xml 9 "{{sujets_decision}}"
@@ -61,6 +63,7 @@ try {
 
   $slide4 = Join-Path $workDir "ppt\slides\slide4.xml"
   $xml = Get-Content -LiteralPath $slide4 -Raw -Encoding UTF8
+  Assert-TextNodeCount -Text $xml -Expected 11 -Label "slide4.xml"
   $xml = Set-TextNodeByIndex $xml 0 "COMOP - Focus incidentologie / recette"
   $xml = Set-TextNodeByIndex $xml 2 "{{type_focus}} - {{faits_marquants_incidentologie_recette}}"
   $xml = Set-TextNodeByIndex $xml 4 "{{commentaire_indicateurs_incidentologie_recette}} - {{commentaire_evolution}}"
