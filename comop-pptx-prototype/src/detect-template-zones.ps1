@@ -70,49 +70,55 @@ try {
   $slideFiles = Get-ChildItem -LiteralPath (Join-Path $workDir "ppt\slides") -Filter "slide*.xml" |
     Sort-Object { [int]([regex]::Match($_.BaseName, '\d+').Value) }
 
-  $slides = @()
+  # Performance (finding audit) : `$tableau += $x` REALLOUE le tableau entier a
+  # chaque ajout (les tableaux .NET sont de taille fixe) -- soit une copie par
+  # zone ET par slide. Mesure sur le gabarit versionne : 36 zones + 4 slides =
+  # 40 reallocations pour une seule detection, et le cout croit en O(n^2) sur un
+  # deck client de 60 slides. List[object].Add() est amorti O(1) ; le rendu
+  # ConvertTo-Json est identique (verrouille par test/test-detect-template-zones.js).
+  $slides = [System.Collections.Generic.List[object]]::new()
   foreach ($slideFile in $slideFiles) {
     $slideIndex = [int]([regex]::Match($slideFile.BaseName, '\d+').Value)
     $xml = Get-Content -LiteralPath $slideFile.FullName -Raw -Encoding UTF8
 
-    $zones = @()
+    $zones = [System.Collections.Generic.List[object]]::new()
 
     foreach ($m in [regex]::Matches($xml, '<p:sp>.*?</p:sp>', 'Singleline')) {
       $shapeXml = $m.Value
       $apercu = Get-TextApercu $shapeXml
       if (-not $apercu) { continue }
-      $zones += [ordered]@{
+      $zones.Add([ordered]@{
         type     = "texte"
         nom      = Get-ShapeName $shapeXml
         apercu   = $apercu
         position = Get-ShapePosition $shapeXml
-      }
+      })
     }
 
     foreach ($m in [regex]::Matches($xml, '<p:graphicFrame>.*?</p:graphicFrame>', 'Singleline')) {
       $frameXml = $m.Value
-      $zones += [ordered]@{
+      $zones.Add([ordered]@{
         type     = Get-GraphicType $frameXml
         nom      = Get-ShapeName $frameXml
         apercu   = $null
         position = Get-ShapePosition $frameXml
-      }
+      })
     }
 
     foreach ($m in [regex]::Matches($xml, '<p:pic>.*?</p:pic>', 'Singleline')) {
       $picXml = $m.Value
-      $zones += [ordered]@{
+      $zones.Add([ordered]@{
         type     = "image"
         nom      = Get-ShapeName $picXml
         apercu   = $null
         position = Get-ShapePosition $picXml
-      }
+      })
     }
 
-    $slides += [ordered]@{
+    $slides.Add([ordered]@{
       index = $slideIndex
       zones = $zones
-    }
+    })
   }
 
   $result = [ordered]@{
