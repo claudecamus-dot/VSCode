@@ -123,10 +123,8 @@
       "Read(**/.env.*)",
       "Read(**/secrets/**)",
       "Read(**/credentials.json)",
-      "Bash(cat:*.env*)",
       "Bash(env)",
       "Bash(git config:*)",
-      "PowerShell(Get-Content:*.env*)",
       "PowerShell(Get-ChildItem Env:*)"
     ],
     "allow": [
