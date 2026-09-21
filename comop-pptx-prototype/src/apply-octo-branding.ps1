@@ -84,6 +84,22 @@ $OctoPageCircleId = 9901
 $OctoAccentLineId = 9902
 $OctoShapeIds = @($OctoFooterId, $OctoPageCircleId, $OctoAccentLineId)
 
+# Coordonnees EMU des elements Octo injectes (finding audit : numeros magiques /
+# double source de verite). Un seul endroit pour chaque geometrie -- avant ce
+# correctif, ces valeurs n'existaient qu'en litteral au milieu du here-string XML,
+# sans nom rattachant la valeur a ce qu'elle positionne.
+$OctoPageCircleOffsetX = 8844000
+$OctoPageCircleOffsetY = 4893500
+$OctoPageCircleSize    = 228600
+$OctoPageCircleLineWidth = 19050
+$OctoFooterOffsetX = 182880
+$OctoFooterOffsetY = 4953500
+$OctoFooterWidth   = 7315200
+$OctoFooterHeight  = 152400
+$OctoAccentLineOffsetY = 480060
+$OctoAccentLineWidth   = 9144000
+$OctoAccentLineHeight  = 19050
+
 function Get-FooterXml {
   param([int]$slideNumber)
   $pageCircle = ""
@@ -96,10 +112,10 @@ function Get-FooterXml {
     <p:nvPr/>
   </p:nvSpPr>
   <p:spPr>
-    <a:xfrm><a:off x="8844000" y="4893500"/><a:ext cx="228600" cy="228600"/></a:xfrm>
+    <a:xfrm><a:off x="$OctoPageCircleOffsetX" y="$OctoPageCircleOffsetY"/><a:ext cx="$OctoPageCircleSize" cy="$OctoPageCircleSize"/></a:xfrm>
     <a:prstGeom prst="ellipse"><a:avLst/></a:prstGeom>
     <a:noFill/>
-    <a:ln w="19050"><a:solidFill><a:srgbClr val="$primaryColor"/></a:solidFill></a:ln>
+    <a:ln w="$OctoPageCircleLineWidth"><a:solidFill><a:srgbClr val="$primaryColor"/></a:solidFill></a:ln>
   </p:spPr>
   <p:txBody>
     <a:bodyPr anchor="ctr" anchorCtr="1"/>
@@ -120,7 +136,7 @@ function Get-FooterXml {
     <p:nvPr/>
   </p:nvSpPr>
   <p:spPr>
-    <a:xfrm><a:off x="182880" y="4953500"/><a:ext cx="7315200" cy="152400"/></a:xfrm>
+    <a:xfrm><a:off x="$OctoFooterOffsetX" y="$OctoFooterOffsetY"/><a:ext cx="$OctoFooterWidth" cy="$OctoFooterHeight"/></a:xfrm>
     <a:prstGeom prst="rect"><a:avLst/></a:prstGeom>
     <a:noFill/>
     <a:ln><a:noFill/></a:ln>
@@ -147,7 +163,7 @@ function Get-AccentLineXml {
     <p:nvPr/>
   </p:nvSpPr>
   <p:spPr>
-    <a:xfrm><a:off x="0" y="480060"/><a:ext cx="9144000" cy="19050"/></a:xfrm>
+    <a:xfrm><a:off x="0" y="$OctoAccentLineOffsetY"/><a:ext cx="$OctoAccentLineWidth" cy="$OctoAccentLineHeight"/></a:xfrm>
     <a:prstGeom prst="rect"><a:avLst/></a:prstGeom>
     <a:solidFill><a:srgbClr val="$accentColor"/></a:solidFill>
     <a:ln><a:noFill/></a:ln>
@@ -212,12 +228,16 @@ try {
     Set-Content -LiteralPath $_.FullName -Value $xml -Encoding UTF8
   }
 
-  $slideEntries = @(
+  # Table slide fichier -> numero de page affiche (finding audit : table en dur
+  # / double source de verite). Nommee ici comme unique origine du mapping ;
+  # slide1.xml (page de garde) en est volontairement absent, traite a part
+  # plus bas sans OctoPageCircle.
+  $OctoSlideFileToPageNumber = @(
     @{ Path = "slide2.xml"; Number = 1 }
     @{ Path = "slide3.xml"; Number = 2 }
     @{ Path = "slide4.xml"; Number = 3 }
   )
-  foreach ($entry in $slideEntries) {
+  foreach ($entry in $OctoSlideFileToPageNumber) {
     $slidePath = Join-Path $workDir "ppt\slides\$($entry.Path)"
     if (Test-Path -LiteralPath $slidePath) {
       $xml = Get-Content -LiteralPath $slidePath -Raw -Encoding UTF8
