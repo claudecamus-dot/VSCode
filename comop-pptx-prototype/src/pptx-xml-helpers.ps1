@@ -129,6 +129,68 @@ function Protect-XmlAttribute {
   return $Text -replace '&', '&amp;' -replace '<', '&lt;' -replace '>', '&gt;' -replace '"', '&quot;'
 }
 
+function Invoke-PptxZipRoundTrip {
+  # Squelette extraction -> modification -> recompression, duplique a l'identique
+  # (Add-Type / temp dir / Assert-ZipDecompressedSizeWithinLimit / finally de
+  # nettoyage) dans 6 scripts (apply-octo-branding, generate-comop,
+  # prepare-ag2r-template, remove-template-shape, corrompt-theme,
+  # retire-placeholder -- finding risque_technique de l'audit VSCode, releve le
+  # 2026-09-22). Chaque appelant garde EXACTEMENT son comportement d'origine via
+  # les parametres : -SkipZipBombCheck pour les scripts de test-support qui n'ont
+  # jamais fait ce controle, -AtomicWrite pour apply-octo-branding.ps1 (ecriture
+  # dans un fichier temporaire voisin puis Move-Item, pour ne jamais laisser la
+  # cible detruite si la recompression echoue -- audit 2026-09-13). $Modify recoit
+  # le chemin du dossier de travail extrait et fait les mutations XML ; le
+  # dossier est toujours nettoye, meme en cas d'exception.
+  param(
+    [Parameter(Mandatory = $true)][string]$SourcePath,
+    [Parameter(Mandatory = $true)][string]$OutputPath,
+    [string]$Prefix = "comop-ppt-",
+    [string]$WorkDir,
+    [switch]$SkipZipBombCheck,
+    [switch]$AtomicWrite,
+    [Parameter(Mandatory = $true)][scriptblock]$Modify
+  )
+
+  Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+  $resolvedWorkDir = if ($WorkDir) { $WorkDir } else { New-TempDirectory -Prefix $Prefix }
+  if ($WorkDir -and -not (Test-Path -LiteralPath $resolvedWorkDir)) {
+    New-Item -ItemType Directory -Path $resolvedWorkDir | Out-Null
+  }
+
+  try {
+    if (-not $SkipZipBombCheck) {
+      Assert-ZipDecompressedSizeWithinLimit -ZipPath $SourcePath
+    }
+    [System.IO.Compression.ZipFile]::ExtractToDirectory($SourcePath, $resolvedWorkDir)
+
+    & $Modify $resolvedWorkDir
+
+    if ($AtomicWrite) {
+      $outputDirectory = Split-Path -Parent $OutputPath
+      if ($outputDirectory -and -not (Test-Path -LiteralPath $outputDirectory)) {
+        New-Item -ItemType Directory -Path $outputDirectory | Out-Null
+      }
+      $tempOutput = "$OutputPath.tmp-$([System.Guid]::NewGuid().ToString('N'))"
+      try {
+        [System.IO.Compression.ZipFile]::CreateFromDirectory($resolvedWorkDir, $tempOutput)
+        Move-Item -LiteralPath $tempOutput -Destination $OutputPath -Force
+      } finally {
+        if (Test-Path -LiteralPath $tempOutput) {
+          Remove-Item -LiteralPath $tempOutput -Force
+        }
+      }
+    } else {
+      [System.IO.Compression.ZipFile]::CreateFromDirectory($resolvedWorkDir, $OutputPath)
+    }
+  } finally {
+    if (Test-Path -LiteralPath $resolvedWorkDir) {
+      Remove-Item -LiteralPath $resolvedWorkDir -Recurse -Force
+    }
+  }
+}
+
 function Protect-XmlText {
   # Echappement pour du texte insere en CONTENU d'element XML (ex:
   # <a:t>$value</a:t>) qui tolere les references d'entites XML DEJA valides --

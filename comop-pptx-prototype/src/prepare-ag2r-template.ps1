@@ -11,12 +11,8 @@ if (-not (Test-Path -LiteralPath $SourcePath)) {
   throw "PowerPoint source introuvable: $SourcePath"
 }
 
-Add-Type -AssemblyName System.IO.Compression.FileSystem
-$workDir = New-TempDirectory -Prefix "comop-template-"
-
-try {
-  Assert-ZipDecompressedSizeWithinLimit -ZipPath $SourcePath
-  [System.IO.Compression.ZipFile]::ExtractToDirectory($SourcePath, $workDir)
+Invoke-PptxZipRoundTrip -SourcePath $SourcePath -OutputPath $OutputPath -Prefix "comop-template-" -Modify {
+  param($workDir)
 
   $presentationPath = Join-Path $workDir "ppt\presentation.xml"
   $presentation = Get-Content -LiteralPath $presentationPath -Raw -Encoding UTF8
@@ -80,14 +76,9 @@ try {
   if (Test-Path -LiteralPath $OutputPath) {
     Remove-Item -LiteralPath $OutputPath -Force
   }
-
-  [System.IO.Compression.ZipFile]::CreateFromDirectory($workDir, $OutputPath)
-  [pscustomobject]@{
-    status = "template_prepare"
-    output = (Resolve-Path -LiteralPath $OutputPath).Path
-  } | ConvertTo-Json
-} finally {
-  if (Test-Path -LiteralPath $workDir) {
-    Remove-Item -LiteralPath $workDir -Recurse -Force
-  }
 }
+
+[pscustomobject]@{
+  status = "template_prepare"
+  output = (Resolve-Path -LiteralPath $OutputPath).Path
+} | ConvertTo-Json

@@ -10,12 +10,11 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-Add-Type -AssemblyName System.IO.Compression.FileSystem
 
-$workDir = Join-Path ([System.IO.Path]::GetTempPath()) ("retire-placeholder-" + [System.Guid]::NewGuid().ToString("N"))
-New-Item -ItemType Directory -Path $workDir | Out-Null
-try {
-  [System.IO.Compression.ZipFile]::ExtractToDirectory((Resolve-Path -LiteralPath $Source).Path, $workDir)
+. (Join-Path $PSScriptRoot '..\src\pptx-xml-helpers.ps1')
+
+Invoke-PptxZipRoundTrip -SourcePath (Resolve-Path -LiteralPath $Source).Path -OutputPath $Destination -Prefix "retire-placeholder-" -SkipZipBombCheck -Modify {
+  param($workDir)
 
   $token = "{{$Placeholder}}"
   $slideFiles = Get-ChildItem -LiteralPath (Join-Path $workDir "ppt\slides") -Filter "slide*.xml"
@@ -28,7 +27,4 @@ try {
   }
 
   if (Test-Path -LiteralPath $Destination) { Remove-Item -LiteralPath $Destination -Force }
-  [System.IO.Compression.ZipFile]::CreateFromDirectory($workDir, $Destination)
-} finally {
-  if (Test-Path -LiteralPath $workDir) { Remove-Item -LiteralPath $workDir -Recurse -Force }
 }

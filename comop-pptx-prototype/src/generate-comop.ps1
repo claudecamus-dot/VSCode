@@ -37,14 +37,10 @@ if (-not (Test-Path -LiteralPath $DataPath)) {
   throw "Donnees introuvables: $DataPath"
 }
 
-Add-Type -AssemblyName System.IO.Compression.FileSystem
-
 $data = Get-Content -LiteralPath $DataPath -Raw -Encoding UTF8 | ConvertFrom-Json
-$workDir = if ($WorkDir) { $WorkDir } else { New-TempDirectory -Prefix "comop-pptx-" }
 
-try {
-  Assert-ZipDecompressedSizeWithinLimit -ZipPath $TemplatePath
-  [System.IO.Compression.ZipFile]::ExtractToDirectory($TemplatePath, $workDir)
+Invoke-PptxZipRoundTrip -SourcePath $TemplatePath -OutputPath $OutputPath -Prefix "comop-pptx-" -WorkDir $WorkDir -Modify {
+  param($workDir)
 
   # Construire le dictionnaire de substitutions avant toute modification des slides
   $subs = @{}
@@ -72,19 +68,12 @@ try {
   if ($outputDirectory -and -not (Test-Path -LiteralPath $outputDirectory)) {
     New-Item -ItemType Directory -Path $outputDirectory | Out-Null
   }
-
   if (Test-Path -LiteralPath $OutputPath) {
     Remove-Item -LiteralPath $OutputPath -Force
   }
-
-  [System.IO.Compression.ZipFile]::CreateFromDirectory($workDir, $OutputPath)
-
-  [pscustomobject]@{
-    status = "genere"
-    output = (Resolve-Path -LiteralPath $OutputPath).Path
-  } | ConvertTo-Json
-} finally {
-  if (Test-Path -LiteralPath $workDir) {
-    Remove-Item -LiteralPath $workDir -Recurse -Force
-  }
 }
+
+[pscustomobject]@{
+  status = "genere"
+  output = (Resolve-Path -LiteralPath $OutputPath).Path
+} | ConvertTo-Json

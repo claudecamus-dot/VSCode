@@ -20,13 +20,14 @@ if (-not (Test-Path -LiteralPath $TemplatePath)) {
   throw "Template introuvable: $TemplatePath"
 }
 
-Add-Type -AssemblyName System.IO.Compression.FileSystem
+# On ne cible que les graphiques/tableaux/diagrammes/images : les zones de
+# texte (<p:sp> avec contenu) sont des emplacements de donnees du COMOP et
+# ne doivent pas pouvoir etre retirees par cette voie.
+$script:removedType = $null
+$script:backupPath = $null
 
-$workDir = if ($WorkDir) { $WorkDir } else { New-TempDirectory -Prefix "remove-shape-" }
-
-try {
-  Assert-ZipDecompressedSizeWithinLimit -ZipPath $TemplatePath
-  [System.IO.Compression.ZipFile]::ExtractToDirectory($TemplatePath, $workDir)
+Invoke-PptxZipRoundTrip -SourcePath $TemplatePath -OutputPath $TemplatePath -Prefix "remove-shape-" -WorkDir $WorkDir -Modify {
+  param($workDir)
 
   $slidePath = Join-Path $workDir "ppt\slides\slide$SlideIndex.xml"
   if (-not (Test-Path -LiteralPath $slidePath)) {
@@ -35,10 +36,6 @@ try {
 
   $xml = Get-Content -LiteralPath $slidePath -Raw -Encoding UTF8
 
-  # On ne cible que les graphiques/tableaux/diagrammes/images : les zones de
-  # texte (<p:sp> avec contenu) sont des emplacements de donnees du COMOP et
-  # ne doivent pas pouvoir etre retirees par cette voie.
-  $removedType = $null
   $removedAt = -1
   $removedLength = 0
   foreach ($entry in @(
@@ -47,7 +44,7 @@ try {
     )) {
     $match = [regex]::Matches($xml, $entry.Pattern, 'Singleline') | Where-Object { (Get-ShapeName $_.Value) -eq $ShapeName } | Select-Object -First 1
     if ($match) {
-      $removedType = if ($entry.Kind -eq "pic") { "image" } else { Get-GraphicType $match.Value }
+      $script:removedType = if ($entry.Kind -eq "pic") { "image" } else { Get-GraphicType $match.Value }
       $removedAt = $match.Index
       $removedLength = $match.Length
       break
@@ -73,25 +70,19 @@ try {
     New-Item -ItemType Directory -Path $archiveDir | Out-Null
   }
   $baseName = [System.IO.Path]::GetFileNameWithoutExtension($TemplatePath)
-  $backupPath = Join-Path $archiveDir ("$baseName-avant-suppression-" + (Get-Date -Format "yyyyMMdd-HHmmss") + ".pptx")
-  Copy-Item -LiteralPath $TemplatePath -Destination $backupPath -Force
+  $script:backupPath = Join-Path $archiveDir ("$baseName-avant-suppression-" + (Get-Date -Format "yyyyMMdd-HHmmss") + ".pptx")
+  Copy-Item -LiteralPath $TemplatePath -Destination $script:backupPath -Force
 
   if (Test-Path -LiteralPath $TemplatePath) {
     Remove-Item -LiteralPath $TemplatePath -Force
   }
-  [System.IO.Compression.ZipFile]::CreateFromDirectory($workDir, $TemplatePath)
-
-  [pscustomobject]@{
-    status     = "forme_supprimee"
-    output     = (Resolve-Path -LiteralPath $TemplatePath).Path
-    slide      = $SlideIndex
-    nom        = $ShapeName
-    type       = $removedType
-    sauvegarde = $backupPath
-  } | ConvertTo-Json
-
-} finally {
-  if (Test-Path -LiteralPath $workDir) {
-    Remove-Item -LiteralPath $workDir -Recurse -Force
-  }
 }
+
+[pscustomobject]@{
+  status     = "forme_supprimee"
+  output     = (Resolve-Path -LiteralPath $TemplatePath).Path
+  slide      = $SlideIndex
+  nom        = $ShapeName
+  type       = $script:removedType
+  sauvegarde = $script:backupPath
+} | ConvertTo-Json

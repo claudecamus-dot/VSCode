@@ -9,12 +9,11 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-Add-Type -AssemblyName System.IO.Compression.FileSystem
 
-$workDir = Join-Path ([System.IO.Path]::GetTempPath()) ("corrompt-theme-" + [System.Guid]::NewGuid().ToString("N"))
-New-Item -ItemType Directory -Path $workDir | Out-Null
-try {
-  [System.IO.Compression.ZipFile]::ExtractToDirectory((Resolve-Path -LiteralPath $Source).Path, $workDir)
+. (Join-Path $PSScriptRoot '..\src\pptx-xml-helpers.ps1')
+
+Invoke-PptxZipRoundTrip -SourcePath (Resolve-Path -LiteralPath $Source).Path -OutputPath $Destination -Prefix "corrompt-theme-" -SkipZipBombCheck -Modify {
+  param($workDir)
 
   $themePath = Join-Path $workDir "ppt\theme\theme1.xml"
   $xml = Get-Content -LiteralPath $themePath -Raw -Encoding UTF8
@@ -22,7 +21,4 @@ try {
   Set-Content -LiteralPath $themePath -Value $xml -Encoding UTF8
 
   if (Test-Path -LiteralPath $Destination) { Remove-Item -LiteralPath $Destination -Force }
-  [System.IO.Compression.ZipFile]::CreateFromDirectory($workDir, $Destination)
-} finally {
-  if (Test-Path -LiteralPath $workDir) { Remove-Item -LiteralPath $workDir -Recurse -Force }
 }

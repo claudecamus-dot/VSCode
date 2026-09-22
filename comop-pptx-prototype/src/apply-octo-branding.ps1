@@ -196,17 +196,12 @@ function Add-OctoElements {
   return $xml.Replace('</p:spTree>', "$accentLine$footer</p:spTree>")
 }
 
-Add-Type -AssemblyName System.IO.Compression.FileSystem
-
 if (-not (Test-Path -LiteralPath $TemplatePath)) {
   throw "Template introuvable: $TemplatePath"
 }
 
-$workDir = New-TempDirectory -Prefix "octo-branding-"
-
-try {
-  Assert-ZipDecompressedSizeWithinLimit -ZipPath $TemplatePath
-  [System.IO.Compression.ZipFile]::ExtractToDirectory($TemplatePath, $workDir)
+Invoke-PptxZipRoundTrip -SourcePath $TemplatePath -OutputPath $OutputPath -Prefix "octo-branding-" -AtomicWrite -Modify {
+  param($workDir)
 
   $themePath = Join-Path $workDir "ppt\theme\theme1.xml"
   if (Test-Path -LiteralPath $themePath) {
@@ -254,38 +249,22 @@ try {
     Set-Content -LiteralPath $slide1Path -Value $xml -Encoding UTF8
   }
 
-  $outputDirectory = Split-Path -Parent $OutputPath
-  if ($outputDirectory -and -not (Test-Path -LiteralPath $outputDirectory)) {
-    New-Item -ItemType Directory -Path $outputDirectory | Out-Null
-  }
-  # Audit 2026-09-13 (robustesse) : la cible etait SUPPRIMEE puis recompressee.
-  # Avec OutputPath = TemplatePath (valeur par defaut, et usage nominal :
-  # rebrander le template en place), tout echec de la recompression laissait
-  # templates/comop-template.pptx detruit, sans aucune sauvegarde. On ecrit
-  # desormais l'archive complete dans un fichier temporaire voisin et on ne
-  # remplace la cible qu'une fois cette ecriture terminee : a aucun instant la
-  # cible n'est absente alors que son remplacant n'existe pas encore.
-  $tempOutput = "$OutputPath.tmp-$([System.Guid]::NewGuid().ToString('N'))"
-  try {
-    [System.IO.Compression.ZipFile]::CreateFromDirectory($workDir, $tempOutput)
-    Move-Item -LiteralPath $tempOutput -Destination $OutputPath -Force
-  } finally {
-    if (Test-Path -LiteralPath $tempOutput) {
-      Remove-Item -LiteralPath $tempOutput -Force
-    }
-  }
-
-  [pscustomobject]@{
-    status   = "branding_applique"
-    output   = (Resolve-Path -LiteralPath $OutputPath).Path
-    branding = $branding.name
-    couleurs = $colorMap.Count
-    polices  = ($branding.font_replacements | Measure-Object).Count
-    footer   = $footerText
-  } | ConvertTo-Json
-
-} finally {
-  if (Test-Path -LiteralPath $workDir) {
-    Remove-Item -LiteralPath $workDir -Recurse -Force
-  }
 }
+
+# Audit 2026-09-13 (robustesse) : la cible etait SUPPRIMEE puis recompressee.
+# Avec OutputPath = TemplatePath (valeur par defaut, et usage nominal :
+# rebrander le template en place), tout echec de la recompression laissait
+# templates/comop-template.pptx detruit, sans aucune sauvegarde. -AtomicWrite
+# (Invoke-PptxZipRoundTrip) ecrit desormais l'archive complete dans un fichier
+# temporaire voisin et ne remplace la cible qu'une fois cette ecriture
+# terminee : a aucun instant la cible n'est absente alors que son remplacant
+# n'existe pas encore.
+
+[pscustomobject]@{
+  status   = "branding_applique"
+  output   = (Resolve-Path -LiteralPath $OutputPath).Path
+  branding = $branding.name
+  couleurs = $colorMap.Count
+  polices  = ($branding.font_replacements | Measure-Object).Count
+  footer   = $footerText
+} | ConvertTo-Json
