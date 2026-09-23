@@ -35,22 +35,43 @@ function Assert-ZipDecompressedSizeWithinLimit {
   # gabarit connu pese 1,4 Mo compresse/decompresse (marge tres large pour un
   # template legitime avec plusieurs images), tres en-dessous des ratios
   # d'une archive pathologique.
+  # -Archive (optionnel) : audit performance 2026-09-22 (residu du finding
+  # "triple lancement powershell", requalification du 09-20) -- valide-template.ps1
+  # appelait ce garde PUIS rouvrait la meme archive pour lire le texte des
+  # slides, soit 2 ZipFile.OpenRead sur 1 seul fichier. Accepter une archive
+  # deja ouverte evite la reouverture sans changer le comportement des 7
+  # autres appelants (qui continuent de passer -ZipPath et gardent leur
+  # ouverture/fermeture propre).
+  # $Archive n'est volontairement PAS type [System.IO.Compression.ZipArchive] :
+  # ce type vit dans l'assembly System.IO.Compression (distincte de
+  # ...FileSystem) et son chargement n'est pas garanti au moment ou CE fichier
+  # est dot-source par un script qui n'a pas encore fait son propre Add-Type --
+  # un parametre type echoue alors en TypeNotFound avant meme l'appel (constate
+  # a l'execution : smoke-test / generate-comop cassaient en le typant).
   param(
-    [Parameter(Mandatory = $true)][string]$ZipPath,
+    [string]$ZipPath,
+    $Archive,
     [long]$MaxBytes = 300MB
   )
-  Add-Type -AssemblyName System.IO.Compression.FileSystem
-  $archive = [System.IO.Compression.ZipFile]::OpenRead($ZipPath)
+  if (-not $ZipPath -and -not $Archive) {
+    throw "Assert-ZipDecompressedSizeWithinLimit : -ZipPath ou -Archive requis"
+  }
+  $ownsArchive = $false
+  if (-not $Archive) {
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $Archive = [System.IO.Compression.ZipFile]::OpenRead($ZipPath)
+    $ownsArchive = $true
+  }
   try {
     $total = 0L
-    foreach ($entry in $archive.Entries) {
+    foreach ($entry in $Archive.Entries) {
       $total += $entry.Length
       if ($total -gt $MaxBytes) {
         throw "Archive rejetee : volume decompresse annonce superieur a $([math]::Round($MaxBytes / 1MB)) Mo (zip bomb potentiel)"
       }
     }
   } finally {
-    $archive.Dispose()
+    if ($ownsArchive) { $Archive.Dispose() }
   }
 }
 
