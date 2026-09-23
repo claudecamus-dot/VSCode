@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-18T10:40:44+02:00",
+ "generated": "2026-09-23T09:53:26+02:00",
  "eprouves": [
   "(defaut)",
   "agent-orchestrator",
@@ -80,6 +80,7 @@
   "skill-creator",
   "synced"
  ],
+ "contredit_par_skill_doctor": [],
  "bibliotheque_reference": [
   "deck-design-library",
   "pdf-quality",
@@ -98,11 +99,11 @@
  ],
  "playbooks": {
   "evolution-flotte": {
-   "n": 2,
-   "succes": 2,
+   "n": 3,
+   "succes": 3,
    "echecs": 0,
    "reprises": 0,
-   "en_cours": 1,
+   "en_cours": 0,
    "en_attente_validation": 0,
    "partiels": 2,
    "runs_fortes_reprises": 0
@@ -120,12 +121,12 @@
    "runs_fortes_reprises": 0
   },
   "(session)": {
-   "n": 8,
-   "succes": 8,
+   "n": 10,
+   "succes": 10,
    "echecs": 0,
    "reprises": 0,
    "en_cours": 0,
-   "en_attente_validation": 2,
+   "en_attente_validation": 0,
    "partiels": 11,
    "runs_fortes_reprises": 0
   },
@@ -150,12 +151,12 @@
    "runs_fortes_reprises": 0
   },
   "atelier-idees (bmad-party-mode subagent)": {
-   "n": 0,
-   "succes": 0,
+   "n": 2,
+   "succes": 2,
    "echecs": 0,
    "reprises": 0,
    "en_cours": 0,
-   "en_attente_validation": 2,
+   "en_attente_validation": 0,
    "partiels": 0,
    "runs_fortes_reprises": 0
   },
@@ -200,11 +201,11 @@
    "runs_fortes_reprises": 0
   },
   "session": {
-   "n": 13,
-   "succes": 13,
+   "n": 21,
+   "succes": 21,
    "echecs": 0,
    "reprises": 0,
-   "en_cours": 8,
+   "en_cours": 0,
    "en_attente_validation": 0,
    "partiels": 3,
    "runs_fortes_reprises": 0
