@@ -3,9 +3,9 @@
     "source": "hub de supervision VScode5, .claude/veille/veille.json",
     "projection": "entrees dont projets_concernes nomme VSCode",
     "ne_pas_editer": "Fichier GENERE, en lecture seule : une correction faite ici sera ecrasee a la prochaine propagation. La veille s'ecrit AU HUB, ou elle est lue (section 3 du wiki) et arbitree. Une veille lancee depuis ce depot doit y etre remontee.",
-    "date": "2026-09-18"
+    "date": "2026-09-23"
   },
-  "derniere_veille": "2026-09-16T00:00:00",
+  "derniere_veille": "2026-09-23T12:00:00",
   "entrees": [
     {
       "titre": "BMAD-METHOD — v7 ANNONCEE (uv standard) — PAS sortie : derniere release v6.10.0",
@@ -186,6 +186,43 @@
       "action_corrective": "ADOPTE ET APPLIQUE 2026-09-13 : les 3 rôles (audit dépendances/supply chain, revue avec historique git, audit workflows CI) sont repris comme squelette des étapes 2-4 de la skill `agent-securite`, réécrits maison par canal — jamais d'import du dépôt tiers.",
       "date": "2026-09-12",
       "statut": "adopte"
+    },
+    {
+      "titre": "CI qui ne peut pas echouer : 'ruff check . || true' sur 3 depots, et zero artefact d'execution publie sur les 5 workflows de la flotte",
+      "url": "https://github.com/actions/upload-artifact",
+      "type": "pratique",
+      "projets_concernes": [
+        "VScode5",
+        "VSCode2",
+        "VSCode4",
+        "VSCode",
+        "VSCode1"
+      ],
+      "date": "2026-09-19",
+      "statut": "adopte",
+      "source_referentiel": "actions/upload-artifact - README officiel : if-no-files-found accepte warn (defaut) | error (echec de l'action avec message) | ignore. ET docs.pytest.org/en/stable/reference/exit-codes.html : code 5 = 'No tests were collected'. Consultes 2026-09-19. NATURE : docs officielles. CLASSE : prouve (deux mecanismes d'echec documentes).",
+      "pertinence": "A1 - distinguer mecaniquement une CI qui a EXECUTE d'une CI verte par absence d'execution. Constat local mesure le 2026-09-19 (grep sur les 5 dossiers .github/workflows de la flotte) : (1) 'python -m ruff check . || true' en ligne 65 de VSCode2, 105 de VSCode4 et 34 du hub - une etape de verification qui ne peut structurellement pas faire echouer la CI ; (2) ZERO occurrence de upload-artifact, if-no-files-found ou --junitxml sur toute la flotte : aucun workflow ne publie de rapport d'execution, le vert est le seul signal disponible. Ici, contrairement a B1, un GREP SUFFIT : '|| true' dans un workflow est un motif syntaxique decisif. [adopte le 2026-09-19 : Garde de baseline de lint PORTEE DE VSCode4 AU HUB (tests/test_lint_baseline.py, motif repris et non reinvente) : compte par zone et par regle, barre dans les deux sens. Le `|| true` de ci.yml n'est PAS supprime, il devient deliberement informatif et adosse a la garde, comme chez VSCode4 - l'entree dit de traiter le perimetre, pas de supprimer sans decision. Artefact d'execution ajoute : pytest --junitxml + actions/upload-artifact avec if-no-files-found: error et if: always(). Les deux criteres inscrits au referentiel en oo avec la raison du non-outillage (le grep brut ferait un faux positif sur VSCode4 et sur le hub).]",
+      "regle_proposee": "Deux criteres mesurables a froid par scan_projets.py sur .github/workflows/*.yml : (a) aucune etape de verification ne se termine par '|| true' ni ne porte continue-on-error: true ; (b) tout workflow qui lance des tests publie un artefact d'execution via actions/upload-artifact avec if-no-files-found: error - un vert sans artefact publie compte comme non execute.",
+      "action_corrective": "1) Traiter les 3 etapes '|| true' : elles avaient ete posees pour ne pas bloquer sur du legacy ; les remplacer par un perimetre qui echoue vraiment (ex. ruff check --select F .) plutot que les supprimer sans decision. 2) Ajouter pytest --junitxml=report.xml puis upload-artifact avec if-no-files-found: error. Cout : ~20 min par depot, 5 depots concernes."
+    },
+    {
+      "titre": "Hook Stop / SubagentStop bloquant (exit 2) - le seul mecanisme publie qui rend un gate de fin d'increment opposable",
+      "url": "https://code.claude.com/docs/en/hooks",
+      "type": "pratique",
+      "projets_concernes": [
+        "VScode5",
+        "VSCode",
+        "VSCode1",
+        "VSCode2",
+        "VSCode3",
+        "VSCode4"
+      ],
+      "date": "2026-09-19",
+      "statut": "adopte",
+      "source_referentiel": "Anthropic - doc officielle Claude Code / Hooks (consultee 2026-09-19 ; docs.claude.com/en/docs/claude-code/hooks redirige en 301 vers code.claude.com/docs/en/hooks). Stop et SubagentStop : 'Can block? Yes' ; le code de sortie 2 empeche l'arret et poursuit la conversation ; le message vient du champ de raison JSON, sinon de stderr ; garde-fou stop_hook_active contre la boucle infinie. NATURE : doc officielle. CLASSE : ANNONCE, pas prouve - la doc decrit le mecanisme, je n'ai ouvert AUCUN transcript reel ou un hook Stop a effectivement bloque.",
+      "pertinence": "A2 - rendre un gate humain BLOQUANT avant qu'un increment soit marque termine. La flotte n'a aujourd'hui que des hooks de RAPPEL (remind_revue_increment, warn_verif_before_commit), tous fail-open : rien n'empeche mecaniquement de conclure. Le couple Stop + code 2 est le seul mecanisme publie qui transforme le rappel en blocage, et stop_hook_active repond precisement a l'objection 'un hook bloquant fera boucler l'agent'. [adopte le 2026-09-19 : PREUVE CHERCHEE, AUCUN GATE CABLE - conformement au texte de l'entree. Hook Stop jetable ecrit HORS DU DEPOT (scratchpad) : il rend bien 2 sur le cas nominal et 0 quand stop_hook_active est vrai (la reponse publiee a l'objection de la boucle infinie). MAIS le blocage au niveau du HARNAIS n'a PAS ete observe : aucun transcript de session bloquee n'a pu etre produit depuis un sous-agent. L'entree RESTE donc classee 'annonce' au referentiel, et settings.json n'a pas ete touche. La distinction rappel (fail-open, sortie 0) / gate (sortie 2) est inscrite au referentiel en oo.]",
+      "regle_proposee": "Distinguer au referentiel les hooks de RAPPEL (fail-open, sortie 0) des hooks de GATE (sortie 2 bloquante). Critere mesurable a froid : un projet qui pretend gater la fin d'increment doit avoir au moins un chemin de sortie 2 dans le hook concerne - grep sys.exit(2) dans .claude/hooks/*.py croise avec la declaration Stop de settings.json.",
+      "action_corrective": "NE PAS cabler avant preuve : ecrire d'abord un hook Stop jetable dans le scratchpad, provoquer le blocage, LIRE le transcript, et seulement alors proposer le gate. Cout de verification : ~30 min, 0 token reseau. Tant que ce transcript n'existe pas, cette entree reste classee 'annonce'."
     }
   ]
 }
