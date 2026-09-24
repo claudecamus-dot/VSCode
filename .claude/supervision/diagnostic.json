@@ -1,4 +1,8 @@
 {
- "generated": "2026-09-10T08:01:47+02:00",
- "findings": []
+  "generated": "2026-09-24T09:28:28+02:00",
+  "findings": [],
+  "passe_sans_constat": {
+    "date": "2026-09-24T09:28:28+02:00",
+    "preuve": "passe etage 2 du 2026-09-24 (salle hub) : comop-pptx-prototype npm run lint exit 0 ; npm test 55 passed 0 fail ; git rev-list HEAD...origin 0/0 ; seul constat (compte de tests du CLAUDE.md) corrige par 7d2e191"
+  }
 }
