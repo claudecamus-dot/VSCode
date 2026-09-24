@@ -40,7 +40,7 @@ qui l'a produit — sinon marqué non mesuré.
 
 | Si le changement touche… | Alors… |
 | --- | --- |
-| `server.js` / le routage HTTP | `npm test` (node:test, 27 cas réels sur un serveur lancé — mesuré le 2026-09-07) |
+| `server.js` / le routage HTTP | `npm test` (node:test sur un serveur réellement lancé — le compte fait foi dans la sortie de `npm test`, jamais écrit ici : 27 annoncés le 2026-09-07, 55 mesurés le 2026-09-24) |
 | La génération PPTX / les scripts `src/*.ps1` | `npm test` suffit : `test/test-smoke.js` y rejoue `.\src\smoke-test.ps1` (34 assertions end-to-end : fichiers, génération complète, aucun placeholder résiduel, mutation OOXML). Lancer le `.ps1` seul ne sert qu'à isoler un échec |
 | Un template `.pptx` | `.\src\validate-template.ps1` sur le template modifié — cette même vérification est désormais aussi rejouée par le serveur à l'upload (`POST /api/templates`), qui remonte `validation.status`/`missing` au client |
 
