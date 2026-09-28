@@ -19,9 +19,34 @@ WATCHED_PREFIXES = (
 )
 
 
+# --- bounded stdin read (anthropics/claude-code#87289) -------------------------
+try:
+    sys.path.insert(0, __import__("os").path.dirname(__import__("os").path.abspath(__file__)))
+    from _stdin_borne import lire_stdin_borne as _lsb
+except Exception:  # noqa: BLE001 - exported without the helper: still bounded
+    def _lsb(delai=5.0, flux=None):
+        import threading
+        f = flux if flux is not None else sys.stdin
+        boite = {}
+
+        def _c():
+            try:
+                boite["v"] = f.read()
+            except BaseException:  # noqa: BLE001
+                boite["v"] = None
+        t = threading.Thread(target=_c, daemon=True)
+        t.start()
+        t.join(delai)
+        return None if t.is_alive() else boite.get("v")
+
+
 def read_stdin_json():
     try:
-        raw = sys.stdin.read()
+        raw = _lsb(5.0)
+        if raw is None:
+            return {}
+        if isinstance(raw, bytes):
+            raw = raw.decode("utf-8", "replace")
         return json.loads(raw) if raw.strip() else {}
     except Exception:
         return {}

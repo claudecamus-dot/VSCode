@@ -63,9 +63,41 @@ def _laisser_passer():
     sys.exit(0)
 
 
+# --- bounded stdin read (anthropics/claude-code#87289) -------------------------
+try:
+    sys.path.insert(0, __import__("os").path.dirname(__import__("os").path.abspath(__file__)))
+    from _stdin_borne import lire_stdin_borne as _lsb
+except Exception:  # noqa: BLE001 - exported without the helper: still bounded
+    def _lsb(delai=5.0, flux=None):
+        import threading
+        f = flux if flux is not None else sys.stdin
+        boite = {}
+
+        def _c():
+            try:
+                boite["v"] = f.read()
+            except BaseException:  # noqa: BLE001
+                boite["v"] = None
+        t = threading.Thread(target=_c, daemon=True)
+        t.start()
+        t.join(delai)
+        return None if t.is_alive() else boite.get("v")
+
+
+def _stdin_borne(delai=5.0):
+    """Bounded stdin read: the payload, or None on timeout/error — fail-open,
+    matching this hook's existing policy."""
+    return _lsb(delai, globals().get("_FLUX_STDIN"))
+
+
 def main() -> None:
     try:
-        data = json.loads(sys.stdin.buffer.read().decode("utf-8", "replace"))
+        brut = _stdin_borne()
+        if brut is None:
+            _laisser_passer()
+        if isinstance(brut, bytes):
+            brut = brut.decode("utf-8", "replace")
+        data = json.loads(brut)
     except Exception:   # noqa: BLE001 - fail-open
         _laisser_passer()
 
