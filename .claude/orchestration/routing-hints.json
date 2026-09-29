@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-25T14:00:36+02:00",
+ "generated": "2026-09-29T12:39:04+02:00",
  "eprouves": [
   "(defaut)",
   "agent-orchestrator",
@@ -76,11 +76,14 @@
   "bmad-workflow-builder",
   "deck-design-review",
   "restitution-deck-design",
-  "revue-increment",
+  "revue-increment"
+ ],
+ "contredit_par_skill_doctor": [],
+ "mesure_skill_doctor_perimee": false,
+ "absents_du_disque": [
   "skill-creator",
   "synced"
  ],
- "contredit_par_skill_doctor": [],
  "bibliotheque_reference": [
   "deck-design-library",
   "pdf-quality",
