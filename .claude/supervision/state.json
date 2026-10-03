@@ -93,7 +93,7 @@
    "last": "2026-09-07T18:11:42.735Z"
   }
  },
- "last_scan": "2026-09-30T08:37:57+02:00",
+ "last_scan": "2026-10-03T20:32:39+02:00",
  "detector_version": 2,
  "last_replay": "2026-07-27T12:19:20+02:00",
  "agents_connus": [
@@ -101,12 +101,14 @@
   "agent-supervisor",
   "bmad-recherche",
   "bmad-revue",
+  "bmad-test",
   "ppt-designer",
+  "scribe",
   "utilisateur-produit",
   "veille-agentic"
  ],
  "mesure_incomplete": {
-  "transcripts_absents": 2,
+  "transcripts_absents": 4,
   "total_fichiers": 11,
   "dernier_evenement": "2026-09-11T06:46:54.708Z",
   "journal_usage_muet": false
