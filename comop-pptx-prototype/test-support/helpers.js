@@ -74,7 +74,10 @@ async function startServer({ env: extraEnv = {} } = {}) {
   const baseUrl = `http://127.0.0.1:${port}`;
 
   async function stop() {
-    const exited = new Promise(resolve => child.once("exit", resolve));
+    // Un serveur deja mort (crash) ne re-emettra jamais "exit" : ne pas attendre.
+    const exited = child.exitCode !== null || child.signalCode !== null
+      ? Promise.resolve()
+      : new Promise(resolve => child.once("exit", resolve));
     child.stdin.end();
     const timeout = setTimeout(() => child.kill(), 3000);
     await exited;

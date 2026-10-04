@@ -597,7 +597,17 @@ async function handleApi(req, res) {
     const id = crypto.randomUUID();
     const dataPath = path.join(requestDataDir, `request-${id}.json`);
     const outputPath = path.join(outputDir, `comop-${id}.pptx`);
-    fs.writeFileSync(dataPath, JSON.stringify(body.fields || {}, null, 2), "utf8");
+    // Ecriture atomique : fichier temporaire dans le meme dossier puis rename,
+    // pour qu'un lecteur (generate-comop.ps1) ne voie jamais un JSON tronque.
+    const dataTmpPath = `${dataPath}.${process.pid}.tmp`;
+    try {
+      fs.writeFileSync(dataTmpPath, JSON.stringify(body.fields || {}, null, 2), "utf8");
+      fs.renameSync(dataTmpPath, dataPath);
+    } catch (error) {
+      try { fs.unlinkSync(dataTmpPath); } catch (_) { /* tmp deja absent */ }
+      sendInternalError(res, error);
+      return;
+    }
 
     try {
       const generateWorkDir = fs.mkdtempSync(path.join(os.tmpdir(), "comop-generate-"));
@@ -674,7 +684,18 @@ function serveStatic(req, res) {
     return;
   }
   const ext = path.extname(filePath);
-  send(res, 200, fs.readFileSync(filePath), contentTypes[ext] || "application/octet-stream");
+  let content;
+  try {
+    if (!fs.statSync(filePath).isFile()) {
+      send(res, 404, "Page introuvable", "text/plain; charset=utf-8");
+      return;
+    }
+    content = fs.readFileSync(filePath);
+  } catch (error) {
+    sendInternalError(res, error);
+    return;
+  }
+  send(res, 200, content, contentTypes[ext] || "application/octet-stream");
 }
 
 // Audit du 2026-09-02 (securite) : le serveur n'ecoute que sur 127.0.0.1, mais
@@ -729,8 +750,9 @@ process.on("uncaughtException", error => {
 });
 
 process.on("unhandledRejection", error => {
-  log(`UNHANDLED ${error.stack || error.message}`);
-  process.exit(1);
+  // Une promesse rejetee ne doit pas tuer le serveur pour tout le monde :
+  // on journalise et on continue (uncaughtException, lui, reste fatal).
+  log(`UNHANDLED ${(error && error.stack) || (error && error.message) || String(error)}`);
 });
 
 server.listen(port, "127.0.0.1", () => {
