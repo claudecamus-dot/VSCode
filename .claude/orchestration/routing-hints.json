@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-04T22:36:47+02:00",
+ "generated": "2026-10-05T15:05:31+02:00",
  "eprouves": [
   "(defaut)",
   "agent-orchestrator",
@@ -67,7 +67,9 @@
  "hub_only": [
   "audit-technique"
  ],
- "en_sommeil": [],
+ "en_sommeil": [
+  "bmad-party-mode"
+ ],
  "verifications_oubliees": [
   "revue-increment jamais invoquee malgre le rappel SessionStart -> l'inserer d'office en etape terminale des plans de dev"
  ],
@@ -374,7 +376,7 @@
   }
  ],
  "mesure_incomplete": {
-  "transcripts_absents": 4,
+  "transcripts_absents": 6,
   "total_fichiers": 11,
   "dernier_evenement": "2026-09-11T06:46:54.708Z",
   "journal_usage_muet": false

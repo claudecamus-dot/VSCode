@@ -93,7 +93,7 @@
    "last": "2026-09-07T18:11:42.735Z"
   }
  },
- "last_scan": "2026-10-04T22:36:47+02:00",
+ "last_scan": "2026-10-05T15:05:31+02:00",
  "detector_version": 2,
  "last_replay": "2026-07-27T12:19:20+02:00",
  "agents_connus": [
@@ -108,7 +108,7 @@
   "veille-agentic"
  ],
  "mesure_incomplete": {
-  "transcripts_absents": 4,
+  "transcripts_absents": 6,
   "total_fichiers": 11,
   "dernier_evenement": "2026-09-11T06:46:54.708Z",
   "journal_usage_muet": false
