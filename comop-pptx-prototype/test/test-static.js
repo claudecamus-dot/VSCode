@@ -79,3 +79,11 @@ test("GET /output/<repertoire>.pptx renvoie une erreur geree, sans faire tomber 
   const suivante = await request(server.baseUrl, "GET", "/output/inexistant.pptx");
   assert.equal(suivante.status, 404);
 });
+
+test("serveStatic ne bloque pas le thread Node avec une lecture synchrone", () => {
+  const src = fs.readFileSync(path.join(__dirname, "..", "server.js"), "utf8");
+  const debut = src.indexOf("async function serveStatic");
+  assert.ok(debut >= 0, "serveStatic doit etre async");
+  const fin = src.indexOf("\n}\n", debut);
+  assert.doesNotMatch(src.slice(debut, fin), /readFileSync|statSync/);
+});

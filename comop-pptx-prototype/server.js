@@ -5,6 +5,7 @@ const os = require("os");
 const path = require("path");
 const { spawn } = require("child_process");
 const { isInside } = require("./src/path-guard");
+const { createLimiter } = require("./src/concurrency-limit");
 
 const root = __dirname;
 // COMOP_DATA_ROOT permet aux tests de rediriger templates/output/data vers un
@@ -230,7 +231,14 @@ function readBinaryBody(req, maxBytes) {
 // c'est Node qui le supprime lui-meme sur ce chemin -- il en connait le
 // chemin exact, contrairement a un balayage global de %TEMP% qui risquerait
 // de supprimer le repertoire d'un autre processus en cours.
-function runPowerShell(args, { workDir } = {}) {
+// Perf audit 2026-10-04: one powershell.exe per request with no cap. At most
+// COMOP_MAX_POWERSHELL (default 2) run at once; the rest wait in a FIFO queue
+// (the timeout only starts once the process is spawned).
+const powerShellLimiter = createLimiter(Number(process.env.COMOP_MAX_POWERSHELL) || 2);
+function runPowerShell(args, opts) {
+  return powerShellLimiter(() => runPowerShellNow(args, opts));
+}
+function runPowerShellNow(args, { workDir } = {}) {
   return new Promise((resolve, reject) => {
     const child = spawn("powershell.exe", ["-NoProfile", "-ExecutionPolicy", "Bypass", ...args], {
       cwd: root,
@@ -639,7 +647,7 @@ async function handleApi(req, res) {
   sendJson(res, 404, { error: "Route API inconnue" });
 }
 
-function serveStatic(req, res) {
+async function serveStatic(req, res) {
   let url;
   if (req.url === "/") {
     url = "/index.html";
@@ -687,11 +695,13 @@ function serveStatic(req, res) {
   const ext = path.extname(filePath);
   let content;
   try {
-    if (!fs.statSync(filePath).isFile()) {
+    if (!(await fs.promises.stat(filePath)).isFile()) {
       send(res, 404, "Page introuvable", "text/plain; charset=utf-8");
       return;
     }
-    content = fs.readFileSync(filePath);
+    // Perf audit 2026-10-04: async read, the single Node thread is not blocked.
+    content = await fs.promises.readFile(filePath);
+
   } catch (error) {
     sendInternalError(res, error);
     return;
@@ -739,7 +749,7 @@ const server = http.createServer(async (req, res) => {
       await handleApi(req, res);
       return;
     }
-    serveStatic(req, res);
+    await serveStatic(req, res);
   } catch (error) {
     sendInternalError(res, error);
   }
