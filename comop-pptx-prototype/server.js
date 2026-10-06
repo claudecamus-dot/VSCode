@@ -4,6 +4,7 @@ const http = require("http");
 const os = require("os");
 const path = require("path");
 const { spawn } = require("child_process");
+const { isInside } = require("./src/path-guard");
 
 const root = __dirname;
 // COMOP_DATA_ROOT permet aux tests de rediriger templates/output/data vers un
@@ -296,7 +297,7 @@ function safeTemplatePath(name) {
   const fileName = path.basename(name || "").replace(/\.pptx$/i, ".pptx");
   const templatePath = path.join(templatesDir, fileName);
   const baseNameUpper = fileName.replace(/\.pptx$/i, "").toUpperCase();
-  if (!fileName.endsWith(".pptx") || !templatePath.startsWith(templatesDir) || RESERVED_WINDOWS_DEVICE_NAMES.has(baseNameUpper)) {
+  if (!fileName.endsWith(".pptx") || !isInside(templatesDir, templatePath) || RESERVED_WINDOWS_DEVICE_NAMES.has(baseNameUpper)) {
     throw new Error("Template invalide");
   }
   return templatePath;
