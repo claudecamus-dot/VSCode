@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-05T15:05:31+02:00",
+ "generated": "2026-10-06T14:01:28+02:00",
  "eprouves": [
   "(defaut)",
   "agent-orchestrator",
@@ -68,7 +68,9 @@
   "audit-technique"
  ],
  "en_sommeil": [
-  "bmad-party-mode"
+  "bmad-forge-idea",
+  "bmad-party-mode",
+  "bmad-spec"
  ],
  "verifications_oubliees": [
   "revue-increment jamais invoquee malgre le rappel SessionStart -> l'inserer d'office en etape terminale des plans de dev"
