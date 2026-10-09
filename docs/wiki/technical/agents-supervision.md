@@ -1,5 +1,5 @@
 ---
-updated: 2026-10-06
+updated: 2026-10-09
 generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, étage 1)
 ---
 
@@ -8,16 +8,16 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-10-06T22:04:29+02:00 · **11 sessions** (transcripts) · **18** invocations de skills · **18** lancements de sous-agents.
+Dernier scan : 2026-10-09T10:41:22+02:00 · **3 sessions** (transcripts) · **16** invocations de skills · **18** lancements de sous-agents.
 
 ## Skills — usage réel
 
 | Skill | Famille | Invocations | Première | Dernière |
 | --- | --- | --- | --- | --- |
-| `agent-orchestrator` | projet | 8 | 2026-07-27 | 2026-09-11 |
-| `agent-supervisor` | projet | 2 | 2026-07-23 | 2026-09-04 |
+| `agent-orchestrator` | projet | 7 | 2026-09-04 | 2026-09-11 |
 | `bmad-forge-idea` | BMAD | 2 | 2026-09-04 | 2026-09-04 |
 | `veille-agentic` | projet | 2 | 2026-09-04 | 2026-09-07 |
+| `agent-supervisor` | projet | 1 | 2026-09-04 | 2026-09-04 |
 | `bmad-party-mode` | BMAD | 1 | 2026-09-04 | 2026-09-04 |
 | `bmad-review` | BMAD | 1 | 2026-09-07 | 2026-09-07 |
 | `bmad-spec` | BMAD | 1 | 2026-09-04 | 2026-09-04 |
@@ -66,12 +66,12 @@ _Consommés en lisant/exécutant leurs `scripts/`, ou via un sous-agent qui les 
 
 ## TODO agents (constats automatiques)
 
-⚠️ **Mesure incomplète** — 6 transcript(s) sur 11 absent(s) du disque. Un `n=0` ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.
+⚠️ **Mesure incomplète** — 1 transcript(s) sur 3 absent(s) du disque. Un `n=0` ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.
 
 1. **Désinstaller les shims BMAD dépréciés** (2) : `bmad-create-story`, `bmad-dev-story` — dépréciés par BMAD dans leur propre `description`, chacun avec son remplaçant ; le seul élagage qui ne repose pas sur notre mesure d'usage.
 2. **`revue-increment` jamais invoquée** malgré le rappel SessionStart à chaque session — revoir son déclencheur (l'ancrer au flux de commit ?) ou la simplifier.
 3. **Skills projet sans usage** : `agent-securite`, `deck-design-review`, `restitution-deck-design` — vérifier pertinence et déclencheurs.
-4. **Skills en sommeil (>30 j sans usage)** : `bmad-forge-idea`, `bmad-party-mode`, `bmad-spec`.
+4. **Skills en sommeil (>30 j sans usage)** : `bmad-forge-idea`, `bmad-party-mode`, `bmad-review`, `bmad-revue`, `bmad-spec`.
 
 ## Arbitrages enregistrés
 
@@ -101,7 +101,11 @@ _Constats clos par décision humaine (`.claude/supervision/arbitrages.json`) —
 
 ## Diagnostic qualitatif (étage 2 — `agent-supervisor`)
 
-_Diagnostic à jour — rien à signaler, tous les constats précédents ont été arbitrés._
+_Diagnostic à jour._
+
+1. **[À VÉRIFIER] Journal d'orchestration muet depuis le 2026-09-11 alors que le depot a recu 122 commits** — Vérifier l'appariement fin des 9 corrections avec le journal ; ne journaliser a posteriori que les vraies corrections, pas les rattrapages du hub. · **Proposition** : Regle CLAUDE.md VSCode : tout commit feat/fix/perf sur comop-pptx-prototype passe par le playbook dev-verifie et un log_run.py ; les commits chore(kit)/dispositif venant du hub restent journalises cote hub
+2. **[À VÉRIFIER] 3 runs partiel jamais soldes (2026-07-27, 2026-09-01, 2026-09-02), en attente depuis 36 a 73 jours** — Solder ou relancer chaque run · **Proposition** : Pour chacun : verifier l'etat reel (findings smoke-test hors CI / transcripts absents) puis log_run.py --solde succes|abandon avec la preuve ; ne pas laisser un partiel > 30 j
+3. **[À VÉRIFIER] revue-increment jamais invoquee sur VSCode malgre le rappel SessionStart** — Inserer revue-increment en etape terminale des plans de dev du projet · **Proposition** : Amender le playbook dev-verifie de VSCode : etape finale obligatoire /revue-increment avant commit applicatif
 
 ## Seuil de qualification — la mesure
 

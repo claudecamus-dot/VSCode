@@ -1,20 +1,6 @@
 {
- "generated": "2026-10-09T09:09:36+02:00",
+ "generated": "2026-10-09T10:07:21+02:00",
  "findings": [
-  {
-   "categorie": "verification-manquante",
-   "cible": "VSCode",
-   "priorite": 1,
-   "statut_preuve": "a_verifier",
-   "titre": "Journal d'orchestration muet depuis le 2026-09-11 alors que le depot a recu 122 commits",
-   "preuve": "VSCode/.claude/orchestration/runs.jsonl : 15 runs, dernier 2026-09-11T09:42 ; git log --since=2026-09-09 --oneline | wc -l = 122, dont 13 feat/fix/perf (ex. 2026-10-06 perf(server) cap powershell spawns, fix(server) template directory guard) sans run journalise",
-   "recommandation": "Journaliser les changements applicatifs du serveur COMOP via log_run.py",
-   "proposition": "Regle CLAUDE.md VSCode : tout commit feat/fix/perf sur comop-pptx-prototype passe par le playbook dev-verifie et un log_run.py ; les commits chore(kit)/dispositif venant du hub restent journalises cote hub",
-   "vu_le": "2026-10-09",
-   "re_challenge": true,
-   "owner": "VSCode",
-   "echeance": "2026-10-23"
-  },
   {
    "categorie": "verification-manquante",
    "cible": "VSCode",
@@ -41,6 +27,20 @@
    "vu_le": "2026-10-09",
    "re_challenge": true,
    "owner": "revue-increment",
+   "echeance": "2026-10-23"
+  },
+  {
+   "categorie": "verification-manquante",
+   "cible": "VSCode",
+   "priorite": 3,
+   "statut_preuve": "a_verifier",
+   "titre": "Journal d'orchestration muet depuis le 2026-09-11 alors que le depot a recu 122 commits",
+   "preuve": "VSCode/.claude/orchestration/runs.jsonl : 15 runs, dernier 2026-09-11T09:42 ; git log --since=2026-09-09 --oneline | wc -l = 122, dont 13 feat/fix/perf (ex. 2026-10-06 perf(server) cap powershell spawns, fix(server) template directory guard) sans run journalise || RE-CHALLENGE 2026-10-09 (règle utilisateur du 2026-09-07 : seuls les corrections et bugs sont des runs ; propagations, états des lieux et rapports n'en sont pas) : depuis le dernier run (2026-09-11), 9 commits au sujet `fix` n'ont aucun sha dans runs.jsonl (commande : git -C VSCode log --since=2026-09-11 -i --grep='^fix' --format='%h %s'). Mesure fragile : les runs citent peu les sha, et certains fix sont des rattrapages du hub (fix(ci) lint, fix(hooks) stdin borné). Le chiffre brut de commits du constat initial n'est PAS le bon indicateur.",
+   "recommandation": "Vérifier l'appariement fin des 9 corrections avec le journal ; ne journaliser a posteriori que les vraies corrections, pas les rattrapages du hub.",
+   "proposition": "Regle CLAUDE.md VSCode : tout commit feat/fix/perf sur comop-pptx-prototype passe par le playbook dev-verifie et un log_run.py ; les commits chore(kit)/dispositif venant du hub restent journalises cote hub",
+   "vu_le": "2026-10-09",
+   "re_challenge": true,
+   "owner": "VSCode",
    "echeance": "2026-10-23"
   }
  ]
