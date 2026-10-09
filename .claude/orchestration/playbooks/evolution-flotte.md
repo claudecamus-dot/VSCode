@@ -136,7 +136,7 @@ cible, une cible à la fois. Mémoire du hub
 }
 ```
 
-<!-- SOCLE-PROVENANCE: socle : e5276048 du 2026-10-07 -->
-> **Socle généré** — tout ce qui PRÉCÈDE ce bandeau vient du hub de supervision (`e5276048`, 2026-10-07) et sera **réécrit** à la prochaine propagation.
+<!-- SOCLE-PROVENANCE: socle : e11226d7 du 2026-10-09 -->
+> **Socle généré** — tout ce qui PRÉCÈDE ce bandeau vient du hub de supervision (`e11226d7`, 2026-10-09) et sera **réécrit** à la prochaine propagation.
 > Le chapitre « Portée sur ce projet » placé après ce bandeau, lui, n'est jamais réécrit : c'est le travail local.
 
