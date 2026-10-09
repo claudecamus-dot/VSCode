@@ -172,6 +172,17 @@
       "cible": "en-sommeil-indicateur",
       "date": "2026-09-11",
       "decision": "ACCEPTE + DEJA RESOLU, verifie avant d ecrire. Les deux volets de la proposition sont implementes au canon et presents dans la copie locale de CE depot : (1) hors_perimetre_sommeil() exclut du TODO « en sommeil » ce sur quoi aucun geste n existe -- les types de sous-agents NATIFS du harnais (Explore, Plan, general-purpose : aucun .claude/agents/<nom>.md, donc rien a desinstaller ni a reveiller) et les noms a cadence propre deja suivie ailleurs sur la meme page, calcules par _cadence_propre() (tout hook remind_*.py plus agent-supervisor et ses 14 jours) ; (2) avertissement_mesure() rend le drapeau mesure_non_fiable visible LA OU L HUMAIN ARBITRE, en tete du bloc TODO, avec le nombre de transcripts absents et la consigne de ne rien desinstaller sur cette base. Le docstring de hors_perimetre_sommeil cite nommement ce finding."
+    },
+    {
+      "cible": "VSCode",
+      "date": "2026-10-09",
+      "titre": "3 runs partiel jamais soldes (2026-07-27, 2026-09-01, 2026-09-02), en attente depuis 36 a 73 jours",
+      "categories": [
+        "verification-manquante"
+      ],
+      "decision": "ACCEPTE + APPLIQUE : les 3 runs partiels sont soldes avec preuve (aucun reste ouvert).",
+      "preuve_application": "Les 3 runs partiels (2026-07-27T12:22:48, 2026-09-01T15:21:32, 2026-09-02T15:14:50) sont requalifiés partiel -> succes par `py .claude/orchestration/log_run.py --solde` (le premier avec --re-solder) dans VSCode, chacun avec une note `revue:` ; `npm test --prefix comop-pptx-prototype` rejoué le 2026-10-09 : 63/63 pass, exit 0 ; commit VSCode de9d45a.",
+      "sans_commit": "le commit de9d45a est dans le depot VSCode, pas dans le hub"
     }
   ]
 }
