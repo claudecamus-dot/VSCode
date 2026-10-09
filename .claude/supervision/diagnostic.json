@@ -1,8 +1,47 @@
 {
-  "generated": "2026-09-24T09:28:28+02:00",
-  "findings": [],
-  "passe_sans_constat": {
-    "date": "2026-09-24T09:28:28+02:00",
-    "preuve": "passe etage 2 du 2026-09-24 (salle hub) : comop-pptx-prototype npm run lint exit 0 ; npm test 55 passed 0 fail ; git rev-list HEAD...origin 0/0 ; seul constat (compte de tests du CLAUDE.md) corrige par 7d2e191"
+ "generated": "2026-10-09T09:09:36+02:00",
+ "findings": [
+  {
+   "categorie": "verification-manquante",
+   "cible": "VSCode",
+   "priorite": 1,
+   "statut_preuve": "a_verifier",
+   "titre": "Journal d'orchestration muet depuis le 2026-09-11 alors que le depot a recu 122 commits",
+   "preuve": "VSCode/.claude/orchestration/runs.jsonl : 15 runs, dernier 2026-09-11T09:42 ; git log --since=2026-09-09 --oneline | wc -l = 122, dont 13 feat/fix/perf (ex. 2026-10-06 perf(server) cap powershell spawns, fix(server) template directory guard) sans run journalise",
+   "recommandation": "Journaliser les changements applicatifs du serveur COMOP via log_run.py",
+   "proposition": "Regle CLAUDE.md VSCode : tout commit feat/fix/perf sur comop-pptx-prototype passe par le playbook dev-verifie et un log_run.py ; les commits chore(kit)/dispositif venant du hub restent journalises cote hub",
+   "vu_le": "2026-10-09",
+   "re_challenge": true,
+   "owner": "VSCode",
+   "echeance": "2026-10-23"
+  },
+  {
+   "categorie": "verification-manquante",
+   "cible": "VSCode",
+   "priorite": 2,
+   "statut_preuve": "a_verifier",
+   "titre": "3 runs partiel jamais soldes (2026-07-27, 2026-09-01, 2026-09-02), en attente depuis 36 a 73 jours",
+   "preuve": "runs.jsonl VSCode : resultat=partiel aux dates 2026-07-27T12:22, 2026-09-01T15:21, 2026-09-02T15:14 ; hub docs/wiki/projets-supervision.md:37 et :43 les listent 'il y a 37 j' / '36 j'",
+   "recommandation": "Solder ou relancer chaque run",
+   "proposition": "Pour chacun : verifier l'etat reel (findings smoke-test hors CI / transcripts absents) puis log_run.py --solde succes|abandon avec la preuve ; ne pas laisser un partiel > 30 j",
+   "vu_le": "2026-10-09",
+   "re_challenge": true,
+   "owner": "VSCode",
+   "echeance": "2026-10-23"
+  },
+  {
+   "categorie": "pratique-revue",
+   "cible": "revue-increment",
+   "priorite": 2,
+   "statut_preuve": "a_verifier",
+   "titre": "revue-increment jamais invoquee sur VSCode malgre le rappel SessionStart",
+   "preuve": "VSCode/.claude/orchestration/routing-hints.json (generated 2026-10-09T08:48) verifications_oubliees : 'revue-increment jamais invoquee malgre le rappel SessionStart' ; les 2 commits server du 2026-10-06 n'ont pas de run associe",
+   "recommandation": "Inserer revue-increment en etape terminale des plans de dev du projet",
+   "proposition": "Amender le playbook dev-verifie de VSCode : etape finale obligatoire /revue-increment avant commit applicatif",
+   "vu_le": "2026-10-09",
+   "re_challenge": true,
+   "owner": "revue-increment",
+   "echeance": "2026-10-23"
   }
+ ]
 }
