@@ -8,7 +8,7 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-10-11T09:22:34+02:00 · **3 sessions** (transcripts) · **16** invocations de skills · **18** lancements de sous-agents.
+Dernier scan : 2026-10-11T19:19:34+02:00 · **3 sessions** (transcripts) · **16** invocations de skills · **18** lancements de sous-agents.
 
 ## Skills — usage réel
 
