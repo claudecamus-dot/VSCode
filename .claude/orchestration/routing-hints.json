@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-09T10:41:23+02:00",
+ "generated": "2026-10-11T09:22:34+02:00",
  "eprouves": [
   "(defaut)",
   "agent-orchestrator",
@@ -79,45 +79,45 @@
  ],
  "playbooks": {
   "evolution-flotte": {
-   "n": 3,
-   "succes": 3,
+   "n": 5,
+   "succes": 5,
    "echecs": 0,
    "reprises": 0,
    "en_cours": 0,
    "en_attente_validation": 0,
-   "partiels": 2,
+   "partiels": 0,
    "runs_fortes_reprises": 0
   }
  },
  "agents": {
   "Explore": {
-   "n": 0,
-   "succes": 0,
+   "n": 1,
+   "succes": 1,
    "echecs": 0,
    "reprises": 0,
    "en_cours": 0,
    "en_attente_validation": 0,
-   "partiels": 1,
+   "partiels": 0,
    "runs_fortes_reprises": 0
   },
   "(session)": {
-   "n": 10,
-   "succes": 10,
+   "n": 21,
+   "succes": 21,
    "echecs": 0,
    "reprises": 0,
    "en_cours": 0,
    "en_attente_validation": 0,
-   "partiels": 11,
+   "partiels": 0,
    "runs_fortes_reprises": 0
   },
   "revue-increment": {
-   "n": 0,
-   "succes": 0,
+   "n": 2,
+   "succes": 2,
    "echecs": 0,
    "reprises": 0,
    "en_cours": 0,
    "en_attente_validation": 0,
-   "partiels": 2,
+   "partiels": 0,
    "runs_fortes_reprises": 0
   },
   "veille-agentic": {
@@ -377,6 +377,38 @@
    "cible": "en-sommeil-indicateur",
    "date": "2026-09-11",
    "decision": "ACCEPTE + DEJA RESOLU, verifie avant d ecrire. Les deux volets de la proposition sont implementes au canon et presents dans la copie locale de CE depot : (1) hors_perimetre_sommeil() exclut du TODO « en sommeil » ce sur quoi aucun geste n existe -- les types de sous-agents NATIFS du harnais (Explore, Plan, general-purpose : aucun .claude/agents/<nom>.md, donc rien a desinstaller ni a reveiller) et les noms a cadence propre deja suivie ailleurs sur la meme page, calcules par _cadence_propre() (tout hook remind_*.py plus agent-supervisor et ses 14 jours) ; (2) avertissement_mesure() rend le drapeau mesure_non_fiable visible LA OU L HUMAIN ARBITRE, en tete du bloc TODO, avec le nombre de transcripts absents et la consigne de ne rien desinstaller sur cette base. Le docstring de hors_perimetre_sommeil cite nommement ce finding."
+  },
+  {
+   "cible": "VSCode",
+   "date": "2026-10-09",
+   "titre": "3 runs partiel jamais soldes (2026-07-27, 2026-09-01, 2026-09-02), en attente depuis 36 a 73 jours",
+   "categories": [
+    "verification-manquante"
+   ],
+   "decision": "ACCEPTE + APPLIQUE : les 3 runs partiels sont soldes avec preuve (aucun reste ouvert).",
+   "preuve_application": "Les 3 runs partiels (2026-07-27T12:22:48, 2026-09-01T15:21:32, 2026-09-02T15:14:50) sont requalifiés partiel -> succes par `py .claude/orchestration/log_run.py --solde` (le premier avec --re-solder) dans VSCode, chacun avec une note `revue:` ; `npm test --prefix comop-pptx-prototype` rejoué le 2026-10-09 : 63/63 pass, exit 0 ; commit VSCode de9d45a.",
+   "sans_commit": "le commit de9d45a est dans le depot VSCode, pas dans le hub"
+  },
+  {
+   "cible": "VSCode",
+   "date": "2026-10-10",
+   "titre": "Journal d'orchestration muet depuis le 2026-09-11 alors que le depot a recu 122 commits",
+   "categories": [
+    "verification-manquante"
+   ],
+   "decision": "ACCEPTE + APPLIQUE : run recapitulatif a posteriori journalise par log_run.py (partiel, shas des fix dans les notes), decision utilisateur 2026-10-10",
+   "preuve_application": "VSCode commit 7bf7d67 : ligne partiel ajoutee a runs.jsonl ; 9 fix recomptes par git log --grep ^fix depuis 2026-09-11T09:42"
+  },
+  {
+   "cible": "revue-increment",
+   "date": "2026-10-10",
+   "titre": "revue-increment jamais invoquee sur VSCode malgre le rappel SessionStart",
+   "categories": [
+    "pratique-revue"
+   ],
+   "decision": "ACCEPTE (requalifie) : le constat « jamais invoquee » est infirme (3 runs : 2026-07-27, 2026-09-01, 2026-09-04) ; requalifie en non invoquee depuis le 2026-09-04. Decision utilisateur 2026-10-10.",
+   "preuve_application": "grep revue-increment VSCode/.claude/orchestration/runs.jsonl : 3 runs, aucun posterieur au 2026-09-04",
+   "sans_commit": "requalification d'un finding du diagnostic local, aucun correctif de code"
   }
  ],
  "mesure_incomplete": {
@@ -394,11 +426,11 @@
    "budget": 0.0,
    "p90_max": 0.2
   },
-  "sans_champ": 15,
+  "sans_champ": 16,
   "bras_inconnu": 0,
   "lignes_illisibles": 0,
   "reprises_non_numeriques": 0,
-  "n_runs": 15,
+  "n_runs": 16,
   "playbooks": {}
  }
 }

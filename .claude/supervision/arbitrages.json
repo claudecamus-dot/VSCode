@@ -183,6 +183,27 @@
       "decision": "ACCEPTE + APPLIQUE : les 3 runs partiels sont soldes avec preuve (aucun reste ouvert).",
       "preuve_application": "Les 3 runs partiels (2026-07-27T12:22:48, 2026-09-01T15:21:32, 2026-09-02T15:14:50) sont requalifiés partiel -> succes par `py .claude/orchestration/log_run.py --solde` (le premier avec --re-solder) dans VSCode, chacun avec une note `revue:` ; `npm test --prefix comop-pptx-prototype` rejoué le 2026-10-09 : 63/63 pass, exit 0 ; commit VSCode de9d45a.",
       "sans_commit": "le commit de9d45a est dans le depot VSCode, pas dans le hub"
+    },
+    {
+      "cible": "VSCode",
+      "date": "2026-10-10",
+      "titre": "Journal d'orchestration muet depuis le 2026-09-11 alors que le depot a recu 122 commits",
+      "categories": [
+        "verification-manquante"
+      ],
+      "decision": "ACCEPTE + APPLIQUE : run recapitulatif a posteriori journalise par log_run.py (partiel, shas des fix dans les notes), decision utilisateur 2026-10-10",
+      "preuve_application": "VSCode commit 7bf7d67 : ligne partiel ajoutee a runs.jsonl ; 9 fix recomptes par git log --grep ^fix depuis 2026-09-11T09:42"
+    },
+    {
+      "cible": "revue-increment",
+      "date": "2026-10-10",
+      "titre": "revue-increment jamais invoquee sur VSCode malgre le rappel SessionStart",
+      "categories": [
+        "pratique-revue"
+      ],
+      "decision": "ACCEPTE (requalifie) : le constat « jamais invoquee » est infirme (3 runs : 2026-07-27, 2026-09-01, 2026-09-04) ; requalifie en non invoquee depuis le 2026-09-04. Decision utilisateur 2026-10-10.",
+      "preuve_application": "grep revue-increment VSCode/.claude/orchestration/runs.jsonl : 3 runs, aucun posterieur au 2026-09-04",
+      "sans_commit": "requalification d'un finding du diagnostic local, aucun correctif de code"
     }
   ]
 }

@@ -1,5 +1,5 @@
 ---
-updated: 2026-10-09
+updated: 2026-10-11
 generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, étage 1)
 ---
 
@@ -8,7 +8,7 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-10-09T10:41:22+02:00 · **3 sessions** (transcripts) · **16** invocations de skills · **18** lancements de sous-agents.
+Dernier scan : 2026-10-11T09:22:34+02:00 · **3 sessions** (transcripts) · **16** invocations de skills · **18** lancements de sous-agents.
 
 ## Skills — usage réel
 
@@ -98,18 +98,23 @@ _Constats clos par décision humaine (`.claude/supervision/arbitrages.json`) —
 - **`bmad-catalogue-elagage`** (2026-09-11) : ACCEPTE + DEJA RESOLU sur les deux volets, verifie avant d ecrire. Volet (a) desinstaller les 4 skills DEPRECATED (bmad-create-architecture, bmad-create-prd, bmad-edit-prd, bmad-validate-prd) : SANS OBJET, elles ne sont plus sur le disque de ce depot -- la migration BMAD 6.10.0 -> 6.12.0 (commit 0ef6d7c du 2026-09-07, independante de ce finding) les a retirees ; test -d rend absent pour les 4, et grep -rl DEPRECATED sur les SKILL.md restants ne les cite pas. Volet (b) ne plus publier de TODO d elagage sur la foi d un compteur non fiable : DEJA IMPLEMENTE au canon -- skills_depreciees() lit la declaration d obsolescence dans le frontmatter de chaque skill (donnee de l editeur, independante de notre compteur) et avertissement_mesure() affiche en tete du bloc TODO « Ne rien desinstaller sur cette base » quand mesure_non_fiable vaut true. Les deux fonctions sont presentes dans la copie locale de CE depot (verifie par grep 'def <nom>'), pas seulement au hub.
 - **`veille-sans-depot`** (2026-09-11) : ACCEPTE + APPLIQUE. Volet (a) « ou la sortie a-t-elle atterri ? » : REPONDU, elle n etait pas perdue -- .claude/veille/veille.json existe dans ce depot, projection filtree generee par le hub (_genere.date 2026-09-09, derniere_veille 2026-09-08), propagee par sync_dispositif.py qui projette la veille du hub chez chaque cible. Aucune relance de veille faite : elle aurait coute un appel LLM pour un probleme deja resolu. Volet (b) alarme de fraicheur « veille lancee le X, aucun artefact produit » : APPLIQUE au canon du hub (commit hub 13d7355, fonction veille_sans_production, rendue en tete du bloc TODO en md ET en html), puis propagee ici par sync_dispositif.py. 6 tests, dont les 3 qui exigent que l alarme crie vus ROUGES avant d etre crus.
 - **`en-sommeil-indicateur`** (2026-09-11) : ACCEPTE + DEJA RESOLU, verifie avant d ecrire. Les deux volets de la proposition sont implementes au canon et presents dans la copie locale de CE depot : (1) hors_perimetre_sommeil() exclut du TODO « en sommeil » ce sur quoi aucun geste n existe -- les types de sous-agents NATIFS du harnais (Explore, Plan, general-purpose : aucun .claude/agents/<nom>.md, donc rien a desinstaller ni a reveiller) et les noms a cadence propre deja suivie ailleurs sur la meme page, calcules par _cadence_propre() (tout hook remind_*.py plus agent-supervisor et ses 14 jours) ; (2) avertissement_mesure() rend le drapeau mesure_non_fiable visible LA OU L HUMAIN ARBITRE, en tete du bloc TODO, avec le nombre de transcripts absents et la consigne de ne rien desinstaller sur cette base. Le docstring de hors_perimetre_sommeil cite nommement ce finding.
+- **`VSCode`** (2026-10-09) : ACCEPTE + APPLIQUE : les 3 runs partiels sont soldes avec preuve (aucun reste ouvert).
+- **`VSCode`** (2026-10-10) : ACCEPTE + APPLIQUE : run recapitulatif a posteriori journalise par log_run.py (partiel, shas des fix dans les notes), decision utilisateur 2026-10-10
+- **`revue-increment`** (2026-10-10) : ACCEPTE (requalifie) : le constat « jamais invoquee » est infirme (3 runs : 2026-07-27, 2026-09-01, 2026-09-04) ; requalifie en non invoquee depuis le 2026-09-04. Decision utilisateur 2026-10-10.
 
 ## Diagnostic qualitatif (étage 2 — `agent-supervisor`)
 
-_Diagnostic à jour._
+_Diagnostic à jour — rien à signaler, tous les constats précédents ont été arbitrés._
 
-1. **[À VÉRIFIER] Journal d'orchestration muet depuis le 2026-09-11 alors que le depot a recu 122 commits** — Vérifier l'appariement fin des 9 corrections avec le journal ; ne journaliser a posteriori que les vraies corrections, pas les rattrapages du hub. · **Proposition** : Regle CLAUDE.md VSCode : tout commit feat/fix/perf sur comop-pptx-prototype passe par le playbook dev-verifie et un log_run.py ; les commits chore(kit)/dispositif venant du hub restent journalises cote hub
-2. **[À VÉRIFIER] 3 runs partiel jamais soldes (2026-07-27, 2026-09-01, 2026-09-02), en attente depuis 36 a 73 jours** — Solder ou relancer chaque run · **Proposition** : Pour chacun : verifier l'etat reel (findings smoke-test hors CI / transcripts absents) puis log_run.py --solde succes|abandon avec la preuve ; ne pas laisser un partiel > 30 j
-3. **[À VÉRIFIER] revue-increment jamais invoquee sur VSCode malgre le rappel SessionStart** — Inserer revue-increment en etape terminale des plans de dev du projet · **Proposition** : Amender le playbook dev-verifie de VSCode : etape finale obligatoire /revue-increment avant commit applicatif
+_3 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir un, demander au superviseur un `re_challenge` avec des données nouvelles :_
+
+- ~~[À VÉRIFIER] 3 runs partiel jamais soldes (2026-07-27, 2026-09-01, 2026-09-02), en attente depuis 36 a 73 jours~~ (`VSCode`)
+- ~~[À VÉRIFIER] revue-increment jamais invoquee sur VSCode malgre le rappel SessionStart~~ (`revue-increment`)
+- ~~[À VÉRIFIER] Journal d'orchestration muet depuis le 2026-09-11 alors que le depot a recu 122 commits~~ (`VSCode`)
 
 ## Seuil de qualification — la mesure
 
-Depuis le 2026-09-04 : **37** demande(s) vue(s) hors commande slash (+ 6 slash), **12** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **32 %** des demandes orchestrées.
+Depuis le 2026-09-04 : **37** demande(s) vue(s) hors commande slash (+ 6 slash), **13** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **35 %** des demandes orchestrées.
 _Ce chiffre ne dit pas ce qui AURAIT dû être orchestré : le hook compte, il ne juge pas. Il donne le dénominateur qui manquait pour arbitrer le seuil sur données plutôt que sur habitude._
 
 ---

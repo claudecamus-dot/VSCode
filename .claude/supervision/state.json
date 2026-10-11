@@ -18,7 +18,7 @@
   }
  },
  "subagents": {},
- "last_scan": "2026-10-09T10:41:22+02:00",
+ "last_scan": "2026-10-11T09:22:34+02:00",
  "detector_version": 4,
  "last_replay": "2026-10-08T12:35:58+02:00",
  "agents_connus": [
@@ -123,6 +123,8 @@
   "n1": {
    "mesurable": false,
    "raison": "aucun <session>/subagents/agent-*.jsonl sous c--Users-claude-camus-Documents-VSCode"
-  }
+  },
+  "detector_version": 1,
+  "version_depuis": "2026-10-09T12:35:29+02:00"
  }
 }
