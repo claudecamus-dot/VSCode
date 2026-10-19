@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-11T19:19:37+02:00",
+ "generated": "2026-10-19T17:03:44+02:00",
  "eprouves": [
   "(defaut)",
   "agent-orchestrator",
@@ -68,6 +68,7 @@
   "audit-technique"
  ],
  "en_sommeil": [
+  "agent-orchestrator",
   "bmad-forge-idea",
   "bmad-party-mode",
   "bmad-review",
@@ -412,7 +413,7 @@
   }
  ],
  "mesure_incomplete": {
-  "transcripts_absents": 1,
+  "transcripts_absents": 3,
   "total_fichiers": 3,
   "dernier_evenement": "2026-09-11T06:46:54.708Z",
   "journal_usage_muet": false
