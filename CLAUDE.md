@@ -32,6 +32,17 @@ Commandes réelles, depuis `comop-pptx-prototype/` :
 - **Valider un template** : `.\src\validate-template.ps1` (placeholders attendus
   dans `src/placeholders.json`).
 - **Branding OCTO** : `config/branding.json` + `.\src\apply-octo-branding.ps1`.
+- **Tests** : `npm test` (tous) ; un seul fichier : `node --test test/test-path-guard.js`
+  (vérifié le 2026-10-21 : 1 test passé).
+
+## Limites
+
+- Pas de python-pptx : la génération passe par COMOP + PowerShell (canal ci-dessus).
+- Le serveur n'écoute que sur `127.0.0.1` ; ne pas l'exposer.
+- `safeTemplatePath` (anti-traversée de répertoire) ne se contourne pas.
+- Les tests n'écrivent jamais dans `templates/`, `output/` ni `data/` (`COMOP_DATA_ROOT`).
+- Un deck n'est jamais déclaré « vérifié » sans rendu réel inspecté.
+- Les fichiers `.claude/` synchronisés depuis le hub ne s'éditent pas ici.
 
 ## Vérifications avant commit (canal du prototype)
 
