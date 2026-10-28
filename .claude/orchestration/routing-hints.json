@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-22T18:00:07+02:00",
+ "generated": "2026-10-28T08:18:43+01:00",
  "eprouves": [
   "(defaut)",
   "agent-orchestrator",
@@ -204,7 +204,7 @@
  },
  "prudence": [],
  "trous_catalogue": [],
- "diagnostic_a_jour": true,
+ "diagnostic_a_jour": false,
  "arbitrages": [
   {
    "cible": "ppt-designer",
