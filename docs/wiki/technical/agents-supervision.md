@@ -1,5 +1,5 @@
 ---
-updated: 2026-10-28
+updated: 2026-10-31
 generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, étage 1)
 ---
 
@@ -8,13 +8,13 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-10-28T08:18:42+01:00 · **3 sessions** (transcripts) · **16** invocations de skills · **18** lancements de sous-agents.
+Dernier scan : 2026-10-31T12:40:55+01:00 · **4 sessions** (transcripts) · **17** invocations de skills · **18** lancements de sous-agents.
 
 ## Skills — usage réel
 
 | Skill | Famille | Invocations | Première | Dernière |
 | --- | --- | --- | --- | --- |
-| `agent-orchestrator` | projet | 7 | 2026-09-04 | 2026-09-11 |
+| `agent-orchestrator` | projet | 8 | 2026-09-04 | 2026-10-28 |
 | `bmad-forge-idea` | BMAD | 2 | 2026-09-04 | 2026-09-04 |
 | `veille-agentic` | projet | 2 | 2026-09-04 | 2026-09-07 |
 | `agent-supervisor` | projet | 1 | 2026-09-04 | 2026-09-04 |
@@ -66,12 +66,12 @@ _Consommés en lisant/exécutant leurs `scripts/`, ou via un sous-agent qui les 
 
 ## TODO agents (constats automatiques)
 
-⚠️ **Mesure incomplète** — 3 transcript(s) sur 3 absent(s) du disque. Un `n=0` ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.
+⚠️ **Mesure incomplète** — 3 transcript(s) sur 4 absent(s) du disque. Un `n=0` ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.
 
 1. **Désinstaller les shims BMAD dépréciés** (2) : `bmad-create-story`, `bmad-dev-story` — dépréciés par BMAD dans leur propre `description`, chacun avec son remplaçant ; le seul élagage qui ne repose pas sur notre mesure d'usage.
 2. **`revue-increment` jamais invoquée** malgré le rappel SessionStart à chaque session — revoir son déclencheur (l'ancrer au flux de commit ?) ou la simplifier.
 3. **Skills projet sans usage** : `agent-securite`, `deck-design-review`, `restitution-deck-design` — vérifier pertinence et déclencheurs.
-4. **Skills en sommeil (>30 j sans usage)** : `agent-orchestrator`, `bmad-forge-idea`, `bmad-party-mode`, `bmad-review`, `bmad-revue`, `bmad-spec`.
+4. **Skills en sommeil (>30 j sans usage)** : `bmad-forge-idea`, `bmad-party-mode`, `bmad-review`, `bmad-revue`, `bmad-spec`.
 
 ## Arbitrages enregistrés
 
@@ -114,7 +114,7 @@ _3 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir 
 
 ## Seuil de qualification — la mesure
 
-Depuis le 2026-09-04 : **37** demande(s) vue(s) hors commande slash (+ 6 slash), **13** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **35 %** des demandes orchestrées.
+Depuis le 2026-09-04 : **37** demande(s) vue(s) hors commande slash (+ 7 slash), **13** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **35 %** des demandes orchestrées.
 _Ce chiffre ne dit pas ce qui AURAIT dû être orchestré : le hook compte, il ne juge pas. Il donne le dénominateur qui manquait pour arbitrer le seuil sur données plutôt que sur habitude._
 
 ---
